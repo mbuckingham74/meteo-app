@@ -16,13 +16,18 @@ function LocationComparisonView() {
 
   const [unit, setUnit] = useState('C');
 
-  // Fetch weather data for each location
-  const location1Data = useForecast(locations[0], 7);
-  const location2Data = useForecast(locations[1], 7);
-  const location3Data = locations[2] ? useForecast(locations[2], 7) : null;
-  const location4Data = locations[3] ? useForecast(locations[3], 7) : null;
+  // Fetch weather data for each location (always call hooks - pass null if no location)
+  const location1Data = useForecast(locations[0] || null, 7);
+  const location2Data = useForecast(locations[1] || null, 7);
+  const location3Data = useForecast(locations[2] || null, 7);
+  const location4Data = useForecast(locations[3] || null, 7);
 
-  const allData = [location1Data, location2Data, location3Data, location4Data].filter(Boolean);
+  const allData = [
+    locations[0] ? location1Data : null,
+    locations[1] ? location2Data : null,
+    locations[2] ? location3Data : null,
+    locations[3] ? location4Data : null
+  ].filter(Boolean);
 
   const handleAddLocation = () => {
     if (locations.length < 4) {
