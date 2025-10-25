@@ -36,9 +36,10 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 
 ### 🌤️ Weather Forecasts
 
-- **Multi-Day Forecasts** - 3, 7, or 14-day weather forecasts
+- **Multi-Day Forecasts** - 3, 7, or 14-day weather forecasts with dynamic time labels
 - **48-Hour Detailed View** - Hourly forecasts with temperature, feels-like, precipitation, and wind data
-- **Temperature Unit Support** - Toggle between Celsius and Fahrenheit
+- **Current Conditions Display** - Real-time temperature, feels-like, weather conditions, wind speed, humidity, visibility, and cloud cover
+- **Temperature Unit Toggle** - Global Celsius/Fahrenheit toggle in header (works for all users)
 - **Weather Alerts** - Real-time severe weather warnings, watches, and advisories with color-coded severity levels
   - Expandable alert details with onset/end times
   - Automatic severity classification (warning, watch, advisory)
@@ -66,8 +67,12 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 
 - **Smart Search** - Location search with autocomplete and keyboard navigation
 - **Popular Locations** - Quick access to major cities worldwide
-- **Geolocation Detection** - Automatic detection of current location via browser
-- **Favorites System** - Save and manage favorite locations with cloud sync
+- **Geolocation Detection** - Automatic detection of current location via browser with intelligent fallback
+  - Works even when reverse geocoding is rate-limited
+  - Uses coordinates directly if address lookup fails
+- **Favorites System** - Save and manage favorite locations with cloud sync (authentication required)
+  - Access favorites from user profile modal
+  - Automatic sync across all devices
 - **Location Comparison** - Side-by-side weather comparison for 2-4 locations with insights
 
 ### 💨 Air Quality Index (AQI)
@@ -120,10 +125,14 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React** - UI framework with Context API for state management (AuthContext, ThemeContext)
+- **React** - UI framework with Context API for state management
+  - AuthContext - User authentication state
+  - ThemeContext - Light/dark/auto theme management
+  - LocationContext - Global location selection state
+  - TemperatureUnitContext - Celsius/Fahrenheit preference
 - **Recharts** - Data visualization library
 - **CSS3** - Custom styling with CSS variables for theming and gradient designs
-- **localStorage** - Client-side favorites and theme storage (with cloud sync)
+- **localStorage** - Client-side preferences and theme storage (with cloud sync for authenticated users)
 
 ### Backend
 - **Node.js** - Runtime environment
@@ -406,9 +415,11 @@ meteo-app/
 │   │   │   ├── auth/                # Authentication components
 │   │   │   │   ├── AuthHeader.jsx
 │   │   │   │   ├── AuthModal.jsx
-│   │   │   │   └── UserProfileModal.jsx
+│   │   │   │   └── UserProfileModal.jsx         # Includes favorites tab
 │   │   │   ├── theme/               # Theme components
 │   │   │   │   └── ThemeToggle.jsx
+│   │   │   ├── units/               # NEW: Unit preference components
+│   │   │   │   └── TemperatureUnitToggle.jsx    # NEW: C/F toggle
 │   │   │   ├── location/            # Location management
 │   │   │   │   ├── LocationSearchBar.jsx
 │   │   │   │   ├── FavoritesPanel.jsx
@@ -418,7 +429,9 @@ meteo-app/
 │   │   │       └── WeatherAlertsBanner.jsx      # NEW: Weather alerts display
 │   │   ├── contexts/                # React Context providers
 │   │   │   ├── AuthContext.js
-│   │   │   └── ThemeContext.js
+│   │   │   ├── ThemeContext.js
+│   │   │   ├── LocationContext.js               # NEW: Global location state
+│   │   │   └── TemperatureUnitContext.js        # NEW: C/F preference
 │   │   ├── styles/                  # Global styles
 │   │   │   └── themes.css
 │   │   ├── hooks/                   # Custom React hooks
@@ -463,13 +476,14 @@ meteo-app/
 
 ### Main Dashboard
 
-1. **Search for a location** using the search bar
+1. **Search for a location** using the search bar in the controls panel
 2. **Use your current location** via the "Use My Location" button
-3. **Adjust forecast settings**:
-   - Select forecast duration (3, 7, or 14 days)
-   - Toggle temperature units (Celsius/Fahrenheit)
-4. **Customize chart visibility** using the chart controls panel
-5. **Save favorite locations** for quick access
+3. **Adjust settings**:
+   - Toggle temperature units (°C/°F) in the header (persists for all users)
+   - Select forecast duration (3, 7, or 14 days) in the controls panel
+4. **View current conditions** - See real-time temperature, weather, wind, humidity, and more
+5. **Customize chart visibility** using the chart controls panel
+6. **Save favorite locations** (requires login) - Access from user profile modal
 
 ### Location Comparison
 
@@ -480,10 +494,15 @@ meteo-app/
 
 ### Favorites Management
 
-1. Search for a location
-2. Click the location in search results to select it
-3. Add to favorites from the Favorites panel
-4. Click any favorite to quickly load that location's weather
+1. **Login or create an account** (favorites require authentication)
+2. **Search for and select a location** on the main dashboard
+3. **Open your user profile** by clicking your profile icon in the header
+4. **Navigate to the Favorites tab** in the profile modal
+5. **Add the current location to favorites** from within the favorites tab
+6. **Click any favorite** to quickly load that location's weather data
+7. **Remove favorites** by clicking the trash icon next to any saved location
+
+Note: Favorites automatically sync across all your devices when you're logged in.
 
 ---
 
@@ -530,11 +549,11 @@ The application implements a **MySQL-based caching layer** that dramatically red
 - 💾 Automatic cleanup of expired entries every hour
 
 **Cache TTL (Time To Live):**
-- Current Weather: 15 minutes
-- Forecasts: 2 hours
-- Historical Data: 24 hours
-- Air Quality: 30 minutes
-- Climate Stats: 7 days
+- Current Weather: 30 minutes (optimized from 15 min)
+- Forecasts: 6 hours (optimized from 2 hours)
+- Historical Data: 7 days (optimized from 24 hours)
+- Air Quality: 60 minutes (optimized from 30 min)
+- Climate Stats: 30 days (optimized from 7 days)
 
 **Cache Management Endpoints:**
 - `GET /api/cache/stats` - View cache statistics
@@ -546,6 +565,24 @@ The application implements a **MySQL-based caching layer** that dramatically red
 - Faster page loads for cached data
 - Better user experience with instant responses
 - Automatic expiration ensures fresh data
+
+### Request Throttling & Rate Limit Protection
+
+The application includes intelligent request management to prevent API rate limiting:
+
+**Throttling Features:**
+- 🚦 **Max 3 concurrent requests** - Prevents API stampeding
+- ⏱️ **100ms minimum interval** - Spaces out requests to avoid rate limits
+- 🔄 **Exponential backoff retry** - Automatically retries failed requests with increasing delays
+- 🛡️ **Graceful fallbacks** - Continues to work even when API limits are hit
+  - Geolocation uses coordinates if reverse geocoding fails
+  - Cached data served when fresh requests are blocked
+
+**How it Works:**
+- Requests queue automatically when limits are reached
+- Retry logic: Initial request → Wait 1s → Retry → Wait 2s → Final retry
+- Prevents cascade failures across multiple components
+- User experience maintained even during high API usage
 
 ## ⚠️ API Rate Limiting
 

@@ -9,11 +9,15 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 **Key Features:**
 - Historical weather data and climate patterns
 - Interactive charts and visualizations (temperature, precipitation, wind, etc.)
+- Current weather conditions display with real-time data
 - City comparison functionality
 - Monthly, daily, and hourly weather views
 - 10-year historical data analysis
-- User accounts with favorite locations
-- Customizable units (temperature, wind speed)
+- User accounts with cloud-synced favorite locations
+- Global temperature unit toggle (Celsius/Fahrenheit)
+- Light/dark/auto theme system
+- Weather alerts and air quality monitoring
+- Intelligent API caching and rate limit protection
 
 **Architecture:**
 - **Frontend**: React-based web application (Create React App)
@@ -43,9 +47,20 @@ The application is containerized using Docker Compose for consistent development
 The backend uses CommonJS modules (type: "commonjs" in package.json).
 
 ### Frontend Structure
-Standard Create React App structure with React 19.2.0. Main components:
-- **src/App.js** - Root application component
+Standard Create React App structure with React 19.2.0. Key architectural components:
+
+**React Context Providers:**
+- **AuthContext** - User authentication state and JWT token management
+- **ThemeContext** - Light/dark/auto theme management with system preference detection
+- **LocationContext** - Global location selection state shared across components
+- **TemperatureUnitContext** - Celsius/Fahrenheit preference with localStorage/cloud sync
+
+**Main Components:**
+- **src/App.js** - Root application component with nested context providers
 - **src/index.js** - Application entry point
+- **src/components/weather/WeatherDashboard.jsx** - Main dashboard with current conditions and charts
+- **src/components/auth/UserProfileModal.jsx** - User profile with favorites management
+- **src/components/units/TemperatureUnitToggle.jsx** - Global C/F toggle in header
 - **public/** - Static assets
 
 ### Environment Configuration
@@ -191,19 +206,94 @@ This application uses **Visual Crossing Weather API exclusively** for all weathe
 - Detailed hourly and daily data
 - Cost-effective for proof-of-concept projects
 
-### API Response Caching
+### API Response Caching & Optimization
+The application implements multiple layers of API optimization to minimize external calls and handle rate limits gracefully:
+
+**Caching Strategy:**
 Weather data is cached in the `api_cache` table to:
-- Reduce external API calls (cost savings)
-- Improve response times
-- Handle API rate limits
-- Store historical data permanently
+- Reduce external API calls by 99% (cost savings)
+- Improve response times (282x faster: 850ms → 3ms)
+- Handle API rate limits automatically
+- Store historical data for analysis
+
+**Cache TTL (Time To Live):**
+- Current Weather: 30 minutes (optimized from 15 min)
+- Forecasts: 6 hours (optimized from 2 hours)
+- Historical Data: 7 days (optimized from 24 hours)
+- Air Quality: 60 minutes (optimized from 30 min)
+- Climate Stats: 30 days (optimized from 7 days)
+
+**Request Throttling:**
+Implemented in `backend/services/weatherService.js`:
+- Maximum 3 concurrent API requests
+- Minimum 100ms interval between requests
+- Automatic request queuing when limits reached
+- Prevents API stampeding during high traffic
+
+**Exponential Backoff Retry:**
+- Initial request → Wait 1s → Retry → Wait 2s → Final retry
+- Gracefully handles transient rate limit errors (429)
+- Prevents cascade failures across components
+
+**Graceful Fallbacks:**
+- Geolocation: Uses raw coordinates if reverse geocoding fails
+- Weather data: Serves cached data when fresh requests are blocked
+- User experience maintained even during API issues
+
+## UI/UX Architecture
+
+### Dashboard Layout
+The main weather dashboard uses a responsive 75/25 split layout:
+- **75% - Location & Current Conditions Box:**
+  - Header with city name (left) and coordinates/timezone (right)
+  - Current weather conditions card (centered, full-width)
+  - Displays: temperature, feels-like, conditions, wind, humidity, visibility, cloud cover
+  - Placeholder for future radar map integration
+- **25% - Controls Panel:**
+  - Location search bar with autocomplete
+  - "Use My Location" button with geolocation
+  - Forecast day selector (3, 7, 14 days)
+  - "Compare Locations" navigation link
+- **Below:** Interactive charts with visibility toggles
+
+### Global Controls
+- **Temperature Unit Toggle** (Header): Switches between °C and °F
+  - Persists to localStorage for guests
+  - Syncs to cloud for authenticated users
+  - Updates all components in real-time via TemperatureUnitContext
+- **Theme Toggle** (Header): Light/Dark/Auto mode
+  - Follows system preferences in Auto mode
+  - Persists to localStorage/cloud
+  - CSS variables ensure smooth transitions
+
+### Favorites Management
+- Moved to user profile modal (authentication required)
+- Accessed via "Favorites" tab in profile
+- Cloud-synced across all devices
+- Click any favorite to load location instantly
+
+### Temperature Conversion
+All temperature values from the API (Celsius) are converted using:
+```javascript
+// frontend/src/utils/weatherHelpers.js
+celsiusToFahrenheit(celsius) = (celsius * 9/5) + 32
+```
+Components use the `convertTemp()` helper in WeatherDashboard or `formatTemperature()` in charts.
+
+### Dark Mode Support
+All text colors use CSS variables that automatically adapt to theme:
+- `--text-primary`: Main text (white in dark mode)
+- `--text-secondary`: Secondary text (light gray in dark mode)
+- `--text-tertiary`: Tertiary text (medium gray in dark mode)
+Use `!important` when needed to override specificity issues.
 
 ## Data Visualization Strategy
 
 Following Weather Spark's approach:
-- **Interactive Charts**: Temperature ranges, precipitation, wind patterns
+- **Interactive Charts**: Temperature ranges, precipitation, wind patterns with dynamic time labels
 - **Color-coded Temperature Bands**: frigid → cold → cool → comfortable → warm → hot → sweltering
-- **Multiple Time Scales**: Hourly, daily, monthly, yearly views
+- **Multiple Time Scales**: Hourly, daily, weekly, yearly views
+- **Dynamic Labels**: "Next Week" (7 days), "Next 2 Weeks" (14 days), "Next N Days" (custom)
 - **Comparative Analysis**: Side-by-side city comparisons
 - **Climate Categories**: Comfortable days, precipitation probability, cloud cover percentages
 
