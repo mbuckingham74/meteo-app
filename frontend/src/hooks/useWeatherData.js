@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   getCurrentWeather,
   getWeatherForecast,
+  getHourlyForecast,
   getHistoricalWeather
 } from '../services/weatherApi';
 
@@ -36,6 +37,10 @@ export function useWeatherData(location, type = 'current', options = {}) {
 
         case 'forecast':
           result = await getWeatherForecast(location, options.days || 7);
+          break;
+
+        case 'hourly':
+          result = await getHourlyForecast(location, options.hours || 48);
           break;
 
         case 'historical':
@@ -92,4 +97,11 @@ export function useForecast(location, days = 7) {
  */
 export function useHistoricalWeather(location, startDate, endDate) {
   return useWeatherData(location, 'historical', { startDate, endDate });
+}
+
+/**
+ * Hook for fetching hourly forecast
+ */
+export function useHourlyForecast(location, hours = 48) {
+  return useWeatherData(location, 'hourly', { hours });
 }

@@ -112,6 +112,48 @@ router.get('/forecast/:location', async (req, res) => {
 });
 
 /**
+ * Get hourly weather forecast for a location
+ * GET /api/weather/hourly/:location?hours=48
+ * Example: /api/weather/hourly/Seattle,WA?hours=72
+ */
+router.get('/hourly/:location', async (req, res) => {
+  try {
+    const { location } = req.params;
+    const hours = parseInt(req.query.hours) || 48;
+
+    if (!location) {
+      return res.status(400).json({
+        success: false,
+        error: 'Location parameter is required'
+      });
+    }
+
+    if (hours < 1 || hours > 240) {
+      return res.status(400).json({
+        success: false,
+        error: 'Hours must be between 1 and 240'
+      });
+    }
+
+    const result = await weatherService.getHourlyForecast(location, hours);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(result.statusCode || 500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
  * Get historical weather data for a location
  * GET /api/weather/historical/:location?start=2023-01-01&end=2023-12-31
  * Example: /api/weather/historical/Tokyo,Japan?start=2024-01-01&end=2024-01-31

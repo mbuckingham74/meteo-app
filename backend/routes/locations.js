@@ -1,6 +1,100 @@
 const express = require('express');
 const router = express.Router();
 const locationService = require('../services/locationService');
+const geocodingService = require('../services/geocodingService');
+
+/**
+ * Geocode location search (autocomplete)
+ * GET /api/locations/geocode?q=London&limit=5
+ */
+router.get('/geocode', async (req, res) => {
+  try {
+    const { q, limit } = req.query;
+
+    if (!q || q.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Query parameter "q" is required'
+      });
+    }
+
+    const maxLimit = parseInt(limit) || 5;
+    const result = await geocodingService.searchLocations(q, maxLimit);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(result.statusCode || 404).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Reverse geocode coordinates
+ * GET /api/locations/reverse?lat=51.5074&lon=-0.1278
+ */
+router.get('/reverse', async (req, res) => {
+  try {
+    const { lat, lon } = req.query;
+
+    if (!lat || !lon) {
+      return res.status(400).json({
+        success: false,
+        error: 'Latitude (lat) and longitude (lon) query parameters are required'
+      });
+    }
+
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lon);
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid latitude or longitude'
+      });
+    }
+
+    const result = await geocodingService.reverseGeocode(latitude, longitude);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(404).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get popular/suggested locations
+ * GET /api/locations/popular
+ */
+router.get('/popular', (req, res) => {
+  try {
+    const result = geocodingService.getPopularLocations();
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
 
 /**
  * Search locations by name

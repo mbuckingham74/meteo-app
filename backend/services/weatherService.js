@@ -239,6 +239,82 @@ async function getForecast(location, days = 7) {
 }
 
 /**
+ * Get hourly weather forecast for a location
+ * @param {string} location - City name, address, or coordinates
+ * @param {number} hours - Number of forecast hours (default: 48, max: 240)
+ * @returns {Promise<object>} Hourly forecast data
+ */
+async function getHourlyForecast(location, hours = 48) {
+  const today = new Date();
+  const endDate = new Date(today);
+  const daysNeeded = Math.ceil(Math.min(hours, 240) / 24);
+  endDate.setDate(today.getDate() + daysNeeded);
+
+  const startDateStr = today.toISOString().split('T')[0];
+  const endDateStr = endDate.toISOString().split('T')[0];
+
+  const url = buildApiUrl(location, startDateStr, endDateStr, {
+    include: 'hours'
+  });
+
+  const result = await makeApiRequest(url);
+
+  if (!result.success) {
+    return result;
+  }
+
+  const data = result.data;
+
+  // Flatten hours from all days
+  const allHours = [];
+  data.days.forEach(day => {
+    if (day.hours) {
+      day.hours.forEach(hour => {
+        allHours.push({
+          datetime: `${day.datetime}T${hour.datetime}`,
+          date: day.datetime,
+          time: hour.datetime,
+          temperature: hour.temp,
+          feelsLike: hour.feelslike,
+          humidity: hour.humidity,
+          precipitation: hour.precip,
+          precipProbability: hour.precipprob,
+          precipType: hour.preciptype,
+          snow: hour.snow,
+          windSpeed: hour.windspeed,
+          windGust: hour.windgust,
+          windDirection: hour.winddir,
+          pressure: hour.pressure,
+          cloudCover: hour.cloudcover,
+          visibility: hour.visibility,
+          uvIndex: hour.uvindex,
+          solarRadiation: hour.solarradiation,
+          solarEnergy: hour.solarenergy,
+          dewPoint: hour.dew,
+          conditions: hour.conditions,
+          icon: hour.icon
+        });
+      });
+    }
+  });
+
+  // Limit to requested hours
+  const limitedHours = allHours.slice(0, hours);
+
+  return {
+    success: true,
+    location: {
+      address: data.resolvedAddress,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      timezone: data.timezone
+    },
+    hourly: limitedHours,
+    queryCost: result.queryCost
+  };
+}
+
+/**
  * Get historical weather data for a location
  * @param {string} location - City name, address, or coordinates
  * @param {string} startDate - Start date (YYYY-MM-DD)
@@ -297,5 +373,6 @@ module.exports = {
   testApiConnection,
   getCurrentWeather,
   getForecast,
+  getHourlyForecast,
   getHistoricalWeather
 };

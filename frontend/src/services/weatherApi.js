@@ -41,6 +41,24 @@ export async function getWeatherForecast(location, days = 7) {
 }
 
 /**
+ * Get hourly weather forecast
+ * @param {string} location - City name
+ * @param {number} hours - Number of hours (1-240)
+ * @returns {Promise<Object>} Hourly forecast data
+ */
+export async function getHourlyForecast(location, hours = 48) {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/weather/hourly/${encodeURIComponent(location)}?hours=${hours}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching hourly forecast:', error);
+    throw error;
+  }
+}
+
+/**
  * Get historical weather data
  * @param {string} location - City name
  * @param {string} startDate - Start date (YYYY-MM-DD)
@@ -94,6 +112,56 @@ export async function getAllLocations(limit = 100, offset = 0) {
     return response.data.locations || [];
   } catch (error) {
     console.error('Error fetching locations:', error);
+    throw error;
+  }
+}
+
+/**
+ * Geocode location search (autocomplete)
+ * @param {string} query - Search query
+ * @param {number} limit - Max results
+ * @returns {Promise<Array>} Matching locations
+ */
+export async function geocodeLocation(query, limit = 5) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/locations/geocode`, {
+      params: { q: query, limit }
+    });
+    return response.data.results || [];
+  } catch (error) {
+    console.error('Error geocoding location:', error);
+    throw error;
+  }
+}
+
+/**
+ * Reverse geocode coordinates
+ * @param {number} lat - Latitude
+ * @param {number} lon - Longitude
+ * @returns {Promise<Object>} Location details
+ */
+export async function reverseGeocode(lat, lon) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/locations/reverse`, {
+      params: { lat, lon }
+    });
+    return response.data.location;
+  } catch (error) {
+    console.error('Error reverse geocoding:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get popular locations
+ * @returns {Promise<Array>} Popular locations
+ */
+export async function getPopularLocations() {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/locations/popular`);
+    return response.data.locations || [];
+  } catch (error) {
+    console.error('Error fetching popular locations:', error);
     throw error;
   }
 }
