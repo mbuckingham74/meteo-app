@@ -31,6 +31,7 @@ services:
       - VISUAL_CROSSING_API_KEY=${VISUAL_CROSSING_API_KEY}
     volumes:
       - ./backend:/app
+      - ./database:/database
       - /app/node_modules
     depends_on:
       - mysql

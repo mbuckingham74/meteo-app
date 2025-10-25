@@ -36,8 +36,13 @@ async function initializeDatabase() {
   const path = require('path');
 
   try {
-    // Read schema file
+    // Read schema file (works both locally and in Docker)
     const schemaPath = path.join(__dirname, '../../database/schema.sql');
+
+    if (!fs.existsSync(schemaPath)) {
+      throw new Error(`Schema file not found at: ${schemaPath}`);
+    }
+
     const schema = fs.readFileSync(schemaPath, 'utf8');
 
     // Split by statements and execute
