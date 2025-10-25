@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { useForecast } from '../../hooks/useWeatherData';
 import TemperatureBandChart from '../charts/TemperatureBandChart';
 import PrecipitationChart from '../charts/PrecipitationChart';
+import WindChart from '../charts/WindChart';
+import CloudCoverChart from '../charts/CloudCoverChart';
+import UVIndexChart from '../charts/UVIndexChart';
+import WeatherOverviewChart from '../charts/WeatherOverviewChart';
 import './WeatherDashboard.css';
 
 /**
@@ -14,6 +18,16 @@ function WeatherDashboard() {
   const [unit, setUnit] = useState('C');
   const [inputLocation, setInputLocation] = useState('London,UK');
 
+  // Chart visibility state
+  const [visibleCharts, setVisibleCharts] = useState({
+    temperature: true,
+    precipitation: true,
+    wind: true,
+    cloudCover: true,
+    uvIndex: true,
+    overview: true
+  });
+
   const { data, loading, error } = useForecast(location, days);
 
   const handleLocationSubmit = (e) => {
@@ -22,6 +36,17 @@ function WeatherDashboard() {
       setLocation(inputLocation.trim());
     }
   };
+
+  // Toggle chart visibility
+  const toggleChart = (chartName) => {
+    setVisibleCharts(prev => ({
+      ...prev,
+      [chartName]: !prev[chartName]
+    }));
+  };
+
+  // Count visible charts
+  const visibleChartCount = Object.values(visibleCharts).filter(Boolean).length;
 
   return (
     <div className="weather-dashboard">
@@ -106,23 +131,159 @@ function WeatherDashboard() {
             <p className="location-timezone">{data.location?.timezone}</p>
           </div>
 
-          {/* Charts */}
-          <div className="charts-grid">
-            <div className="chart-card">
-              <TemperatureBandChart
-                data={data.forecast || []}
-                unit={unit}
-                height={400}
-              />
+          {/* Chart Visibility Controls */}
+          <div className="chart-controls">
+            <div className="chart-controls-header">
+              <h3>📊 Charts ({visibleChartCount}/{Object.keys(visibleCharts).length} visible)</h3>
+              <div className="chart-toggle-buttons">
+                <button
+                  className="toggle-all-button"
+                  onClick={() => setVisibleCharts({
+                    temperature: true,
+                    precipitation: true,
+                    wind: true,
+                    cloudCover: true,
+                    uvIndex: true,
+                    overview: true
+                  })}
+                >
+                  Show All
+                </button>
+                <button
+                  className="toggle-all-button"
+                  onClick={() => setVisibleCharts({
+                    temperature: false,
+                    precipitation: false,
+                    wind: false,
+                    cloudCover: false,
+                    uvIndex: false,
+                    overview: false
+                  })}
+                >
+                  Hide All
+                </button>
+              </div>
             </div>
-
-            <div className="chart-card">
-              <PrecipitationChart
-                data={data.forecast || []}
-                height={350}
-              />
+            <div className="chart-toggles">
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.temperature}
+                  onChange={() => toggleChart('temperature')}
+                />
+                <span>🌡️ Temperature Bands</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.precipitation}
+                  onChange={() => toggleChart('precipitation')}
+                />
+                <span>🌧️ Precipitation</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.wind}
+                  onChange={() => toggleChart('wind')}
+                />
+                <span>💨 Wind</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.cloudCover}
+                  onChange={() => toggleChart('cloudCover')}
+                />
+                <span>☁️ Cloud Cover</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.uvIndex}
+                  onChange={() => toggleChart('uvIndex')}
+                />
+                <span>☀️ UV Index</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.overview}
+                  onChange={() => toggleChart('overview')}
+                />
+                <span>📈 Multi-Metric Overview</span>
+              </label>
             </div>
           </div>
+
+          {/* Charts */}
+          <div className="charts-grid">
+            {visibleCharts.temperature && (
+              <div className="chart-card">
+                <TemperatureBandChart
+                  data={data.forecast || []}
+                  unit={unit}
+                  height={400}
+                />
+              </div>
+            )}
+
+            {visibleCharts.precipitation && (
+              <div className="chart-card">
+                <PrecipitationChart
+                  data={data.forecast || []}
+                  height={350}
+                />
+              </div>
+            )}
+
+            {visibleCharts.wind && (
+              <div className="chart-card">
+                <WindChart
+                  data={data.forecast || []}
+                  height={350}
+                />
+              </div>
+            )}
+
+            {visibleCharts.cloudCover && (
+              <div className="chart-card">
+                <CloudCoverChart
+                  data={data.forecast || []}
+                  height={350}
+                />
+              </div>
+            )}
+
+            {visibleCharts.uvIndex && (
+              <div className="chart-card">
+                <UVIndexChart
+                  data={data.forecast || []}
+                  height={350}
+                />
+              </div>
+            )}
+
+            {visibleCharts.overview && (
+              <div className="chart-card chart-card-wide">
+                <WeatherOverviewChart
+                  data={data.forecast || []}
+                  unit={unit}
+                  height={450}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* No charts selected message */}
+          {visibleChartCount === 0 && (
+            <div className="no-charts-message">
+              <p>📊 No charts selected</p>
+              <p style={{ fontSize: '14px', color: '#6b7280' }}>
+                Use the toggles above to show weather charts
+              </p>
+            </div>
+          )}
 
           {/* API Cost Info */}
           {data.queryCost && (

@@ -196,6 +196,103 @@
   color: #9ca3af;
 }
 
+/* Chart Controls */
+.chart-controls {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.chart-controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.chart-controls-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+.chart-toggle-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle-all-button {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #374151;
+}
+
+.toggle-all-button:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.chart-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.chart-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.chart-toggle:hover {
+  background: #f3f4f6;
+}
+
+.chart-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.chart-toggle span {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* No Charts Message */
+.no-charts-message {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.no-charts-message p:first-child {
+  font-size: 24px;
+  margin: 0 0 8px 0;
+  color: #374151;
+}
+
 /* Charts Grid */
 .charts-grid {
   display: grid;
@@ -209,6 +306,10 @@
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-card-wide {
+  grid-column: 1 / -1;
 }
 
 /* API Info */
@@ -241,6 +342,12 @@
 }
 
 /* Responsive Design */
+@media (min-width: 1024px) {
+  .charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard-title {
     font-size: 24px;
@@ -269,5 +376,19 @@
 
   .control-select {
     width: 100%;
+  }
+
+  .chart-controls-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chart-toggles {
+    gap: 12px;
+  }
+
+  .chart-toggle {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 140px;
   }
 }
