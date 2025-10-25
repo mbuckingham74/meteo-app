@@ -35,8 +35,8 @@ function buildApiUrl(location, startDate = '', endDate = '', options = {}) {
   const params = new URLSearchParams({
     key: API_KEY,
     unitGroup: options.unitGroup || 'metric',
-    include: options.include || 'days,hours,current',
-    elements: options.elements || 'datetime,tempmax,tempmin,temp,feelslike,humidity,precip,precipprob,snow,snowdepth,windspeed,winddir,pressure,cloudcover,visibility,uvindex,sunrise,sunset,conditions,description,icon',
+    include: options.include || 'days,hours,current,alerts',
+    elements: options.elements || 'datetime,tempmax,tempmin,temp,feelslike,feelslikemax,feelslikemin,dew,humidity,precip,precipprob,snow,snowdepth,windspeed,winddir,pressure,cloudcover,visibility,uvindex,sunrise,sunset,moonphase,conditions,description,icon',
     contentType: 'json',
     ...options
   });

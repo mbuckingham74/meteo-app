@@ -1,0 +1,177 @@
+/* Weather Alerts Banner Styles */
+
+.weather-alerts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.weather-alert {
+  background: var(--bg-elevated);
+  border-radius: 12px;
+  border-left: 4px solid;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.weather-alert:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Severity-based styling */
+.weather-alert-warning {
+  background: #fef2f2;
+}
+
+[data-theme='dark'] .weather-alert-warning {
+  background: #4c0519;
+}
+
+.weather-alert-watch {
+  background: #fffbeb;
+}
+
+[data-theme='dark'] .weather-alert-watch {
+  background: #451a03;
+}
+
+.weather-alert-advisory {
+  background: #eff6ff;
+}
+
+[data-theme='dark'] .weather-alert-advisory {
+  background: #172554;
+}
+
+.weather-alert-info {
+  background: #f9fafb;
+}
+
+[data-theme='dark'] .weather-alert-info {
+  background: #1f2937;
+}
+
+/* Alert Header */
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  user-select: none;
+}
+
+.alert-header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.alert-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.alert-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alert-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.alert-time {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.alert-expand-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px;
+  transition: transform var(--transition-fast);
+}
+
+.alert-expand-button:hover {
+  color: var(--text-primary);
+}
+
+/* Alert Body */
+.alert-body {
+  padding: 0 16px 16px 52px;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+.alert-headline {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.alert-description {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+
+.alert-ends {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.alert-ends strong {
+  color: var(--text-secondary);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .alert-header {
+    padding: 12px;
+  }
+
+  .alert-body {
+    padding: 0 12px 12px 40px;
+  }
+
+  .alert-icon {
+    font-size: 20px;
+  }
+
+  .alert-title {
+    font-size: 14px;
+  }
+
+  .alert-time {
+    font-size: 11px;
+  }
+
+  .alert-description {
+    font-size: 13px;
+  }
+}

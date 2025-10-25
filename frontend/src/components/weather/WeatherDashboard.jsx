@@ -17,7 +17,12 @@ import HourlyForecastChart from '../charts/HourlyForecastChart';
 import HistoricalComparisonChart from '../charts/HistoricalComparisonChart';
 import RecordTemperaturesChart from '../charts/RecordTemperaturesChart';
 import TemperatureProbabilityChart from '../charts/TemperatureProbabilityChart';
+import HumidityDewpointChart from '../charts/HumidityDewpointChart';
+import SunChart from '../charts/SunChart';
+import FeelsLikeChart from '../charts/FeelsLikeChart';
 import ThisDayInHistoryCard from '../cards/ThisDayInHistoryCard';
+import AirQualityCard from '../cards/AirQualityCard';
+import WeatherAlertsBanner from './WeatherAlertsBanner';
 import LocationSearchBar from '../location/LocationSearchBar';
 import FavoritesPanel from '../location/FavoritesPanel';
 import './WeatherDashboard.css';
@@ -43,6 +48,11 @@ function WeatherDashboard() {
     cloudCover: true,
     uvIndex: true,
     overview: true,
+    // New enhanced charts
+    humidityDew: true,
+    sunriseSunset: true,
+    feelsLike: true,
+    airQuality: true,
     // Historical/Climate charts
     thisDayHistory: true,
     historicalComparison: false,
@@ -214,6 +224,11 @@ function WeatherDashboard() {
             <p className="location-timezone">{data.location?.timezone}</p>
           </div>
 
+          {/* Weather Alerts */}
+          {data.alerts && data.alerts.length > 0 && (
+            <WeatherAlertsBanner alerts={data.alerts} />
+          )}
+
           {/* Chart Visibility Controls */}
           <div className="chart-controls">
             <div className="chart-controls-header">
@@ -229,6 +244,10 @@ function WeatherDashboard() {
                     cloudCover: true,
                     uvIndex: true,
                     overview: true,
+                    humidityDew: true,
+                    sunriseSunset: true,
+                    feelsLike: true,
+                    airQuality: true,
                     thisDayHistory: true,
                     historicalComparison: true,
                     recordTemps: true,
@@ -247,6 +266,10 @@ function WeatherDashboard() {
                     cloudCover: false,
                     uvIndex: false,
                     overview: false,
+                    humidityDew: false,
+                    sunriseSunset: false,
+                    feelsLike: false,
+                    airQuality: false,
                     thisDayHistory: false,
                     historicalComparison: false,
                     recordTemps: false,
@@ -314,9 +337,41 @@ function WeatherDashboard() {
                 />
                 <span>📈 Multi-Metric Overview</span>
               </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.humidityDew}
+                  onChange={() => toggleChart('humidityDew')}
+                />
+                <span>💧 Humidity & Dewpoint</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.sunriseSunset}
+                  onChange={() => toggleChart('sunriseSunset')}
+                />
+                <span>🌅 Sunrise & Sunset</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.feelsLike}
+                  onChange={() => toggleChart('feelsLike')}
+                />
+                <span>🌡️ Feels Like Temperature</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.airQuality}
+                  onChange={() => toggleChart('airQuality')}
+                />
+                <span>💨 Air Quality Index</span>
+              </label>
 
               {/* Historical/Climate toggles */}
-              <div style={{ width: '100%', height: '1px', background: '#e5e7eb', margin: '8px 0' }} />
+              <div style={{ width: '100%', height: '1px', background: 'var(--border-light)', margin: '8px 0' }} />
 
               <label className="chart-toggle">
                 <input
@@ -418,6 +473,42 @@ function WeatherDashboard() {
                   data={data.forecast || []}
                   unit={unit}
                   height={450}
+                />
+              </div>
+            )}
+
+            {/* Enhanced Weather Charts */}
+            {visibleCharts.humidityDew && (
+              <div className="chart-card">
+                <HumidityDewpointChart
+                  data={data.forecast || []}
+                  unit={unit}
+                />
+              </div>
+            )}
+
+            {visibleCharts.sunriseSunset && (
+              <div className="chart-card">
+                <SunChart
+                  data={data.forecast || []}
+                />
+              </div>
+            )}
+
+            {visibleCharts.feelsLike && (
+              <div className="chart-card">
+                <FeelsLikeChart
+                  data={data.forecast || []}
+                  unit={unit}
+                />
+              </div>
+            )}
+
+            {visibleCharts.airQuality && data.location && (
+              <div className="chart-card">
+                <AirQualityCard
+                  latitude={data.location.latitude}
+                  longitude={data.location.longitude}
                 />
               </div>
             )}

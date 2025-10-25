@@ -1,0 +1,191 @@
+import React from 'react';
+import {
+  ComposedChart,
+  Line,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from 'recharts';
+
+/**
+ * FeelsLikeChart Component
+ * Compares actual temperature with feels-like temperature
+ */
+function FeelsLikeChart({ data, unit = 'C' }) {
+  if (!data || data.length === 0) {
+    return (
+      <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
+        <p>No temperature data available</p>
+      </div>
+    );
+  }
+
+  // Prepare chart data
+  const chartData = data.map(day => ({
+    date: new Date(day.datetime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    actualMax: day.tempmax,
+    actualMin: day.tempmin,
+    feelsLikeMax: day.feelslikemax,
+    feelsLikeMin: day.feelslikemin,
+    difference: Math.abs(day.temp - day.feelslike).toFixed(1)
+  }));
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div style={{
+          background: 'var(--bg-elevated)',
+          border: '2px solid var(--border-light)',
+          borderRadius: '8px',
+          padding: '12px',
+          boxShadow: 'var(--shadow-md)'
+        }}>
+          <p style={{ margin: '0 0 8px 0', fontWeight: '600', color: 'var(--text-primary)' }}>
+            {data.date}
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <p style={{ margin: 0, color: '#ef4444', fontWeight: '500' }}>
+              🌡️ Actual High: {data.actualMax}°{unit}
+            </p>
+            <p style={{ margin: 0, color: '#f97316', fontWeight: '500' }}>
+              🔥 Feels Like High: {data.feelsLikeMax}°{unit}
+            </p>
+            <p style={{ margin: 0, color: '#3b82f6', fontWeight: '500' }}>
+              ❄️ Actual Low: {data.actualMin}°{unit}
+            </p>
+            <p style={{ margin: 0, color: '#06b6d4', fontWeight: '500' }}>
+              🥶 Feels Like Low: {data.feelsLikeMin}°{unit}
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Calculate temperature range for Y-axis
+  const allTemps = chartData.flatMap(d => [d.actualMax, d.actualMin, d.feelsLikeMax, d.feelsLikeMin]);
+  const minTemp = Math.floor(Math.min(...allTemps)) - 2;
+  const maxTemp = Math.ceil(Math.max(...allTemps)) + 2;
+
+  return (
+    <div style={{ width: '100%', height: 400 }}>
+      <h3 style={{
+        margin: '0 0 20px 0',
+        fontSize: '20px',
+        fontWeight: '600',
+        color: 'var(--text-primary)'
+      }}>
+        🌡️ Temperature vs Feels Like
+      </h3>
+
+      <ResponsiveContainer>
+        <ComposedChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <defs>
+            <linearGradient id="colorFeelsLike" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.3}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" />
+          <XAxis
+            dataKey="date"
+            stroke="var(--text-tertiary)"
+            style={{ fontSize: '12px' }}
+          />
+          <YAxis
+            stroke="var(--text-tertiary)"
+            style={{ fontSize: '12px' }}
+            domain={[minTemp, maxTemp]}
+            label={{ value: `Temperature (°${unit})`, angle: -90, position: 'insideLeft', style: { fill: 'var(--text-secondary)' } }}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend
+            wrapperStyle={{ paddingTop: '20px' }}
+            iconType="line"
+          />
+
+          {/* Feels-like range area */}
+          <Area
+            type="monotone"
+            dataKey="feelsLikeMax"
+            stackId="1"
+            stroke="none"
+            fill="url(#colorFeelsLike)"
+            name="Feels Like Range"
+          />
+          <Area
+            type="monotone"
+            dataKey="feelsLikeMin"
+            stackId="2"
+            stroke="none"
+            fill="url(#colorFeelsLike)"
+            name=""
+          />
+
+          {/* Actual temperature lines */}
+          <Line
+            type="monotone"
+            dataKey="actualMax"
+            stroke="#ef4444"
+            strokeWidth={3}
+            name="Actual High"
+            dot={{ r: 4 }}
+            activeDot={{ r: 6 }}
+          />
+          <Line
+            type="monotone"
+            dataKey="actualMin"
+            stroke="#3b82f6"
+            strokeWidth={3}
+            name="Actual Low"
+            dot={{ r: 4 }}
+            activeDot={{ r: 6 }}
+          />
+
+          {/* Feels-like temperature lines */}
+          <Line
+            type="monotone"
+            dataKey="feelsLikeMax"
+            stroke="#f97316"
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            name="Feels Like High"
+            dot={{ r: 3 }}
+          />
+          <Line
+            type="monotone"
+            dataKey="feelsLikeMin"
+            stroke="#06b6d4"
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            name="Feels Like Low"
+            dot={{ r: 3 }}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+
+      <div style={{
+        marginTop: '16px',
+        padding: '12px',
+        background: 'var(--bg-tertiary)',
+        borderRadius: '8px',
+        fontSize: '13px',
+        color: 'var(--text-secondary)'
+      }}>
+        <p style={{ margin: 0 }}>
+          💡 <strong>Feels Like</strong> temperature accounts for wind chill (cold weather) and heat index (hot weather),
+          showing what the temperature actually feels like on your skin. Solid lines show actual temperature,
+          dashed lines show feels-like temperature.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default FeelsLikeChart;

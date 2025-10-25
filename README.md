@@ -28,11 +28,17 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **Multi-Day Forecasts** - 3, 7, or 14-day weather forecasts
 - **48-Hour Detailed View** - Hourly forecasts with temperature, feels-like, precipitation, and wind data
 - **Temperature Unit Support** - Toggle between Celsius and Fahrenheit
+- **Weather Alerts** - Real-time severe weather warnings, watches, and advisories with color-coded severity levels
+  - Expandable alert details with onset/end times
+  - Automatic severity classification (warning, watch, advisory)
 
 ### 📊 Interactive Charts
 
 #### Current Weather Charts
 - **Temperature Bands** - Daily high/low/average temperature visualization
+- **Feels-Like Temperature** - Compare actual temperature vs. feels-like temperature (wind chill/heat index)
+- **Humidity & Dewpoint** - Dual-axis chart showing humidity percentage and dewpoint temperature
+- **Sunrise & Sunset** - Visualize sunrise/sunset times with daylight duration calculations
 - **Precipitation** - Daily rainfall and precipitation probability
 - **Wind** - Wind speed and direction analysis
 - **Cloud Cover** - Cloud coverage percentage over time
@@ -52,6 +58,26 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **Geolocation Detection** - Automatic detection of current location via browser
 - **Favorites System** - Save and manage favorite locations with cloud sync
 - **Location Comparison** - Side-by-side weather comparison for 2-4 locations with insights
+
+### 💨 Air Quality Index (AQI)
+
+- **Real-Time AQI Data** - Current air quality index with color-coded severity levels
+  - Good (0-50): Green
+  - Moderate (51-100): Yellow
+  - Unhealthy for Sensitive Groups (101-150): Orange
+  - Unhealthy (151-200): Red
+  - Very Unhealthy (201-300): Purple
+  - Hazardous (301+): Maroon
+- **Pollutant Breakdown** - Detailed measurements for:
+  - PM2.5 (Fine particulate matter)
+  - PM10 (Coarse particulate matter)
+  - O₃ (Ozone)
+  - NO₂ (Nitrogen dioxide)
+  - CO (Carbon monoxide)
+  - SO₂ (Sulphur dioxide)
+- **Health Recommendations** - Context-aware advice based on current AQI levels
+- **Both AQI Standards** - Support for US AQI and European AQI metrics
+- **5-Day Forecast** - Hourly air quality predictions
 
 ### 👤 User Authentication & Profiles
 
@@ -97,7 +123,8 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **Docker** - Containerized development environment
 
 ### External APIs
-- **Visual Crossing Weather API** - Weather data, forecasts, and historical climate data
+- **Visual Crossing Weather API** - Weather data, forecasts, historical climate data, and weather alerts
+- **Open-Meteo Air Quality API** - Real-time and forecast air quality data (PM2.5, PM10, O₃, NO₂, CO, SO₂)
 - **Browser Geolocation API** - Current location detection
 
 ---
@@ -316,6 +343,30 @@ POST /api/user/favorites/import
 
 ---
 
+### Air Quality
+
+#### Get Air Quality Data
+```
+GET /api/air-quality?lat=37.7749&lon=-122.4194&days=5
+```
+- **Parameters**: `lat` (latitude), `lon` (longitude), `days` (forecast days, max 5)
+- **Returns**: Current and forecast air quality data with:
+  - US AQI and European AQI values
+  - AQI level classification with colors
+  - All pollutant measurements (PM2.5, PM10, O₃, NO₂, CO, SO₂)
+  - Health recommendations
+  - Hourly forecast data
+  - Summary statistics
+
+#### Get Air Quality by Location Name
+```
+GET /api/air-quality/location/:location?lat=37.7749&lon=-122.4194&days=5
+```
+- **Parameters**: `location` (location name), `lat`, `lon`, `days`
+- **Returns**: Air quality data with location context
+
+---
+
 ## 📁 Project Structure
 
 ```
@@ -325,6 +376,9 @@ meteo-app/
 │   │   ├── components/
 │   │   │   ├── charts/              # Weather visualization charts
 │   │   │   │   ├── TemperatureBandChart.jsx
+│   │   │   │   ├── FeelsLikeChart.jsx           # NEW: Feels-like vs actual temp
+│   │   │   │   ├── HumidityDewpointChart.jsx    # NEW: Humidity & dewpoint
+│   │   │   │   ├── SunChart.jsx                 # NEW: Sunrise/sunset visualization
 │   │   │   │   ├── PrecipitationChart.jsx
 │   │   │   │   ├── WindChart.jsx
 │   │   │   │   ├── CloudCoverChart.jsx
@@ -335,7 +389,8 @@ meteo-app/
 │   │   │   │   ├── RecordTemperaturesChart.jsx
 │   │   │   │   └── TemperatureProbabilityChart.jsx
 │   │   │   ├── cards/               # Weather data cards
-│   │   │   │   └── ThisDayInHistoryCard.jsx
+│   │   │   │   ├── ThisDayInHistoryCard.jsx
+│   │   │   │   └── AirQualityCard.jsx           # NEW: AQI display
 │   │   │   ├── auth/                # Authentication components
 │   │   │   │   ├── AuthHeader.jsx
 │   │   │   │   ├── AuthModal.jsx
@@ -347,7 +402,8 @@ meteo-app/
 │   │   │   │   ├── FavoritesPanel.jsx
 │   │   │   │   └── LocationComparisonView.jsx
 │   │   │   └── weather/             # Main dashboard
-│   │   │       └── WeatherDashboard.jsx
+│   │   │       ├── WeatherDashboard.jsx
+│   │   │       └── WeatherAlertsBanner.jsx      # NEW: Weather alerts display
 │   │   ├── contexts/                # React Context providers
 │   │   │   ├── AuthContext.js
 │   │   │   └── ThemeContext.js
@@ -368,11 +424,13 @@ meteo-app/
 ├── backend/
 │   ├── routes/
 │   │   ├── weather.js               # Weather API endpoints
+│   │   ├── airQuality.js            # NEW: Air quality API endpoints
 │   │   ├── locations.js             # Location API endpoints
 │   │   ├── auth.js                  # Authentication endpoints
 │   │   └── user.js                  # User preferences & favorites
 │   ├── services/
-│   │   ├── weatherService.js        # Weather data fetching
+│   │   ├── weatherService.js        # Weather data fetching (includes alerts)
+│   │   ├── airQualityService.js     # NEW: Air quality data from Open-Meteo
 │   │   ├── climateService.js        # Historical climate analysis
 │   │   ├── geocodingService.js      # Location search
 │   │   ├── authService.js           # Authentication logic
@@ -478,7 +536,8 @@ MIT License - feel free to use this project for learning and development.
 
 ## 🙏 Data Attribution
 
-- Weather data provided by **[Visual Crossing Weather API](https://www.visualcrossing.com/)**
+- Weather data and alerts provided by **[Visual Crossing Weather API](https://www.visualcrossing.com/)**
+- Air quality data provided by **[Open-Meteo Air Quality API](https://open-meteo.com/)**
 - Visualizations inspired by **[Weather Spark](https://weatherspark.com/)**
 
 ---
@@ -487,7 +546,9 @@ MIT License - feel free to use this project for learning and development.
 
 - [x] User authentication and cloud-based favorites ✅
 - [x] Light/dark theme system ✅
-- [ ] Weather alerts and notifications
+- [x] Weather alerts and air quality data ✅
+- [x] Enhanced data visualization (humidity, dewpoint, sunrise/sunset, feels-like) ✅
+- [ ] Push notifications for severe weather alerts
 - [ ] Extended historical data (20+ years)
 - [ ] Seasonal climate analysis
 - [ ] Weather station data integration
