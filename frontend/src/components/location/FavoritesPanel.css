@@ -40,6 +40,23 @@
   font-weight: 700;
 }
 
+.sync-indicator {
+  font-size: 11px;
+  opacity: 0.9;
+  font-weight: 400;
+  font-style: italic;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 .expand-button {
   background: none;
   border: none;

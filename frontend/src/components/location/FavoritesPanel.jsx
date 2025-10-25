@@ -1,54 +1,153 @@
 import React, { useState, useEffect } from 'react';
-import { getFavorites, removeFavorite, isFavorite, addFavorite } from '../../services/favoritesService';
+import { useAuth } from '../../contexts/AuthContext';
+import {
+  getFavorites as getLocalFavorites,
+  removeFavorite as removeLocalFavorite,
+  isFavorite as isLocalFavorite,
+  addFavorite as addLocalFavorite,
+  clearFavorites as clearLocalFavorites
+} from '../../services/favoritesService';
+import {
+  getCloudFavorites,
+  addCloudFavorite,
+  removeCloudFavorite,
+  importFavorites
+} from '../../services/authApi';
 import './FavoritesPanel.css';
 
 /**
  * FavoritesPanel Component
  * Displays and manages favorite locations
+ * Syncs with cloud when authenticated, uses localStorage when not
  */
 function FavoritesPanel({ onLocationSelect, currentLocation }) {
+  const { isAuthenticated, accessToken } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [migrated, setMigrated] = useState(false);
 
-  // Load favorites on mount
+  // Load favorites on mount and when auth changes
   useEffect(() => {
     refreshFavorites();
-  }, []);
+  }, [isAuthenticated, accessToken]);
 
-  const refreshFavorites = () => {
-    setFavorites(getFavorites());
+  // Auto-migrate localStorage favorites to cloud when user logs in
+  useEffect(() => {
+    if (isAuthenticated && accessToken && !migrated) {
+      migrateToCloud();
+    }
+  }, [isAuthenticated, accessToken]);
+
+  const refreshFavorites = async () => {
+    if (isAuthenticated && accessToken) {
+      // Load from cloud
+      try {
+        const cloudFavs = await getCloudFavorites(accessToken);
+        setFavorites(cloudFavs);
+      } catch (error) {
+        console.error('Failed to load cloud favorites:', error);
+        // Fall back to localStorage
+        setFavorites(getLocalFavorites());
+      }
+    } else {
+      // Load from localStorage
+      setFavorites(getLocalFavorites());
+    }
   };
 
-  const handleRemove = (favoriteId, e) => {
+  const migrateToCloud = async () => {
+    setSyncing(true);
+    try {
+      const localFavs = getLocalFavorites();
+
+      if (localFavs.length > 0) {
+        // Import localStorage favorites to cloud
+        const formattedFavs = localFavs.map(fav => ({
+          location_name: fav.address,
+          latitude: fav.latitude,
+          longitude: fav.longitude,
+          address: fav.address,
+          timezone: fav.timezone
+        }));
+
+        await importFavorites(accessToken, formattedFavs);
+
+        // Clear localStorage after successful migration
+        clearLocalFavorites();
+
+        // Refresh from cloud
+        await refreshFavorites();
+      }
+
+      setMigrated(true);
+    } catch (error) {
+      console.error('Failed to migrate favorites:', error);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const handleRemove = async (favorite, e) => {
     e.stopPropagation();
-    if (removeFavorite(favoriteId)) {
+
+    if (isAuthenticated && accessToken) {
+      // Remove from cloud
+      try {
+        await removeCloudFavorite(accessToken, favorite.id);
+        await refreshFavorites();
+      } catch (error) {
+        console.error('Failed to remove cloud favorite:', error);
+      }
+    } else {
+      // Remove from localStorage
+      if (removeLocalFavorite(favorite.id)) {
+        refreshFavorites();
+      }
+    }
+  };
+
+  const handleAdd = async (location, e) => {
+    e.stopPropagation();
+
+    if (isAuthenticated && accessToken) {
+      // Add to cloud
+      try {
+        await addCloudFavorite(accessToken, {
+          location_name: location.address,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          address: location.address,
+          timezone: location.timezone
+        });
+        await refreshFavorites();
+      } catch (error) {
+        console.error('Failed to add cloud favorite:', error);
+      }
+    } else {
+      // Add to localStorage
+      addLocalFavorite(location);
       refreshFavorites();
     }
   };
 
-  const handleToggleFavorite = (location, e) => {
-    e.stopPropagation();
+  const isFavorited = (location) => {
+    if (!location) return false;
 
-    const favorited = isFavorite(location.latitude, location.longitude);
-
-    if (favorited) {
-      removeFavorite(`${location.latitude},${location.longitude}`);
-    } else {
-      addFavorite(location);
-    }
-
-    refreshFavorites();
+    return favorites.some(
+      fav => fav.latitude === location.latitude && fav.longitude === location.longitude
+    );
   };
 
-  const isCurrentFavorite = currentLocation &&
-    isFavorite(currentLocation.latitude, currentLocation.longitude);
+  const isCurrentFavorite = currentLocation && isFavorited(currentLocation);
 
   return (
     <div className="favorites-panel">
       <div className="favorites-header" onClick={() => setIsExpanded(!isExpanded)}>
         <h3>
-          ⭐ Favorite Locations
+          {isAuthenticated ? '☁️' : '⭐'} Favorite Locations
           {favorites.length > 0 && <span className="favorite-count">{favorites.length}</span>}
+          {syncing && <span className="sync-indicator">Syncing...</span>}
         </h3>
         <button className="expand-button">
           {isExpanded ? '▼' : '▶'}
@@ -62,7 +161,8 @@ function FavoritesPanel({ onLocationSelect, currentLocation }) {
             <div className="current-location-add">
               <button
                 className="add-current-button"
-                onClick={(e) => handleToggleFavorite(currentLocation, e)}
+                onClick={(e) => handleAdd(currentLocation, e)}
+                disabled={syncing}
               >
                 <span>⭐</span>
                 <span>Add "{currentLocation.address}" to favorites</span>
@@ -72,9 +172,13 @@ function FavoritesPanel({ onLocationSelect, currentLocation }) {
 
           {favorites.length === 0 ? (
             <div className="favorites-empty">
-              <span className="empty-icon">⭐</span>
+              <span className="empty-icon">{isAuthenticated ? '☁️' : '⭐'}</span>
               <p>No favorite locations yet</p>
-              <p className="empty-hint">Search for a location and click the star to add it</p>
+              <p className="empty-hint">
+                {isAuthenticated
+                  ? 'Your favorites sync across all devices'
+                  : 'Sign in to sync favorites across devices'}
+              </p>
             </div>
           ) : (
             <div className="favorites-list">
@@ -91,7 +195,7 @@ function FavoritesPanel({ onLocationSelect, currentLocation }) {
                   >
                     <div className="favorite-info">
                       <div className="favorite-name">
-                        {favorite.address}
+                        {favorite.address || favorite.location_name}
                         {isCurrent && <span className="current-badge">Current</span>}
                       </div>
                       <div className="favorite-coords">
@@ -101,8 +205,9 @@ function FavoritesPanel({ onLocationSelect, currentLocation }) {
                     </div>
                     <button
                       className="remove-button"
-                      onClick={(e) => handleRemove(favorite.id, e)}
+                      onClick={(e) => handleRemove(favorite, e)}
                       title="Remove from favorites"
+                      disabled={syncing}
                     >
                       ✕
                     </button>
@@ -114,7 +219,10 @@ function FavoritesPanel({ onLocationSelect, currentLocation }) {
 
           {favorites.length > 0 && (
             <div className="favorites-footer">
-              <p>{favorites.length} favorite location{favorites.length !== 1 ? 's' : ''}</p>
+              <p>
+                {favorites.length} favorite location{favorites.length !== 1 ? 's' : ''}
+                {isAuthenticated && ' • Synced to cloud'}
+              </p>
             </div>
           )}
         </div>

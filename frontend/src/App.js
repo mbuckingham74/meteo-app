@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
+import AuthHeader from './components/auth/AuthHeader';
 import WeatherDashboard from './components/weather/WeatherDashboard';
 import LocationComparisonView from './components/location/LocationComparisonView';
 import './App.css';
 
-function App() {
+function AppContent() {
   const [currentView, setCurrentView] = useState('dashboard');
 
   // Simple client-side routing
@@ -45,6 +47,7 @@ function App() {
 
   return (
     <div className="App">
+      <AuthHeader />
       {currentView === 'compare' ? (
         <>
           <div style={{ padding: '20px 20px 0 20px', maxWidth: '1400px', margin: '0 auto' }}>
@@ -75,6 +78,14 @@ function App() {
         <WeatherDashboard />
       )}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
