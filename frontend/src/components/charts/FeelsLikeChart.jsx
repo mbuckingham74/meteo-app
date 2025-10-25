@@ -15,7 +15,14 @@ import {
  * FeelsLikeChart Component
  * Compares actual temperature with feels-like temperature
  */
-function FeelsLikeChart({ data, unit = 'C' }) {
+function FeelsLikeChart({ data, days, unit = 'C' }) {
+  const getTimeLabel = () => {
+    const numDays = days || data.length;
+    if (numDays === 7) return 'Next Week';
+    if (numDays === 14) return 'Next 2 Weeks';
+    return `Next ${numDays} Days`;
+  };
+
   if (!data || data.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
@@ -81,7 +88,7 @@ function FeelsLikeChart({ data, unit = 'C' }) {
         fontWeight: '600',
         color: 'var(--text-primary)'
       }}>
-        🌡️ Temperature vs Feels Like
+        🌡️ Feels Like Temperature - {getTimeLabel()}
       </h3>
 
       <ResponsiveContainer>

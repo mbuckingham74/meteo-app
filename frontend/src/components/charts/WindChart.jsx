@@ -16,7 +16,7 @@ import { formatDateShort, formatWindSpeed, getWindDirection } from '../../utils/
  * Wind Chart Component
  * Shows wind speed and direction over time
  */
-function WindChart({ data, height = 350 }) {
+function WindChart({ data, height = 350, days }) {
   if (!data || data.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
@@ -24,6 +24,13 @@ function WindChart({ data, height = 350 }) {
       </div>
     );
   }
+
+  const getTimeLabel = () => {
+    const numDays = days || data.length;
+    if (numDays === 7) return 'Next Week';
+    if (numDays === 14) return 'Next 2 Weeks';
+    return `Next ${numDays} Days`;
+  };
 
   // Format data for Recharts
   const chartData = data.map(day => ({
@@ -103,7 +110,7 @@ function WindChart({ data, height = 350 }) {
   return (
     <div>
       <h3 style={{ marginBottom: '16px', color: '#111827', fontSize: '18px', fontWeight: '600' }}>
-        Wind Speed & Direction
+        Wind Speed & Direction - {getTimeLabel()}
       </h3>
 
       <ResponsiveContainer width="100%" height={height}>

@@ -7,6 +7,21 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api
  * Communicates with the backend API
  */
 
+// Add response interceptor for better error handling
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 429) {
+      // Rate limit exceeded
+      const customError = new Error('Rate limit exceeded. Please wait a moment and try again.');
+      customError.rateLimitExceeded = true;
+      customError.response = error.response;
+      return Promise.reject(customError);
+    }
+    return Promise.reject(error);
+  }
+);
+
 /**
  * Get current weather for a location
  * @param {string} location - City name (e.g., "London,UK")

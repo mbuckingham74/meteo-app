@@ -122,6 +122,22 @@ async function reverseGeocode(lat, lon) {
     };
   } catch (error) {
     console.error('Reverse geocoding error:', error.message);
+
+    // If rate limited (429) or any other error, return a fallback with coordinates
+    if (error.response?.status === 429) {
+      console.warn('⚠️ Rate limit hit for reverse geocoding, using coordinates as fallback');
+      return {
+        success: true,
+        location: {
+          address: `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
+          latitude: parseFloat(lat),
+          longitude: parseFloat(lon),
+          timezone: 'UTC',
+          tzOffset: 0
+        }
+      };
+    }
+
     return {
       success: false,
       error: 'Failed to reverse geocode coordinates'

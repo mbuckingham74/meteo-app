@@ -14,7 +14,14 @@ import {
  * SunChart Component
  * Visualizes sunrise and sunset times with daylight hours
  */
-function SunChart({ data }) {
+function SunChart({ data, days }) {
+  const getTimeLabel = () => {
+    const numDays = days || data.length;
+    if (numDays === 7) return 'Next Week';
+    if (numDays === 14) return 'Next 2 Weeks';
+    return `Next ${numDays} Days`;
+  };
+
   if (!data || data.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
@@ -93,7 +100,7 @@ function SunChart({ data }) {
         fontWeight: '600',
         color: 'var(--text-primary)'
       }}>
-        🌅 Sunrise & Sunset Times
+        🌅 Sunrise & Sunset - {getTimeLabel()}
       </h3>
 
       <ResponsiveContainer>

@@ -8,13 +8,14 @@ const crypto = require('crypto');
 
 /**
  * Cache TTL (Time To Live) in minutes
+ * Optimized for reducing API calls and staying within rate limits
  */
 const CACHE_TTL = {
-  CURRENT_WEATHER: 15,      // 15 minutes
-  FORECAST: 120,            // 2 hours
-  HISTORICAL: 1440,         // 24 hours
-  AIR_QUALITY: 30,          // 30 minutes
-  CLIMATE_STATS: 10080      // 7 days
+  CURRENT_WEATHER: 30,      // 30 minutes (increased from 15)
+  FORECAST: 360,            // 6 hours (increased from 2 hours)
+  HISTORICAL: 10080,        // 7 days (increased from 24 hours - historical data doesn't change)
+  AIR_QUALITY: 60,          // 60 minutes (increased from 30)
+  CLIMATE_STATS: 43200      // 30 days (increased from 7 days - climate stats are long-term)
 };
 
 /**

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { useForecast, useHourlyForecast } from '../../hooks/useWeatherData';
+import { useLocation } from '../../contexts/LocationContext';
+import { useTemperatureUnit } from '../../contexts/TemperatureUnitContext';
+import { useForecast, useHourlyForecast, useCurrentWeather } from '../../hooks/useWeatherData';
 import {
   useThisDayInHistory,
   useForecastComparison,
@@ -7,6 +9,7 @@ import {
   useTemperatureProbability
 } from '../../hooks/useClimateData';
 import { getCurrentLocation } from '../../services/geolocationService';
+import { celsiusToFahrenheit } from '../../utils/weatherHelpers';
 import TemperatureBandChart from '../charts/TemperatureBandChart';
 import PrecipitationChart from '../charts/PrecipitationChart';
 import WindChart from '../charts/WindChart';
@@ -24,7 +27,6 @@ import ThisDayInHistoryCard from '../cards/ThisDayInHistoryCard';
 import AirQualityCard from '../cards/AirQualityCard';
 import WeatherAlertsBanner from './WeatherAlertsBanner';
 import LocationSearchBar from '../location/LocationSearchBar';
-import FavoritesPanel from '../location/FavoritesPanel';
 import './WeatherDashboard.css';
 
 /**
@@ -32,10 +34,11 @@ import './WeatherDashboard.css';
  * Main dashboard displaying weather charts and data
  */
 function WeatherDashboard() {
-  const [location, setLocation] = useState('London,UK');
-  const [locationData, setLocationData] = useState(null);
+  // Use shared location state from context
+  const { location, locationData, selectLocation } = useLocation();
+  const { unit } = useTemperatureUnit();
+
   const [days, setDays] = useState(7);
-  const [unit, setUnit] = useState('C');
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [locationError, setLocationError] = useState(null);
 
@@ -63,10 +66,7 @@ function WeatherDashboard() {
   // Fetch weather data
   const { data, loading, error } = useForecast(location, days);
   const hourlyData = useHourlyForecast(location, 48);
-
-  // Fetch climate/historical data
-  const thisDayHistory = useThisDayInHistory(location, null, 10);
-  const forecastComparison = useForecastComparison(location, data?.forecast || [], 10);
+  const currentWeather = useCurrentWeather(location);
 
   // Get date ranges for records and probability
   const today = new Date();
@@ -75,13 +75,34 @@ function WeatherDashboard() {
   endDateObj.setDate(today.getDate() + days);
   const endDate = `${String(endDateObj.getMonth() + 1).padStart(2, '0')}-${String(endDateObj.getDate()).padStart(2, '0')}`;
 
-  const recordTemps = useRecordTemperatures(location, startDate, endDate, 10);
-  const tempProbability = useTemperatureProbability(location, startDate, endDate, 10);
+  // Fetch climate/historical data ONLY if charts are visible
+  // This prevents unnecessary API calls and helps stay within rate limits
+  const thisDayHistory = useThisDayInHistory(
+    visibleCharts.thisDayHistory ? location : null,
+    null,
+    10
+  );
+  const forecastComparison = useForecastComparison(
+    visibleCharts.historicalComparison ? location : null,
+    visibleCharts.historicalComparison ? (data?.forecast || []) : [],
+    10
+  );
+  const recordTemps = useRecordTemperatures(
+    visibleCharts.recordTemps ? location : null,
+    startDate,
+    endDate,
+    10
+  );
+  const tempProbability = useTemperatureProbability(
+    visibleCharts.tempProbability ? location : null,
+    startDate,
+    endDate,
+    10
+  );
 
   // Handle location selection from search
   const handleLocationSelect = (locationObj) => {
-    setLocation(locationObj.address);
-    setLocationData(locationObj);
+    selectLocation(locationObj);
     setLocationError(null);
   };
 
@@ -92,8 +113,7 @@ function WeatherDashboard() {
 
     try {
       const currentLoc = await getCurrentLocation();
-      setLocation(currentLoc.address);
-      setLocationData(currentLoc);
+      selectLocation(currentLoc);
     } catch (error) {
       setLocationError(error.message);
     } finally {
@@ -112,6 +132,12 @@ function WeatherDashboard() {
   //     }
   //   }
   // };
+
+  // Helper to convert temperature from API (Celsius) to selected unit
+  const convertTemp = (tempCelsius) => {
+    if (tempCelsius === null || tempCelsius === undefined) return '--';
+    return unit === 'F' ? Math.round(celsiusToFahrenheit(tempCelsius)) : Math.round(tempCelsius);
+  };
 
   // Toggle chart visibility
   const toggleChart = (chartName) => {
@@ -135,66 +161,6 @@ function WeatherDashboard() {
         <p className="dashboard-subtitle">Historical Weather Data & Forecasts</p>
       </header>
 
-      {/* Location Search and Controls */}
-      <div className="dashboard-controls">
-        <div className="location-search-section">
-          <LocationSearchBar
-            onLocationSelect={handleLocationSelect}
-            currentLocation={locationData}
-          />
-          <div className="location-actions">
-            <button
-              className="location-action-button detect-location"
-              onClick={handleDetectLocation}
-              disabled={detectingLocation}
-            >
-              {detectingLocation ? '🔄' : '📍'} {detectingLocation ? 'Detecting...' : 'Use My Location'}
-            </button>
-            <a href="/compare" className="location-action-button compare-link">
-              📊 Compare Locations
-            </a>
-          </div>
-          {locationError && (
-            <div className="location-error">
-              ⚠️ {locationError}
-            </div>
-          )}
-        </div>
-
-        <div className="control-group">
-          <label className="control-label">
-            Forecast Days:
-            <select
-              className="control-select"
-              value={days}
-              onChange={(e) => setDays(parseInt(e.target.value))}
-            >
-              <option value={3}>3 days</option>
-              <option value={7}>7 days</option>
-              <option value={14}>14 days</option>
-            </select>
-          </label>
-
-          <label className="control-label">
-            Units:
-            <select
-              className="control-select"
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-            >
-              <option value="C">Celsius</option>
-              <option value="F">Fahrenheit</option>
-            </select>
-          </label>
-        </div>
-      </div>
-
-      {/* Favorites Panel */}
-      <FavoritesPanel
-        onLocationSelect={handleLocationSelect}
-        currentLocation={locationData}
-      />
-
       {/* Loading State */}
       {loading && (
         <div className="loading-state">
@@ -215,14 +181,104 @@ function WeatherDashboard() {
       {/* Data Display */}
       {!loading && !error && data && (
         <>
-          {/* Location Info */}
-          <div className="location-info">
-            <h2 className="location-name">{data.location?.address || location}</h2>
-            <p className="location-coords">
-              {data.location?.latitude?.toFixed(4)}, {data.location?.longitude?.toFixed(4)}
-            </p>
-            <p className="location-timezone">{data.location?.timezone}</p>
+          {/* City Box and Lookup Controls - Side by Side */}
+          <div className="dashboard-main-row">
+            {/* Location Info with Current Conditions - 75% */}
+            <div className="location-info">
+              {/* Header: City name left, Coords/Timezone right */}
+              <div className="location-header">
+                <h2 className="location-name">{data.location?.address || location}</h2>
+                <p className="location-coords">
+                  {data.location?.latitude?.toFixed(4)}, {data.location?.longitude?.toFixed(4)}
+                  {data.location?.timezone && ` • ${data.location.timezone}`}
+                </p>
+              </div>
+
+              {/* Current Conditions - Centered */}
+              {currentWeather.data && !currentWeather.loading && (
+                <div className="current-conditions">
+                  <div className="current-main">
+                    <div className="current-temp">
+                      {convertTemp(currentWeather.data.current.temperature)}°{unit}
+                    </div>
+                    <div className="current-details">
+                      <div className="current-condition">{currentWeather.data.current.conditions}</div>
+                      <div className="current-feels-like">
+                        Feels like {convertTemp(currentWeather.data.current.feelsLike)}°{unit}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="current-stats">
+                    <div className="current-stat">
+                      <span className="stat-icon">💨</span>
+                      <span className="stat-value">{Math.round(currentWeather.data.current.windSpeed)} mph</span>
+                    </div>
+                    <div className="current-stat">
+                      <span className="stat-icon">💧</span>
+                      <span className="stat-value">{currentWeather.data.current.humidity}%</span>
+                    </div>
+                    <div className="current-stat">
+                      <span className="stat-icon">👁️</span>
+                      <span className="stat-value">{currentWeather.data.current.visibility} mi</span>
+                    </div>
+                    <div className="current-stat">
+                      <span className="stat-icon">☁️</span>
+                      <span className="stat-value">{currentWeather.data.current.cloudCover}%</span>
+                    </div>
+                  </div>
+
+                  <div className="current-footer">
+                    <span className="radar-placeholder">📡 Radar map coming soon</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+          {/* Lookup Controls - 25% */}
+          <div className="dashboard-controls">
+            <h3 className="controls-title">Controls</h3>
+
+            <div className="location-search-section">
+              <LocationSearchBar
+                onLocationSelect={handleLocationSelect}
+                currentLocation={locationData}
+              />
+              <div className="location-actions">
+                <button
+                  className="location-action-button detect-location"
+                  onClick={handleDetectLocation}
+                  disabled={detectingLocation}
+                >
+                  {detectingLocation ? '🔄' : '📍'} {detectingLocation ? 'Detecting...' : 'Use My Location'}
+                </button>
+                <a href="/compare" className="location-action-button compare-link">
+                  📊 Compare Locations
+                </a>
+              </div>
+              {locationError && (
+                <div className="location-error">
+                  ⚠️ {locationError}
+                </div>
+              )}
+            </div>
+
+            <div className="control-group">
+              <label className="control-label">
+                Forecast Days:
+                <select
+                  className="control-select"
+                  value={days}
+                  onChange={(e) => setDays(parseInt(e.target.value))}
+                >
+                  <option value={3}>3 days</option>
+                  <option value={7}>7 days</option>
+                  <option value={14}>14 days</option>
+                </select>
+              </label>
+            </div>
           </div>
+        </div>
 
           {/* Weather Alerts */}
           {data.alerts && data.alerts.length > 0 && (
@@ -427,6 +483,7 @@ function WeatherDashboard() {
                   data={data.forecast || []}
                   unit={unit}
                   height={400}
+                  days={days}
                 />
               </div>
             )}
@@ -436,6 +493,7 @@ function WeatherDashboard() {
                 <PrecipitationChart
                   data={data.forecast || []}
                   height={350}
+                  days={days}
                 />
               </div>
             )}
@@ -445,6 +503,7 @@ function WeatherDashboard() {
                 <WindChart
                   data={data.forecast || []}
                   height={350}
+                  days={days}
                 />
               </div>
             )}
@@ -454,6 +513,7 @@ function WeatherDashboard() {
                 <CloudCoverChart
                   data={data.forecast || []}
                   height={350}
+                  days={days}
                 />
               </div>
             )}
@@ -463,6 +523,7 @@ function WeatherDashboard() {
                 <UVIndexChart
                   data={data.forecast || []}
                   height={350}
+                  days={days}
                 />
               </div>
             )}
@@ -473,6 +534,7 @@ function WeatherDashboard() {
                   data={data.forecast || []}
                   unit={unit}
                   height={450}
+                  days={days}
                 />
               </div>
             )}
@@ -483,6 +545,7 @@ function WeatherDashboard() {
                 <HumidityDewpointChart
                   data={data.forecast || []}
                   unit={unit}
+                  days={days}
                 />
               </div>
             )}
@@ -491,6 +554,7 @@ function WeatherDashboard() {
               <div className="chart-card">
                 <SunChart
                   data={data.forecast || []}
+                  days={days}
                 />
               </div>
             )}
@@ -500,6 +564,7 @@ function WeatherDashboard() {
                 <FeelsLikeChart
                   data={data.forecast || []}
                   unit={unit}
+                  days={days}
                 />
               </div>
             )}

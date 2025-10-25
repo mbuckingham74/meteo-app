@@ -18,7 +18,14 @@ import { formatDateShort } from '../../utils/weatherHelpers';
  * UV Index Chart Component
  * Shows UV Index levels with safety categories
  */
-function UVIndexChart({ data, height = 350 }) {
+function UVIndexChart({ data, days, height = 350 }) {
+  const getTimeLabel = () => {
+    const numDays = days || data.length;
+    if (numDays === 7) return 'Next Week';
+    if (numDays === 14) return 'Next 2 Weeks';
+    return `Next ${numDays} Days`;
+  };
+
   if (!data || data.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
@@ -88,7 +95,7 @@ function UVIndexChart({ data, height = 350 }) {
   return (
     <div>
       <h3 style={{ marginBottom: '16px', color: '#111827', fontSize: '18px', fontWeight: '600' }}>
-        UV Index & Sun Safety
+        UV Index & Sun Safety - {getTimeLabel()}
       </h3>
 
       <ResponsiveContainer width="100%" height={height}>

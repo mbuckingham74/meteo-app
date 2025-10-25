@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { LocationProvider } from './contexts/LocationContext';
+import { TemperatureUnitProvider } from './contexts/TemperatureUnitContext';
 import AuthHeader from './components/auth/AuthHeader';
 import WeatherDashboard from './components/weather/WeatherDashboard';
 import LocationComparisonView from './components/location/LocationComparisonView';
@@ -87,7 +89,11 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <AppContent />
+        <TemperatureUnitProvider>
+          <LocationProvider>
+            <AppContent />
+          </LocationProvider>
+        </TemperatureUnitProvider>
       </ThemeProvider>
     </AuthProvider>
   );

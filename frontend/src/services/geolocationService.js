@@ -18,24 +18,35 @@ export async function getCurrentLocation() {
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
+        const { latitude, longitude } = position.coords;
 
-          // Reverse geocode to get address
+        console.log('📍 Got coordinates:', latitude, longitude);
+
+        try {
+          // Try to reverse geocode to get address
           const location = await reverseGeocode(latitude, longitude);
+
+          console.log('✅ Reverse geocoding successful:', location);
 
           resolve({
             ...location,
             accuracy: position.coords.accuracy
           });
         } catch (error) {
-          // If reverse geocoding fails, return coordinates only
-          resolve({
-            address: `${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
+          console.warn('⚠️ Reverse geocoding failed, using coordinates only:', error.message);
+
+          // If reverse geocoding fails (e.g., API rate limit), return coordinates only
+          // The weather API can still work with lat,lon coordinates
+          const fallbackLocation = {
+            address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+            latitude: latitude,
+            longitude: longitude,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             accuracy: position.coords.accuracy
-          });
+          };
+
+          console.log('📍 Using fallback location:', fallbackLocation);
+          resolve(fallbackLocation);
         }
       },
       (error) => {

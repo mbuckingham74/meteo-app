@@ -16,7 +16,7 @@ import { formatTemperature, formatDateShort } from '../../utils/weatherHelpers';
  * Temperature Band Chart Component
  * Weather Spark-style color-coded temperature visualization
  */
-function TemperatureBandChart({ data, unit = 'C', height = 400 }) {
+function TemperatureBandChart({ data, unit = 'C', height = 400, days }) {
   if (!data || data.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
@@ -24,6 +24,13 @@ function TemperatureBandChart({ data, unit = 'C', height = 400 }) {
       </div>
     );
   }
+
+  const getTimeLabel = () => {
+    const numDays = days || data.length;
+    if (numDays === 7) return 'Next Week';
+    if (numDays === 14) return 'Next 2 Weeks';
+    return `Next ${numDays} Days`;
+  };
 
   // Format data for Recharts
   const chartData = data.map(day => ({
@@ -67,7 +74,7 @@ function TemperatureBandChart({ data, unit = 'C', height = 400 }) {
   return (
     <div>
       <h3 style={{ marginBottom: '16px', color: '#111827', fontSize: '18px', fontWeight: '600' }}>
-        Temperature Range
+        Temperature Range - {getTimeLabel()}
       </h3>
       <ResponsiveContainer width="100%" height={height}>
         <AreaChart

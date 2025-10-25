@@ -14,6 +14,43 @@ if (!API_KEY) {
 }
 
 /**
+ * Request throttling to prevent too many concurrent API calls
+ */
+const MAX_CONCURRENT_REQUESTS = 3;
+const MIN_REQUEST_INTERVAL = 100; // ms between requests
+let activeRequests = 0;
+let lastRequestTime = 0;
+const requestQueue = [];
+
+/**
+ * Throttle API requests to stay within rate limits
+ * @param {Function} requestFn - Function that makes the API request
+ * @returns {Promise<any>} Request result
+ */
+async function throttleRequest(requestFn) {
+  // Wait if too many concurrent requests
+  while (activeRequests >= MAX_CONCURRENT_REQUESTS) {
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+
+  // Ensure minimum interval between requests
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+  if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+    await new Promise(resolve => setTimeout(resolve, MIN_REQUEST_INTERVAL - timeSinceLastRequest));
+  }
+
+  activeRequests++;
+  lastRequestTime = Date.now();
+
+  try {
+    return await requestFn();
+  } finally {
+    activeRequests--;
+  }
+}
+
+/**
  * Build Visual Crossing API URL
  * @param {string} location - City name, address, or lat,lon coordinates
  * @param {string} startDate - Start date (YYYY-MM-DD) or empty for current
@@ -46,50 +83,68 @@ function buildApiUrl(location, startDate = '', endDate = '', options = {}) {
 }
 
 /**
- * Make API request to Visual Crossing
+ * Make API request to Visual Crossing with retry logic and throttling
  * @param {string} url - Complete API URL
+ * @param {number} retries - Number of retries (default: 2)
+ * @param {number} delay - Initial delay in ms (default: 1000)
  * @returns {Promise<object>} API response data
  */
-async function makeApiRequest(url) {
-  try {
-    const response = await axios.get(url, {
-      timeout: 10000, // 10 second timeout
-      headers: {
-        'Accept': 'application/json'
+async function makeApiRequest(url, retries = 2, delay = 1000) {
+  return throttleRequest(async () => {
+    try {
+      const response = await axios.get(url, {
+        timeout: 10000, // 10 second timeout
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      return {
+        success: true,
+        data: response.data,
+        queryCost: response.data.queryCost || 0
+      };
+    } catch (error) {
+      const statusCode = error.response?.status || 0;
+
+      // Handle rate limiting with exponential backoff
+      if (statusCode === 429 && retries > 0) {
+        console.log(`⏳ Rate limit hit, retrying in ${delay}ms... (${retries} retries left)`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return makeApiRequest(url, retries - 1, delay * 2); // Exponential backoff
       }
-    });
 
-    return {
-      success: true,
-      data: response.data,
-      queryCost: response.data.queryCost || 0
-    };
-  } catch (error) {
-    console.error('Visual Crossing API Error:', error.message);
+      console.error('Visual Crossing API Error:', error.message);
 
-    if (error.response) {
-      // API responded with error
-      return {
-        success: false,
-        error: error.response.data?.message || 'API request failed',
-        statusCode: error.response.status
-      };
-    } else if (error.request) {
-      // No response received
-      return {
-        success: false,
-        error: 'No response from Visual Crossing API',
-        statusCode: 0
-      };
-    } else {
-      // Request setup error
-      return {
-        success: false,
-        error: error.message,
-        statusCode: 0
-      };
+      if (error.response) {
+        // API responded with error
+        const errorMsg = statusCode === 429
+          ? 'Rate limit exceeded. Please try again later or upgrade your API plan.'
+          : error.response.data?.message || 'API request failed';
+
+        return {
+          success: false,
+          error: errorMsg,
+          statusCode: statusCode,
+          rateLimitExceeded: statusCode === 429
+        };
+      } else if (error.request) {
+        // No response received
+        return {
+          success: false,
+          error: 'No response from Visual Crossing API',
+          statusCode: 0
+        };
+      } else {
+        // Request setup error
+        return {
+          success: false,
+          error: error.message,
+          statusCode: 0
+        };
+      }
     }
-  }
+  });
 }
 
 /**

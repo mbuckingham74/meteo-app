@@ -17,7 +17,14 @@ import { formatDateShort, formatTemperature, formatPrecipitation } from '../../u
  * Weather Overview Chart Component
  * Multi-metric visualization with toggleable data series
  */
-function WeatherOverviewChart({ data, unit = 'C', height = 450 }) {
+function WeatherOverviewChart({ data, days, unit = 'C', height = 450 }) {
+  const getTimeLabel = () => {
+    const numDays = days || data.length;
+    if (numDays === 7) return 'Next Week';
+    if (numDays === 14) return 'Next 2 Weeks';
+    return `Next ${numDays} Days`;
+  };
+
   const [visibleMetrics, setVisibleMetrics] = useState({
     temperature: true,
     precipitation: true,
@@ -111,7 +118,7 @@ function WeatherOverviewChart({ data, unit = 'C', height = 450 }) {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
         <h3 style={{ margin: 0, color: '#111827', fontSize: '18px', fontWeight: '600' }}>
-          Multi-Metric Weather Overview
+          Multi-Metric Weather Overview - {getTimeLabel()}
         </h3>
 
         {/* Metric Toggles */}

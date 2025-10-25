@@ -1,20 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLocation } from '../../contexts/LocationContext';
 import {
   changePassword,
   getUserPreferences,
   updateUserPreferences,
-  updateUserProfile
+  updateUserProfile,
+  getCloudFavorites,
+  addCloudFavorite,
+  removeCloudFavorite
 } from '../../services/authApi';
 import './UserProfileModal.css';
 
 /**
  * UserProfileModal Component
- * Manages user profile, preferences, and password
+ * Manages user profile, preferences, password, and favorites
  */
 function UserProfileModal({ isOpen, onClose }) {
   const { user, accessToken, logout, updateUser } = useAuth();
-  const [activeTab, setActiveTab] = useState('profile'); // 'profile', 'preferences', 'security'
+  const { selectLocation } = useLocation();
+  const [activeTab, setActiveTab] = useState('profile'); // 'profile', 'preferences', 'security', 'favorites'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -36,6 +41,10 @@ function UserProfileModal({ isOpen, onClose }) {
     theme: 'light'
   });
 
+  // Favorites state
+  const [favorites, setFavorites] = useState([]);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
+
   useEffect(() => {
     if (user) {
       setName(user.name || '');
@@ -52,11 +61,26 @@ function UserProfileModal({ isOpen, onClose }) {
     }
   }, [accessToken]);
 
+  const loadFavorites = useCallback(async () => {
+    if (!accessToken) return;
+
+    setFavoritesLoading(true);
+    try {
+      const cloudFavs = await getCloudFavorites(accessToken);
+      setFavorites(cloudFavs);
+    } catch (error) {
+      console.error('Failed to load favorites:', error);
+    } finally {
+      setFavoritesLoading(false);
+    }
+  }, [accessToken]);
+
   useEffect(() => {
     if (isOpen && accessToken) {
       loadPreferences();
+      loadFavorites();
     }
-  }, [isOpen, accessToken, loadPreferences]);
+  }, [isOpen, accessToken, loadPreferences, loadFavorites]);
 
   if (!isOpen) return null;
 
@@ -129,6 +153,28 @@ function UserProfileModal({ isOpen, onClose }) {
     }
   };
 
+  const handleRemoveFavorite = async (favoriteId) => {
+    setError(null);
+    setSuccess(null);
+    setFavoritesLoading(true);
+
+    try {
+      await removeCloudFavorite(accessToken, favoriteId);
+      await loadFavorites();
+      setSuccess('Favorite removed successfully!');
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setFavoritesLoading(false);
+    }
+  };
+
+  const handleSelectFavorite = (favorite) => {
+    selectLocation(favorite);
+    onClose();
+  };
+
   const handleLogout = () => {
     logout();
     onClose();
@@ -153,6 +199,12 @@ function UserProfileModal({ isOpen, onClose }) {
               onClick={() => setActiveTab('profile')}
             >
               Profile
+            </button>
+            <button
+              className={`profile-tab ${activeTab === 'favorites' ? 'active' : ''}`}
+              onClick={() => setActiveTab('favorites')}
+            >
+              ⭐ Favorites
             </button>
             <button
               className={`profile-tab ${activeTab === 'preferences' ? 'active' : ''}`}
@@ -310,6 +362,79 @@ function UserProfileModal({ isOpen, onClose }) {
               >
                 {loading ? 'Saving...' : 'Save Preferences'}
               </button>
+            </div>
+          )}
+
+          {/* Favorites Tab */}
+          {activeTab === 'favorites' && (
+            <div className="profile-section">
+              <h3 className="profile-section-title">
+                Your Favorite Locations
+                {favorites.length > 0 && (
+                  <span className="favorite-count-badge">{favorites.length}</span>
+                )}
+              </h3>
+
+              {favoritesLoading && (
+                <div className="favorites-loading">
+                  <div className="spinner-small"></div>
+                  <p>Loading favorites...</p>
+                </div>
+              )}
+
+              {!favoritesLoading && favorites.length === 0 && (
+                <div className="favorites-empty-state">
+                  <span className="empty-icon">⭐</span>
+                  <h4>No favorite locations yet</h4>
+                  <p>Add locations to your favorites from the main dashboard.</p>
+                  <p className="empty-hint">
+                    Your favorites are securely stored and synced across all your devices.
+                  </p>
+                </div>
+              )}
+
+              {!favoritesLoading && favorites.length > 0 && (
+                <div className="favorites-list-profile">
+                  {favorites.map((favorite) => (
+                    <div
+                      key={favorite.id}
+                      className="favorite-item-profile"
+                    >
+                      <div
+                        className="favorite-content"
+                        onClick={() => handleSelectFavorite(favorite)}
+                      >
+                        <div className="favorite-icon">📍</div>
+                        <div className="favorite-details">
+                          <div className="favorite-name-profile">
+                            {favorite.address || favorite.location_name}
+                          </div>
+                          <div className="favorite-coords-profile">
+                            {favorite.latitude.toFixed(4)}, {favorite.longitude.toFixed(4)}
+                            {favorite.timezone && ` • ${favorite.timezone}`}
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        className="remove-favorite-button"
+                        onClick={() => handleRemoveFavorite(favorite.id)}
+                        title="Remove from favorites"
+                        disabled={favoritesLoading}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {favorites.length > 0 && (
+                <div className="favorites-info">
+                  <p>
+                    💾 {favorites.length} location{favorites.length !== 1 ? 's' : ''} saved • Synced to cloud
+                  </p>
+                </div>
+              )}
             </div>
           )}
 

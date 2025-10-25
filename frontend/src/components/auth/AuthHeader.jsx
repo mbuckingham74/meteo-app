@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import ThemeToggle from '../theme/ThemeToggle';
+import TemperatureUnitToggle from '../units/TemperatureUnitToggle';
 import AuthModal from './AuthModal';
 import UserProfileModal from './UserProfileModal';
 import './AuthHeader.css';
@@ -42,7 +43,10 @@ function AuthHeader() {
   return (
     <>
       <div className="auth-header">
-        <ThemeToggle />
+        <div className="auth-header-controls">
+          <TemperatureUnitToggle />
+          <ThemeToggle />
+        </div>
         {isAuthenticated ? (
           <div className="auth-user-info">
             <span className="auth-user-name">{user?.name}</span>
