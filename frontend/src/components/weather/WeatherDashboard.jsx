@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 import { useForecast } from '../../hooks/useWeatherData';
+import {
+  useThisDayInHistory,
+  useForecastComparison,
+  useRecordTemperatures,
+  useTemperatureProbability
+} from '../../hooks/useClimateData';
 import TemperatureBandChart from '../charts/TemperatureBandChart';
 import PrecipitationChart from '../charts/PrecipitationChart';
 import WindChart from '../charts/WindChart';
 import CloudCoverChart from '../charts/CloudCoverChart';
 import UVIndexChart from '../charts/UVIndexChart';
 import WeatherOverviewChart from '../charts/WeatherOverviewChart';
+import HistoricalComparisonChart from '../charts/HistoricalComparisonChart';
+import RecordTemperaturesChart from '../charts/RecordTemperaturesChart';
+import TemperatureProbabilityChart from '../charts/TemperatureProbabilityChart';
+import ThisDayInHistoryCard from '../cards/ThisDayInHistoryCard';
 import './WeatherDashboard.css';
 
 /**
@@ -25,10 +35,30 @@ function WeatherDashboard() {
     wind: true,
     cloudCover: true,
     uvIndex: true,
-    overview: true
+    overview: true,
+    // Historical/Climate charts
+    thisDayHistory: true,
+    historicalComparison: false,
+    recordTemps: false,
+    tempProbability: false
   });
 
+  // Fetch weather data
   const { data, loading, error } = useForecast(location, days);
+
+  // Fetch climate/historical data
+  const thisDayHistory = useThisDayInHistory(location, null, 10);
+  const forecastComparison = useForecastComparison(location, data?.forecast || [], 10);
+
+  // Get date ranges for records and probability
+  const today = new Date();
+  const startDate = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const endDateObj = new Date(today);
+  endDateObj.setDate(today.getDate() + days);
+  const endDate = `${String(endDateObj.getMonth() + 1).padStart(2, '0')}-${String(endDateObj.getDate()).padStart(2, '0')}`;
+
+  const recordTemps = useRecordTemperatures(location, startDate, endDate, 10);
+  const tempProbability = useTemperatureProbability(location, startDate, endDate, 10);
 
   const handleLocationSubmit = (e) => {
     e.preventDefault();
@@ -144,7 +174,11 @@ function WeatherDashboard() {
                     wind: true,
                     cloudCover: true,
                     uvIndex: true,
-                    overview: true
+                    overview: true,
+                    thisDayHistory: true,
+                    historicalComparison: true,
+                    recordTemps: true,
+                    tempProbability: true
                   })}
                 >
                   Show All
@@ -157,7 +191,11 @@ function WeatherDashboard() {
                     wind: false,
                     cloudCover: false,
                     uvIndex: false,
-                    overview: false
+                    overview: false,
+                    thisDayHistory: false,
+                    historicalComparison: false,
+                    recordTemps: false,
+                    tempProbability: false
                   })}
                 >
                   Hide All
@@ -212,6 +250,42 @@ function WeatherDashboard() {
                   onChange={() => toggleChart('overview')}
                 />
                 <span>📈 Multi-Metric Overview</span>
+              </label>
+
+              {/* Historical/Climate toggles */}
+              <div style={{ width: '100%', height: '1px', background: '#e5e7eb', margin: '8px 0' }} />
+
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.thisDayHistory}
+                  onChange={() => toggleChart('thisDayHistory')}
+                />
+                <span>📅 This Day in History</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.historicalComparison}
+                  onChange={() => toggleChart('historicalComparison')}
+                />
+                <span>📊 Historical Comparison</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.recordTemps}
+                  onChange={() => toggleChart('recordTemps')}
+                />
+                <span>🏆 Record Temperatures</span>
+              </label>
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.tempProbability}
+                  onChange={() => toggleChart('tempProbability')}
+                />
+                <span>📉 Temperature Probability</span>
               </label>
             </div>
           </div>
@@ -270,6 +344,47 @@ function WeatherDashboard() {
                   data={data.forecast || []}
                   unit={unit}
                   height={450}
+                />
+              </div>
+            )}
+
+            {/* Historical/Climate Charts */}
+            {visibleCharts.thisDayHistory && (
+              <div className="chart-card chart-card-wide">
+                <ThisDayInHistoryCard
+                  historyData={thisDayHistory.data}
+                  unit={unit}
+                />
+              </div>
+            )}
+
+            {visibleCharts.historicalComparison && (
+              <div className="chart-card chart-card-wide">
+                <HistoricalComparisonChart
+                  forecastData={data.forecast || []}
+                  historicalData={forecastComparison.data || []}
+                  unit={unit}
+                  height={400}
+                />
+              </div>
+            )}
+
+            {visibleCharts.recordTemps && (
+              <div className="chart-card chart-card-wide">
+                <RecordTemperaturesChart
+                  records={recordTemps.data?.records || []}
+                  unit={unit}
+                  height={400}
+                />
+              </div>
+            )}
+
+            {visibleCharts.tempProbability && (
+              <div className="chart-card chart-card-wide">
+                <TemperatureProbabilityChart
+                  probabilityData={tempProbability.data}
+                  unit={unit}
+                  height={400}
                 />
               </div>
             )}

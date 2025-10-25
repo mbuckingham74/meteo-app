@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const weatherService = require('../services/weatherService');
+const climateService = require('../services/climateService');
 
 /**
  * Test Visual Crossing API connection
@@ -149,6 +150,252 @@ router.get('/historical/:location', async (req, res) => {
       res.json(result);
     } else {
       res.status(result.statusCode || 500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get climate normals for a location and date
+ * GET /api/weather/climate/normals/:location?date=MM-DD&years=10
+ * Example: /api/weather/climate/normals/Seattle,WA?date=07-15&years=10
+ */
+router.get('/climate/normals/:location', async (req, res) => {
+  try {
+    const { location } = req.params;
+    const { date, years } = req.query;
+
+    if (!location) {
+      return res.status(400).json({
+        success: false,
+        error: 'Location parameter is required'
+      });
+    }
+
+    if (!date) {
+      return res.status(400).json({
+        success: false,
+        error: 'Date parameter is required (format: MM-DD)'
+      });
+    }
+
+    // Validate date format
+    const dateRegex = /^\d{2}-\d{2}$/;
+    if (!dateRegex.test(date)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid date format. Use MM-DD'
+      });
+    }
+
+    const yearsToAnalyze = parseInt(years) || 10;
+    const result = await climateService.getClimateNormals(location, date, yearsToAnalyze);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get record temperatures for a location and date range
+ * GET /api/weather/climate/records/:location?start=MM-DD&end=MM-DD&years=10
+ * Example: /api/weather/climate/records/London,UK?start=06-01&end=06-30&years=10
+ */
+router.get('/climate/records/:location', async (req, res) => {
+  try {
+    const { location } = req.params;
+    const { start, end, years } = req.query;
+
+    if (!location) {
+      return res.status(400).json({
+        success: false,
+        error: 'Location parameter is required'
+      });
+    }
+
+    if (!start || !end) {
+      return res.status(400).json({
+        success: false,
+        error: 'Start and end date parameters are required (format: MM-DD)'
+      });
+    }
+
+    // Validate date format
+    const dateRegex = /^\d{2}-\d{2}$/;
+    if (!dateRegex.test(start) || !dateRegex.test(end)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid date format. Use MM-DD'
+      });
+    }
+
+    const yearsToAnalyze = parseInt(years) || 10;
+    const result = await climateService.getRecordTemperatures(location, start, end, yearsToAnalyze);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Compare forecast with historical averages
+ * POST /api/weather/climate/compare/:location
+ * Body: { forecastData: [...], years: 10 }
+ */
+router.post('/climate/compare/:location', async (req, res) => {
+  try {
+    const { location } = req.params;
+    const { forecastData, years } = req.body;
+
+    if (!location) {
+      return res.status(400).json({
+        success: false,
+        error: 'Location parameter is required'
+      });
+    }
+
+    if (!forecastData || !Array.isArray(forecastData)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Forecast data array is required in request body'
+      });
+    }
+
+    const yearsToAnalyze = parseInt(years) || 10;
+    const result = await climateService.compareForecastToHistorical(location, forecastData, yearsToAnalyze);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get "This Day in History" weather data
+ * GET /api/weather/climate/this-day/:location?date=MM-DD&years=10
+ * Example: /api/weather/climate/this-day/Paris,France?date=12-25&years=10
+ */
+router.get('/climate/this-day/:location', async (req, res) => {
+  try {
+    const { location } = req.params;
+    const { date, years } = req.query;
+
+    if (!location) {
+      return res.status(400).json({
+        success: false,
+        error: 'Location parameter is required'
+      });
+    }
+
+    // Validate date format if provided
+    if (date) {
+      const dateRegex = /^\d{2}-\d{2}$/;
+      if (!dateRegex.test(date)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid date format. Use MM-DD'
+        });
+      }
+    }
+
+    const yearsToAnalyze = parseInt(years) || 10;
+    const result = await climateService.getThisDayInHistory(location, date, yearsToAnalyze);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get temperature probability distribution
+ * GET /api/weather/climate/probability/:location?start=MM-DD&end=MM-DD&years=10
+ * Example: /api/weather/climate/probability/Tokyo,Japan?start=01-01&end=01-31&years=10
+ */
+router.get('/climate/probability/:location', async (req, res) => {
+  try {
+    const { location } = req.params;
+    const { start, end, years } = req.query;
+
+    if (!location) {
+      return res.status(400).json({
+        success: false,
+        error: 'Location parameter is required'
+      });
+    }
+
+    if (!start || !end) {
+      return res.status(400).json({
+        success: false,
+        error: 'Start and end date parameters are required (format: MM-DD)'
+      });
+    }
+
+    // Validate date format
+    const dateRegex = /^\d{2}-\d{2}$/;
+    if (!dateRegex.test(start) || !dateRegex.test(end)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid date format. Use MM-DD'
+      });
+    }
+
+    const yearsToAnalyze = parseInt(years) || 10;
+    const result = await climateService.getTemperatureProbability(location, start, end, yearsToAnalyze);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(500).json({
         success: false,
         error: result.error
       });
