@@ -50,13 +50,24 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **Smart Search** - Location search with autocomplete and keyboard navigation
 - **Popular Locations** - Quick access to major cities worldwide
 - **Geolocation Detection** - Automatic detection of current location via browser
-- **Favorites System** - Save and manage favorite locations (stored locally)
+- **Favorites System** - Save and manage favorite locations with cloud sync
 - **Location Comparison** - Side-by-side weather comparison for 2-4 locations with insights
+
+### 👤 User Authentication & Profiles
+
+- **User Registration** - Create account with email and password
+- **Secure Login** - JWT-based authentication with token refresh
+- **User Profiles** - Manage name, email, and password
+- **Cloud Sync** - Favorites automatically sync across all devices
+- **Auto-Migration** - localStorage favorites migrate to cloud on login
+- **User Preferences** - Save default temperature units, forecast days, and theme
+- **Profile Management** - Tab-based interface for profile, preferences, and security settings
 
 ### ⚙️ Customization
 
 - **Chart Visibility Controls** - Show/hide individual charts
 - **Quick Toggle** - Show all or hide all charts with one click
+- **User Preferences** - Persistent settings for logged-in users
 - **Responsive Design** - Mobile-friendly interface
 
 ---
@@ -64,15 +75,17 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React** - UI framework
+- **React** - UI framework with Context API for state management
 - **Recharts** - Data visualization library
 - **CSS3** - Custom styling with gradient designs
-- **localStorage** - Client-side favorites storage
+- **localStorage** - Client-side favorites storage (with cloud sync)
 
 ### Backend
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
-- **MySQL** - Database for weather data storage
+- **MySQL** - Database for weather data, users, and preferences
+- **bcryptjs** - Secure password hashing
+- **jsonwebtoken (JWT)** - Token-based authentication
 - **Docker** - Containerized development environment
 
 ### External APIs
@@ -201,6 +214,96 @@ GET /api/locations/popular
 
 ---
 
+### Authentication & User Management
+
+#### Register User
+```
+POST /api/auth/register
+```
+- **Body**: `{ email, password, name }`
+- **Returns**: User object with JWT tokens
+
+#### Login User
+```
+POST /api/auth/login
+```
+- **Body**: `{ email, password }`
+- **Returns**: User object with JWT tokens
+
+#### Get Current User
+```
+GET /api/auth/me
+```
+- **Headers**: `Authorization: Bearer <token>`
+- **Returns**: Current user profile
+
+#### Update Profile
+```
+PUT /api/auth/profile
+```
+- **Headers**: `Authorization: Bearer <token>`
+- **Body**: `{ name, email }`
+- **Returns**: Updated user object
+
+#### Change Password
+```
+POST /api/auth/change-password
+```
+- **Headers**: `Authorization: Bearer <token>`
+- **Body**: `{ currentPassword, newPassword }`
+- **Returns**: Success message
+
+---
+
+### User Preferences & Favorites
+
+#### Get User Preferences
+```
+GET /api/user/preferences
+```
+- **Headers**: `Authorization: Bearer <token>`
+- **Returns**: User preferences object
+
+#### Update Preferences
+```
+PUT /api/user/preferences
+```
+- **Headers**: `Authorization: Bearer <token>`
+- **Body**: `{ temperature_unit, default_forecast_days, theme }`
+- **Returns**: Updated preferences
+
+#### Get Cloud Favorites
+```
+GET /api/user/favorites
+```
+- **Headers**: `Authorization: Bearer <token>`
+- **Returns**: Array of favorite locations
+
+#### Add Favorite
+```
+POST /api/user/favorites
+```
+- **Headers**: `Authorization: Bearer <token>`
+- **Body**: `{ location_name, latitude, longitude, address, timezone }`
+- **Returns**: Created favorite object
+
+#### Remove Favorite
+```
+DELETE /api/user/favorites/:id
+```
+- **Headers**: `Authorization: Bearer <token>`
+- **Returns**: Success message
+
+#### Import Favorites
+```
+POST /api/user/favorites/import
+```
+- **Headers**: `Authorization: Bearer <token>`
+- **Body**: `{ favorites: [...] }`
+- **Returns**: Import results with count
+
+---
+
 ## 📁 Project Structure
 
 ```
@@ -221,17 +324,24 @@ meteo-app/
 │   │   │   │   └── TemperatureProbabilityChart.jsx
 │   │   │   ├── cards/               # Weather data cards
 │   │   │   │   └── ThisDayInHistoryCard.jsx
+│   │   │   ├── auth/                # Authentication components
+│   │   │   │   ├── AuthHeader.jsx
+│   │   │   │   ├── AuthModal.jsx
+│   │   │   │   └── UserProfileModal.jsx
 │   │   │   ├── location/            # Location management
 │   │   │   │   ├── LocationSearchBar.jsx
 │   │   │   │   ├── FavoritesPanel.jsx
 │   │   │   │   └── LocationComparisonView.jsx
 │   │   │   └── weather/             # Main dashboard
 │   │   │       └── WeatherDashboard.jsx
+│   │   ├── contexts/                # React Context providers
+│   │   │   └── AuthContext.js
 │   │   ├── hooks/                   # Custom React hooks
 │   │   │   ├── useWeatherData.js
 │   │   │   └── useClimateData.js
 │   │   ├── services/                # API and local services
 │   │   │   ├── weatherApi.js
+│   │   │   ├── authApi.js
 │   │   │   ├── favoritesService.js
 │   │   │   └── geolocationService.js
 │   │   └── utils/                   # Helper functions
@@ -241,11 +351,20 @@ meteo-app/
 ├── backend/
 │   ├── routes/
 │   │   ├── weather.js               # Weather API endpoints
-│   │   └── locations.js             # Location API endpoints
+│   │   ├── locations.js             # Location API endpoints
+│   │   ├── auth.js                  # Authentication endpoints
+│   │   └── user.js                  # User preferences & favorites
 │   ├── services/
 │   │   ├── weatherService.js        # Weather data fetching
 │   │   ├── climateService.js        # Historical climate analysis
-│   │   └── geocodingService.js      # Location search
+│   │   ├── geocodingService.js      # Location search
+│   │   ├── authService.js           # Authentication logic
+│   │   ├── userPreferencesService.js # User preferences management
+│   │   └── userFavoritesService.js  # Cloud favorites management
+│   ├── middleware/
+│   │   └── authMiddleware.js        # JWT authentication middleware
+│   ├── database/
+│   │   └── auth-schema.sql          # User & auth database schema
 │   └── server.js
 │
 └── docker-compose.yml
