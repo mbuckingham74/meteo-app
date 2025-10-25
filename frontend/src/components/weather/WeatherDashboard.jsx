@@ -1,21 +1,26 @@
 import React, { useState } from 'react';
-import { useForecast } from '../../hooks/useWeatherData';
+import { useForecast, useHourlyForecast } from '../../hooks/useWeatherData';
 import {
   useThisDayInHistory,
   useForecastComparison,
   useRecordTemperatures,
   useTemperatureProbability
 } from '../../hooks/useClimateData';
+import { getCurrentLocation } from '../../services/geolocationService';
+import { addFavorite, isFavorite } from '../../services/favoritesService';
 import TemperatureBandChart from '../charts/TemperatureBandChart';
 import PrecipitationChart from '../charts/PrecipitationChart';
 import WindChart from '../charts/WindChart';
 import CloudCoverChart from '../charts/CloudCoverChart';
 import UVIndexChart from '../charts/UVIndexChart';
 import WeatherOverviewChart from '../charts/WeatherOverviewChart';
+import HourlyForecastChart from '../charts/HourlyForecastChart';
 import HistoricalComparisonChart from '../charts/HistoricalComparisonChart';
 import RecordTemperaturesChart from '../charts/RecordTemperaturesChart';
 import TemperatureProbabilityChart from '../charts/TemperatureProbabilityChart';
 import ThisDayInHistoryCard from '../cards/ThisDayInHistoryCard';
+import LocationSearchBar from '../location/LocationSearchBar';
+import FavoritesPanel from '../location/FavoritesPanel';
 import './WeatherDashboard.css';
 
 /**
@@ -24,12 +29,15 @@ import './WeatherDashboard.css';
  */
 function WeatherDashboard() {
   const [location, setLocation] = useState('London,UK');
+  const [locationData, setLocationData] = useState(null);
   const [days, setDays] = useState(7);
   const [unit, setUnit] = useState('C');
-  const [inputLocation, setInputLocation] = useState('London,UK');
+  const [detectingLocation, setDetectingLocation] = useState(false);
+  const [locationError, setLocationError] = useState(null);
 
   // Chart visibility state
   const [visibleCharts, setVisibleCharts] = useState({
+    hourly: true,
     temperature: true,
     precipitation: true,
     wind: true,
@@ -45,6 +53,7 @@ function WeatherDashboard() {
 
   // Fetch weather data
   const { data, loading, error } = useForecast(location, days);
+  const hourlyData = useHourlyForecast(location, 48);
 
   // Fetch climate/historical data
   const thisDayHistory = useThisDayInHistory(location, null, 10);
@@ -60,10 +69,36 @@ function WeatherDashboard() {
   const recordTemps = useRecordTemperatures(location, startDate, endDate, 10);
   const tempProbability = useTemperatureProbability(location, startDate, endDate, 10);
 
-  const handleLocationSubmit = (e) => {
-    e.preventDefault();
-    if (inputLocation.trim()) {
-      setLocation(inputLocation.trim());
+  // Handle location selection from search
+  const handleLocationSelect = (locationObj) => {
+    setLocation(locationObj.address);
+    setLocationData(locationObj);
+    setLocationError(null);
+  };
+
+  // Handle current location detection
+  const handleDetectLocation = async () => {
+    setDetectingLocation(true);
+    setLocationError(null);
+
+    try {
+      const currentLoc = await getCurrentLocation();
+      setLocation(currentLoc.address);
+      setLocationData(currentLoc);
+    } catch (error) {
+      setLocationError(error.message);
+    } finally {
+      setDetectingLocation(false);
+    }
+  };
+
+  // Handle adding current location to favorites
+  const handleToggleFavorite = () => {
+    if (locationData) {
+      const favorited = isFavorite(locationData.latitude, locationData.longitude);
+      if (!favorited) {
+        addFavorite(locationData);
+      }
     }
   };
 
@@ -89,20 +124,31 @@ function WeatherDashboard() {
         <p className="dashboard-subtitle">Historical Weather Data & Forecasts</p>
       </header>
 
-      {/* Controls */}
+      {/* Location Search and Controls */}
       <div className="dashboard-controls">
-        <form onSubmit={handleLocationSubmit} className="location-form">
-          <input
-            type="text"
-            className="location-input"
-            placeholder="Enter location (e.g., London,UK)"
-            value={inputLocation}
-            onChange={(e) => setInputLocation(e.target.value)}
+        <div className="location-search-section">
+          <LocationSearchBar
+            onLocationSelect={handleLocationSelect}
+            currentLocation={locationData}
           />
-          <button type="submit" className="location-button">
-            Search
-          </button>
-        </form>
+          <div className="location-actions">
+            <button
+              className="location-action-button detect-location"
+              onClick={handleDetectLocation}
+              disabled={detectingLocation}
+            >
+              {detectingLocation ? '🔄' : '📍'} {detectingLocation ? 'Detecting...' : 'Use My Location'}
+            </button>
+            <a href="/compare" className="location-action-button compare-link">
+              📊 Compare Locations
+            </a>
+          </div>
+          {locationError && (
+            <div className="location-error">
+              ⚠️ {locationError}
+            </div>
+          )}
+        </div>
 
         <div className="control-group">
           <label className="control-label">
@@ -131,6 +177,12 @@ function WeatherDashboard() {
           </label>
         </div>
       </div>
+
+      {/* Favorites Panel */}
+      <FavoritesPanel
+        onLocationSelect={handleLocationSelect}
+        currentLocation={locationData}
+      />
 
       {/* Loading State */}
       {loading && (
@@ -169,6 +221,7 @@ function WeatherDashboard() {
                 <button
                   className="toggle-all-button"
                   onClick={() => setVisibleCharts({
+                    hourly: true,
                     temperature: true,
                     precipitation: true,
                     wind: true,
@@ -186,6 +239,7 @@ function WeatherDashboard() {
                 <button
                   className="toggle-all-button"
                   onClick={() => setVisibleCharts({
+                    hourly: false,
                     temperature: false,
                     precipitation: false,
                     wind: false,
@@ -203,6 +257,14 @@ function WeatherDashboard() {
               </div>
             </div>
             <div className="chart-toggles">
+              <label className="chart-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleCharts.hourly}
+                  onChange={() => toggleChart('hourly')}
+                />
+                <span>🕐 48-Hour Forecast</span>
+              </label>
               <label className="chart-toggle">
                 <input
                   type="checkbox"
@@ -292,6 +354,17 @@ function WeatherDashboard() {
 
           {/* Charts */}
           <div className="charts-grid">
+            {/* Hourly Forecast - Full Width */}
+            {visibleCharts.hourly && (
+              <div className="chart-card chart-card-wide">
+                <HourlyForecastChart
+                  hourlyData={hourlyData.data?.hourly || []}
+                  unit={unit}
+                  height={400}
+                />
+              </div>
+            )}
+
             {visibleCharts.temperature && (
               <div className="chart-card">
                 <TemperatureBandChart
