@@ -3,7 +3,87 @@ import { reverseGeocode } from './weatherApi';
 /**
  * Geolocation Service
  * Detects user's current location using browser Geolocation API
+ * Falls back to IP geolocation if browser geolocation fails
  */
+
+/**
+ * Get location from IP address using multiple fallback services
+ * @returns {Promise<Object>} Location object with address, latitude, longitude
+ */
+async function getLocationFromIP() {
+  console.log('🌐 Attempting IP-based geolocation...');
+
+  // Try multiple IP geolocation services in order
+  const services = [
+    {
+      name: 'ip-api.com',
+      url: 'http://ip-api.com/json/',
+      parser: (data) => ({
+        address: `${data.city}, ${data.regionName}, ${data.country}`,
+        latitude: data.lat,
+        longitude: data.lon,
+        timezone: data.timezone,
+        accuracy: 5000,
+        method: 'ip'
+      })
+    },
+    {
+      name: 'geojs.io',
+      url: 'https://get.geojs.io/v1/ip/geo.json',
+      parser: (data) => ({
+        address: `${data.city}, ${data.region}, ${data.country}`,
+        latitude: parseFloat(data.latitude),
+        longitude: parseFloat(data.longitude),
+        timezone: data.timezone,
+        accuracy: 5000,
+        method: 'ip'
+      })
+    },
+    {
+      name: 'ipapi.co',
+      url: 'https://ipapi.co/json/',
+      parser: (data) => ({
+        address: `${data.city}, ${data.region_code || data.region}, ${data.country_name}`,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        timezone: data.timezone,
+        accuracy: 5000,
+        method: 'ip'
+      })
+    }
+  ];
+
+  // Try each service until one succeeds
+  for (const service of services) {
+    try {
+      console.log(`   Trying ${service.name}...`);
+
+      const response = await fetch(service.url);
+
+      if (!response.ok) {
+        console.warn(`   ${service.name} returned ${response.status}`);
+        continue;
+      }
+
+      const data = await response.json();
+
+      if (data.error || data.status === 'fail') {
+        console.warn(`   ${service.name} error:`, data.message || data.reason);
+        continue;
+      }
+
+      const location = service.parser(data);
+      console.log(`✅ IP geolocation successful via ${service.name}:`, location);
+      return location;
+    } catch (error) {
+      console.warn(`   ${service.name} failed:`, error.message);
+      continue;
+    }
+  }
+
+  // All services failed
+  throw new Error('All IP geolocation services failed');
+}
 
 /**
  * Get user's current location
@@ -16,64 +96,120 @@ export async function getCurrentLocation() {
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
+    console.log('🌍 Attempting to get user location...');
+    console.log('   Browser:', navigator.userAgent.split(' ').slice(-2).join(' '));
+    console.log('   Protocol:', window.location.protocol);
+    console.log('   Is secure context:', window.isSecureContext);
 
-        console.log('📍 Got coordinates:', latitude, longitude);
+    // Try with balanced settings (works on most devices)
+    const defaultOptions = {
+      enableHighAccuracy: false,
+      timeout: 20000,
+      maximumAge: 0 // Don't use cached position to avoid stale data issues
+    };
 
-        try {
-          // Try to reverse geocode to get address
-          const location = await reverseGeocode(latitude, longitude);
+    // Fallback to high accuracy with longer timeout if first attempt fails
+    const highAccuracyOptions = {
+      enableHighAccuracy: true,
+      timeout: 30000,
+      maximumAge: 0
+    };
 
-          console.log('✅ Reverse geocoding successful:', location);
+    const attemptGeolocation = (options, isRetry = false) => {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
 
-          resolve({
-            ...location,
-            accuracy: position.coords.accuracy
-          });
-        } catch (error) {
-          console.warn('⚠️ Reverse geocoding failed, using coordinates only:', error.message);
+          console.log(`📍 Got coordinates (${options.enableHighAccuracy ? 'high' : 'low'} accuracy):`, latitude, longitude, `±${position.coords.accuracy}m`);
 
-          // If reverse geocoding fails (e.g., API rate limit), return coordinates only
-          // The weather API can still work with lat,lon coordinates
-          const fallbackLocation = {
-            address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
-            latitude: latitude,
-            longitude: longitude,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            accuracy: position.coords.accuracy
+          try {
+            // Try to reverse geocode to get address
+            const location = await reverseGeocode(latitude, longitude);
+
+            console.log('✅ Reverse geocoding successful:', location);
+
+            resolve({
+              ...location,
+              accuracy: position.coords.accuracy
+            });
+          } catch (error) {
+            console.warn('⚠️ Reverse geocoding failed, using coordinates only:', error.message);
+
+            // If reverse geocoding fails (e.g., API rate limit), return coordinates only
+            // The weather API can still work with lat,lon coordinates
+            const fallbackLocation = {
+              address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+              latitude: latitude,
+              longitude: longitude,
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              accuracy: position.coords.accuracy
+            };
+
+            console.log('📍 Using fallback location:', fallbackLocation);
+            resolve(fallbackLocation);
+          }
+        },
+        (error) => {
+          console.error(`❌ Geolocation error (${options.enableHighAccuracy ? 'high' : 'low'} accuracy):`);
+          console.error('   Error code:', error.code);
+          console.error('   Error message:', error.message);
+          console.error('   Full error:', error);
+
+          // Error codes: 1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT
+          const errorCodes = {
+            1: 'PERMISSION_DENIED',
+            2: 'POSITION_UNAVAILABLE',
+            3: 'TIMEOUT'
           };
+          console.error('   Error type:', errorCodes[error.code] || 'UNKNOWN');
 
-          console.log('📍 Using fallback location:', fallbackLocation);
-          resolve(fallbackLocation);
-        }
-      },
-      (error) => {
-        let errorMessage = 'Unable to retrieve your location';
+          // If low accuracy failed and we haven't tried high accuracy yet, try that
+          if (!isRetry && !options.enableHighAccuracy) {
+            console.log('🔄 Retrying with high accuracy (GPS)...');
+            attemptGeolocation(highAccuracyOptions, true);
+            return;
+          }
 
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage = 'Location permission denied';
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Location information unavailable';
-            break;
-          case error.TIMEOUT:
-            errorMessage = 'Location request timed out';
-            break;
-          default:
-            errorMessage = 'An unknown error occurred';
-        }
+          // Both browser geolocation attempts failed
+          // Try IP-based geolocation as a last resort
+          console.log('💡 Browser geolocation failed, trying IP-based location...');
 
-        reject(new Error(errorMessage));
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
+          getLocationFromIP()
+            .then(location => {
+              console.log('✅ Successfully got location via IP fallback');
+              resolve(location);
+            })
+            .catch(ipError => {
+              // All methods failed - return final error
+              console.error('❌ IP geolocation also failed:', ipError.message);
+
+              let errorMessage = 'Unable to retrieve your location';
+
+              switch (error.code) {
+                case 1: // PERMISSION_DENIED
+                  errorMessage = 'Location permission denied. Please allow location access in your browser settings.';
+                  break;
+                case 2: // POSITION_UNAVAILABLE
+                  errorMessage = 'Location unavailable. Please check System Settings → Privacy & Security → Location Services, ensure it\'s enabled and your browser has access. Or try entering a city name.';
+                  break;
+                case 3: // TIMEOUT
+                  errorMessage = 'Location request timed out. Please try again or enter a city name.';
+                  break;
+                default:
+                  errorMessage = 'Location detection failed. Please try entering a city name.';
+              }
+
+              console.error('   Final error message:', errorMessage);
+              reject(new Error(errorMessage));
+            });
+        },
+        options
+      );
+    };
+
+    // Start with default settings (balanced speed and compatibility)
+    console.log('📡 Starting geolocation with default settings...');
+    attemptGeolocation(defaultOptions);
   });
 }
 

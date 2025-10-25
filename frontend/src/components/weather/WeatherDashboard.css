@@ -13,7 +13,7 @@
 .dashboard-header {
   text-align: center;
   margin-bottom: 30px;
-  padding: 20px;
+  padding: 12px 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-radius: 12px;
@@ -21,21 +21,21 @@
 
 .dashboard-title {
   margin: 0;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .title-icon {
-  font-size: 40px;
+  font-size: 28px;
 }
 
 .dashboard-subtitle {
-  margin: 8px 0 0 0;
-  font-size: 16px;
+  margin: 4px 0 0 0;
+  font-size: 14px;
   opacity: 0.9;
 }
 
@@ -290,7 +290,7 @@
 }
 
 .current-temp {
-  font-size: 56px;
+  font-size: 76px;
   font-weight: 700;
   color: var(--text-primary) !important;
   line-height: 1;
@@ -340,8 +340,15 @@
   color: var(--text-secondary) !important;
 }
 
+.stat-label {
+  font-size: 11px;
+  color: var(--text-tertiary) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
 .current-footer {
-  text-align: center;
   padding-top: 12px;
   border-top: 1px solid var(--border-light);
 }
@@ -350,6 +357,8 @@
   font-size: 13px;
   color: var(--text-tertiary) !important;
   font-style: italic;
+  text-align: center;
+  display: block;
 }
 
 /* Chart Controls */
@@ -510,20 +519,20 @@
   }
 
   .dashboard-header {
-    padding: 16px;
+    padding: 10px 16px;
     margin-bottom: 20px;
   }
 
   .dashboard-title {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .title-icon {
-    font-size: 32px;
+    font-size: 24px;
   }
 
   .dashboard-subtitle {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   /* Stack city box and controls vertically on mobile */
@@ -560,7 +569,7 @@
   }
 
   .current-temp {
-    font-size: 48px;
+    font-size: 64px;
   }
 
   .current-stats {

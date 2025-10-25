@@ -27,6 +27,7 @@ import ThisDayInHistoryCard from '../cards/ThisDayInHistoryCard';
 import AirQualityCard from '../cards/AirQualityCard';
 import WeatherAlertsBanner from './WeatherAlertsBanner';
 import LocationSearchBar from '../location/LocationSearchBar';
+import RadarMap from './RadarMap';
 import './WeatherDashboard.css';
 
 /**
@@ -181,16 +182,26 @@ function WeatherDashboard() {
       {/* Data Display */}
       {!loading && !error && data && (
         <>
+          {/* Debug logging */}
+          {console.log('🔍 Location debug:', {
+            'data.location': data.location,
+            'locationData': locationData,
+            'location string': location,
+            'Final display': data.location?.address || locationData?.address || location || 'Unknown Location'
+          })}
+
           {/* City Box and Lookup Controls - Side by Side */}
           <div className="dashboard-main-row">
             {/* Location Info with Current Conditions - 75% */}
             <div className="location-info">
               {/* Header: City name left, Coords/Timezone right */}
               <div className="location-header">
-                <h2 className="location-name">{data.location?.address || location}</h2>
+                <h2 className="location-name">
+                  {data.location?.address || locationData?.address || location || 'Unknown Location'}
+                </h2>
                 <p className="location-coords">
-                  {data.location?.latitude?.toFixed(4)}, {data.location?.longitude?.toFixed(4)}
-                  {data.location?.timezone && ` • ${data.location.timezone}`}
+                  {data.location?.latitude?.toFixed(4) || locationData?.latitude?.toFixed(4)}, {data.location?.longitude?.toFixed(4) || locationData?.longitude?.toFixed(4)}
+                  {(data.location?.timezone || locationData?.timezone) && ` • ${data.location?.timezone || locationData?.timezone}`}
                 </p>
               </div>
 
@@ -213,23 +224,34 @@ function WeatherDashboard() {
                     <div className="current-stat">
                       <span className="stat-icon">💨</span>
                       <span className="stat-value">{Math.round(currentWeather.data.current.windSpeed)} mph</span>
+                      <span className="stat-label">Wind</span>
                     </div>
                     <div className="current-stat">
                       <span className="stat-icon">💧</span>
                       <span className="stat-value">{currentWeather.data.current.humidity}%</span>
+                      <span className="stat-label">Humidity</span>
                     </div>
                     <div className="current-stat">
                       <span className="stat-icon">👁️</span>
                       <span className="stat-value">{currentWeather.data.current.visibility} mi</span>
+                      <span className="stat-label">Visibility</span>
                     </div>
                     <div className="current-stat">
                       <span className="stat-icon">☁️</span>
                       <span className="stat-value">{currentWeather.data.current.cloudCover}%</span>
+                      <span className="stat-label">Clouds</span>
                     </div>
                   </div>
 
                   <div className="current-footer">
-                    <span className="radar-placeholder">📡 Radar map coming soon</span>
+                    {data.location && (
+                      <RadarMap
+                        latitude={data.location.latitude}
+                        longitude={data.location.longitude}
+                        zoom={8}
+                        height={250}
+                      />
+                    )}
                   </div>
                 </div>
               )}
@@ -237,7 +259,7 @@ function WeatherDashboard() {
 
           {/* Lookup Controls - 25% */}
           <div className="dashboard-controls">
-            <h3 className="controls-title">Controls</h3>
+            <h3 className="controls-title">Location</h3>
 
             <div className="location-search-section">
               <LocationSearchBar
