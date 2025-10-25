@@ -4,10 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Meteo App is a weather application with a three-tier architecture:
+Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather application focused on historical climate data, year-round weather patterns, and detailed visualizations.
+
+**Key Features:**
+- Historical weather data and climate patterns
+- Interactive charts and visualizations (temperature, precipitation, wind, etc.)
+- City comparison functionality
+- Monthly, daily, and hourly weather views
+- 10-year historical data analysis
+- User accounts with favorite locations
+- Customizable units (temperature, wind speed)
+
+**Architecture:**
 - **Frontend**: React-based web application (Create React App)
 - **Backend**: Node.js/Express REST API server
 - **Database**: MySQL 8.0
+- **Data Sources**: OpenWeather API + Visual Crossing 10-year Timeline API
 
 The application is containerized using Docker Compose for consistent development and deployment.
 
@@ -111,6 +123,30 @@ MySQL 8.0 running in Docker container:
 When connecting from backend container, use `DB_HOST=mysql` (Docker network hostname).
 When connecting locally, use `DB_HOST=localhost` and `DB_PORT=3307`.
 
+### Database Schema
+
+The database stores weather data, locations, climate statistics, and user preferences:
+
+**Core Tables:**
+- `locations` - Cities with coordinates, timezone, elevation
+- `weather_data` - Historical and current weather observations (daily/hourly)
+- `climate_stats` - Monthly climate averages and records
+- `users` - User accounts with preferences (temp units, language, etc.)
+- `user_favorites` - User's saved favorite locations
+- `api_cache` - Cached API responses to reduce external API calls
+
+**Schema Files:**
+- `database/schema.sql` - Complete database schema
+- `database/seed.sql` - Sample location data for testing
+- `backend/config/database.js` - Database connection and initialization
+
+**Initialize Database:**
+```javascript
+const { initializeDatabase, seedDatabase } = require('./backend/config/database');
+await initializeDatabase();  // Create tables
+await seedDatabase();        // Add sample data
+```
+
 ## Key Dependencies
 
 ### Backend
@@ -132,6 +168,37 @@ All services communicate via the `meteo-network` Docker bridge network:
 - Frontend → Backend: HTTP requests to `backend:5001` (container) or `localhost:5001` (local)
 - Backend → MySQL: Connects to `mysql:3306` via Docker network
 - Backend → External APIs: OpenWeather and Visual Crossing weather APIs
+
+## Weather API Integration
+
+### OpenWeather API
+- **Purpose**: Current weather, forecasts, and recent historical data
+- **Endpoint**: https://openweathermap.org/api
+- **Key ENV Variable**: `OPENWEATHER_API_KEY`
+- **Use Cases**: Real-time weather, 5-day forecasts, air quality
+
+### Visual Crossing Weather API
+- **Purpose**: Historical weather data (10+ years)
+- **Endpoint**: https://www.visualcrossing.com/weather-api
+- **Key ENV Variable**: `VISUAL_CROSSING_API_KEY`
+- **Use Cases**: Historical climate data, long-term trends, monthly averages
+- **API Type**: Timeline Weather API (provides historical and forecast data)
+
+### API Response Caching
+Weather data is cached in the `api_cache` table to:
+- Reduce external API calls (cost savings)
+- Improve response times
+- Handle API rate limits
+- Store historical data permanently
+
+## Data Visualization Strategy
+
+Following Weather Spark's approach:
+- **Interactive Charts**: Temperature ranges, precipitation, wind patterns
+- **Color-coded Temperature Bands**: frigid → cold → cool → comfortable → warm → hot → sweltering
+- **Multiple Time Scales**: Hourly, daily, monthly, yearly views
+- **Comparative Analysis**: Side-by-side city comparisons
+- **Climate Categories**: Comfortable days, precipitation probability, cloud cover percentages
 
 ## Testing
 

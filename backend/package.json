@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "db:init": "node scripts/init-db.js",
+    "db:schema": "mysql -h ${DB_HOST:-localhost} -P ${DB_PORT:-3307} -u ${DB_USER:-root} -p${DB_PASSWORD} ${DB_NAME} < ../database/schema.sql",
+    "db:seed": "mysql -h ${DB_HOST:-localhost} -P ${DB_PORT:-3307} -u ${DB_USER:-root} -p${DB_PASSWORD} ${DB_NAME} < ../database/seed.sql",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
