@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: meteo-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: meteo_root_pass
+      MYSQL_DATABASE: meteo_app
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - meteo-network
+
+  backend:
+    build: ./backend
+    container_name: meteo-backend
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - mysql
+    networks:
+      - meteo-network
+
+  frontend:
+    build: ./frontend
+    container_name: meteo-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - meteo-network
+
+volumes:
+  mysql_data:
+
+networks:
+  meteo-network:
+    driver: bridge
