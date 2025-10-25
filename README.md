@@ -63,6 +63,14 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **User Preferences** - Save default temperature units, forecast days, and theme
 - **Profile Management** - Tab-based interface for profile, preferences, and security settings
 
+### 🎨 Theme System
+
+- **Light Mode** - Clean, bright interface for daytime use
+- **Dark Mode** - Easy on the eyes for low-light environments
+- **Auto Mode** - Automatically follows system preferences
+- **Smart Persistence** - Theme saved to cloud for logged-in users, localStorage for guests
+- **Real-time Sync** - Theme preference syncs across all devices for authenticated users
+
 ### ⚙️ Customization
 
 - **Chart Visibility Controls** - Show/hide individual charts
@@ -75,10 +83,10 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React** - UI framework with Context API for state management
+- **React** - UI framework with Context API for state management (AuthContext, ThemeContext)
 - **Recharts** - Data visualization library
-- **CSS3** - Custom styling with gradient designs
-- **localStorage** - Client-side favorites storage (with cloud sync)
+- **CSS3** - Custom styling with CSS variables for theming and gradient designs
+- **localStorage** - Client-side favorites and theme storage (with cloud sync)
 
 ### Backend
 - **Node.js** - Runtime environment
@@ -118,6 +126,10 @@ DB_USER=weather_user
 DB_PASSWORD=secure_password
 DB_NAME=weather_db
 PORT=5001
+JWT_SECRET=your_secret_key_here_change_in_production
+JWT_REFRESH_SECRET=your_refresh_secret_key_here_change_in_production
+JWT_EXPIRES_IN=24h
+JWT_REFRESH_EXPIRES_IN=7d
 ```
 
 #### 3. Start the application
@@ -328,6 +340,8 @@ meteo-app/
 │   │   │   │   ├── AuthHeader.jsx
 │   │   │   │   ├── AuthModal.jsx
 │   │   │   │   └── UserProfileModal.jsx
+│   │   │   ├── theme/               # Theme components
+│   │   │   │   └── ThemeToggle.jsx
 │   │   │   ├── location/            # Location management
 │   │   │   │   ├── LocationSearchBar.jsx
 │   │   │   │   ├── FavoritesPanel.jsx
@@ -335,7 +349,10 @@ meteo-app/
 │   │   │   └── weather/             # Main dashboard
 │   │   │       └── WeatherDashboard.jsx
 │   │   ├── contexts/                # React Context providers
-│   │   │   └── AuthContext.js
+│   │   │   ├── AuthContext.js
+│   │   │   └── ThemeContext.js
+│   │   ├── styles/                  # Global styles
+│   │   │   └── themes.css
 │   │   ├── hooks/                   # Custom React hooks
 │   │   │   ├── useWeatherData.js
 │   │   │   └── useClimateData.js
@@ -468,7 +485,8 @@ MIT License - feel free to use this project for learning and development.
 
 ## 🗺️ Future Roadmap
 
-- [ ] User authentication and cloud-based favorites
+- [x] User authentication and cloud-based favorites ✅
+- [x] Light/dark theme system ✅
 - [ ] Weather alerts and notifications
 - [ ] Extended historical data (20+ years)
 - [ ] Seasonal climate analysis

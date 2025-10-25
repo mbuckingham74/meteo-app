@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   changePassword,
@@ -43,20 +43,20 @@ function UserProfileModal({ isOpen, onClose }) {
     }
   }, [user]);
 
-  useEffect(() => {
-    if (isOpen && accessToken) {
-      loadPreferences();
-    }
-  }, [isOpen, accessToken]);
-
-  const loadPreferences = async () => {
+  const loadPreferences = useCallback(async () => {
     try {
       const prefs = await getUserPreferences(accessToken);
       setPreferences(prefs);
     } catch (error) {
       console.error('Failed to load preferences:', error);
     }
-  };
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (isOpen && accessToken) {
+      loadPreferences();
+    }
+  }, [isOpen, accessToken, loadPreferences]);
 
   if (!isOpen) return null;
 

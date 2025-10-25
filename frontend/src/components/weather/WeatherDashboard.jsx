@@ -7,7 +7,6 @@ import {
   useTemperatureProbability
 } from '../../hooks/useClimateData';
 import { getCurrentLocation } from '../../services/geolocationService';
-import { addFavorite, isFavorite } from '../../services/favoritesService';
 import TemperatureBandChart from '../charts/TemperatureBandChart';
 import PrecipitationChart from '../charts/PrecipitationChart';
 import WindChart from '../charts/WindChart';
@@ -93,14 +92,16 @@ function WeatherDashboard() {
   };
 
   // Handle adding current location to favorites
-  const handleToggleFavorite = () => {
-    if (locationData) {
-      const favorited = isFavorite(locationData.latitude, locationData.longitude);
-      if (!favorited) {
-        addFavorite(locationData);
-      }
-    }
-  };
+  // Note: Currently unused - favorites are managed through FavoritesPanel
+  // Keeping for potential future use (quick-add button in dashboard)
+  // const handleToggleFavorite = () => {
+  //   if (locationData) {
+  //     const favorited = isFavorite(locationData.latitude, locationData.longitude);
+  //     if (!favorited) {
+  //       addFavorite(locationData);
+  //     }
+  //   }
+  // };
 
   // Toggle chart visibility
   const toggleChart = (chartName) => {

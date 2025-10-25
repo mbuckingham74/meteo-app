@@ -108,8 +108,6 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
     }
   };
 
-  const displayResults = query.length >= 2 ? results : popularLocations;
-
   return (
     <div className="location-search-bar" ref={searchRef}>
       <div className="search-input-wrapper">

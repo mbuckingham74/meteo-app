@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getFavorites as getLocalFavorites,
   removeFavorite as removeLocalFavorite,
-  isFavorite as isLocalFavorite,
   addFavorite as addLocalFavorite,
   clearFavorites as clearLocalFavorites
 } from '../../services/favoritesService';
@@ -27,19 +26,7 @@ function FavoritesPanel({ onLocationSelect, currentLocation }) {
   const [syncing, setSyncing] = useState(false);
   const [migrated, setMigrated] = useState(false);
 
-  // Load favorites on mount and when auth changes
-  useEffect(() => {
-    refreshFavorites();
-  }, [isAuthenticated, accessToken]);
-
-  // Auto-migrate localStorage favorites to cloud when user logs in
-  useEffect(() => {
-    if (isAuthenticated && accessToken && !migrated) {
-      migrateToCloud();
-    }
-  }, [isAuthenticated, accessToken]);
-
-  const refreshFavorites = async () => {
+  const refreshFavorites = useCallback(async () => {
     if (isAuthenticated && accessToken) {
       // Load from cloud
       try {
@@ -54,9 +41,9 @@ function FavoritesPanel({ onLocationSelect, currentLocation }) {
       // Load from localStorage
       setFavorites(getLocalFavorites());
     }
-  };
+  }, [isAuthenticated, accessToken]);
 
-  const migrateToCloud = async () => {
+  const migrateToCloud = useCallback(async () => {
     setSyncing(true);
     try {
       const localFavs = getLocalFavorites();
@@ -86,7 +73,19 @@ function FavoritesPanel({ onLocationSelect, currentLocation }) {
     } finally {
       setSyncing(false);
     }
-  };
+  }, [accessToken, refreshFavorites]);
+
+  // Load favorites on mount and when auth changes
+  useEffect(() => {
+    refreshFavorites();
+  }, [refreshFavorites]);
+
+  // Auto-migrate localStorage favorites to cloud when user logs in
+  useEffect(() => {
+    if (isAuthenticated && accessToken && !migrated) {
+      migrateToCloud();
+    }
+  }, [isAuthenticated, accessToken, migrated, migrateToCloud]);
 
   const handleRemove = async (favorite, e) => {
     e.stopPropagation();
