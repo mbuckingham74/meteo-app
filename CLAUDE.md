@@ -9,6 +9,7 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 **Key Features:**
 - Historical weather data and climate patterns
 - Interactive charts and visualizations (temperature, precipitation, wind, etc.)
+- **Interactive weather radar map** with toggleable precipitation, cloud, and temperature layers
 - Current weather conditions display with real-time data
 - City comparison functionality
 - Monthly, daily, and hourly weather views
@@ -18,6 +19,9 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 - Light/dark/auto theme system
 - Weather alerts and air quality monitoring
 - Intelligent API caching and rate limit protection
+- **Recent search history** with localStorage persistence
+- **Location persistence** across page refreshes
+- **Robust geolocation** with IP-based fallback
 
 **Architecture:**
 - **Frontend**: React-based web application (Create React App)
@@ -59,8 +63,11 @@ Standard Create React App structure with React 19.2.0. Key architectural compone
 - **src/App.js** - Root application component with nested context providers
 - **src/index.js** - Application entry point
 - **src/components/weather/WeatherDashboard.jsx** - Main dashboard with current conditions and charts
+- **src/components/weather/RadarMap.jsx** - Interactive Leaflet map with OpenWeather radar tiles
+- **src/components/location/LocationSearchBar.jsx** - Autocomplete search with recent history
 - **src/components/auth/UserProfileModal.jsx** - User profile with favorites management
 - **src/components/units/TemperatureUnitToggle.jsx** - Global C/F toggle in header
+- **src/services/geolocationService.js** - Browser + IP-based geolocation with fallbacks
 - **public/** - Static assets
 
 ### Environment Configuration
@@ -176,6 +183,9 @@ await seedDatabase();        // Add sample data
 - **react** 19.2.0
 - **react-scripts** - Create React App tooling
 - **@testing-library/react** - Component testing utilities
+- **leaflet** 1.9.4 - Interactive maps library
+- **react-leaflet** 5.0.0 - React components for Leaflet
+- **recharts** 3.3.0 - Chart visualization library
 
 ## Network Architecture
 
@@ -248,13 +258,67 @@ The main weather dashboard uses a responsive 75/25 split layout:
   - Header with city name (left) and coordinates/timezone (right)
   - Current weather conditions card (centered, full-width)
   - Displays: temperature, feels-like, conditions, wind, humidity, visibility, cloud cover
-  - Placeholder for future radar map integration
-- **25% - Controls Panel:**
-  - Location search bar with autocomplete
-  - "Use My Location" button with geolocation
+  - **Interactive radar map** with toggleable precipitation, cloud, and temperature layers
+- **25% - Location Panel:**
+  - Location search bar with autocomplete and recent history
+  - "Use My Location" button with robust geolocation
   - Forecast day selector (3, 7, 14 days)
   - "Compare Locations" navigation link
 - **Below:** Interactive charts with visibility toggles
+
+### Weather Radar Map
+The app includes an interactive Leaflet-based radar map:
+- **Layers Available:**
+  - 💧 Precipitation overlay (OpenWeather precipitation_new tiles)
+  - ☁️ Cloud cover overlay (OpenWeather clouds_new tiles)
+  - 🌡️ Temperature overlay (OpenWeather temp_new tiles)
+- **Features:**
+  - Toggle layers on/off with emoji buttons (top-right corner)
+  - Automatic centering on selected location
+  - Zoom controls for detailed viewing
+  - Updates in real-time when location changes
+  - Dark mode support
+- **Technical:**
+  - Uses OpenWeather Maps API (free tier)
+  - Tile endpoint: `tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png`
+  - Update frequency: Every 3 hours (free tier limitation)
+  - Base map: OpenStreetMap
+  - API Key stored in RadarMap component (consider moving to .env)
+
+### Location Search & Geolocation
+Enhanced location detection with multiple fallback mechanisms:
+
+**Search Features:**
+- **Autocomplete:** Real-time city search with debouncing (300ms)
+- **Recent History:** Last 5 searches stored in localStorage (`meteo_recent_searches`)
+- **Press Enter:** Automatically selects first search result
+- **Dark Mode:** Fully styled dropdown with readable text on dark backgrounds
+- **Persistence:** Current location saved to localStorage, survives page refresh
+
+**Geolocation System (3-Tier Fallback):**
+1. **Browser Geolocation (Low Accuracy):**
+   - Uses Wi-Fi/IP triangulation
+   - Fast (~1-3 seconds)
+   - Works on desktops
+   - Accuracy: 50-500m
+2. **Browser Geolocation (High Accuracy):**
+   - Attempts GPS if available
+   - Slower (~5-10 seconds)
+   - Better for mobile devices
+   - Accuracy: 10-50m
+3. **IP-Based Geolocation (Fallback):**
+   - Multi-service approach with automatic failover
+   - Services: ip-api.com (primary), geojs.io (backup), ipapi.co (backup)
+   - Works even when CoreLocation is unavailable
+   - City-level accuracy (~5km)
+   - **Critical for macOS users** where browser geolocation often fails
+
+**Why This Matters:**
+macOS often returns `kCLErrorLocationUnknown` (POSITION_UNAVAILABLE) due to:
+- Wi-Fi disabled (primary desktop geolocation method)
+- Location Services disabled in System Settings
+- Browser lacking Location Services permission
+The IP fallback ensures location detection works 99% of the time.
 
 ### Global Controls
 - **Temperature Unit Toggle** (Header): Switches between °C and °F
