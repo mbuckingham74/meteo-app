@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { withCache, CACHE_TTL } = require('./cacheService');
 
 /**
  * Open-Meteo Air Quality API Service
@@ -15,46 +16,61 @@ const AIR_QUALITY_API_URL = 'https://air-quality-api.open-meteo.com/v1/air-quali
  * @returns {Promise<object>} Air quality data
  */
 async function getAirQuality(latitude, longitude, days = 5) {
-  try {
-    // Validate inputs
-    if (!latitude || !longitude) {
-      throw new Error('Latitude and longitude are required');
-    }
-
-    // Build API URL with parameters
-    const params = new URLSearchParams({
-      latitude: latitude.toString(),
-      longitude: longitude.toString(),
-      hourly: 'pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,aerosol_optical_depth,dust,uv_index,uv_index_clear_sky',
-      current: 'european_aqi,us_aqi,pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,dust',
-      forecast_days: Math.min(days, 5).toString(),
-      timezone: 'auto'
-    });
-
-    const url = `${AIR_QUALITY_API_URL}?${params.toString()}`;
-
-    // Make API request
-    const response = await axios.get(url, {
-      timeout: 10000,
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
-
-    // Process and return data
-    return {
-      success: true,
-      data: processAirQualityData(response.data)
-    };
-  } catch (error) {
-    console.error('Open-Meteo Air Quality API Error:', error.message);
-
+  // Validate inputs
+  if (!latitude || !longitude) {
     return {
       success: false,
-      error: error.response?.data?.reason || error.message || 'Failed to fetch air quality data',
-      statusCode: error.response?.status || 500
+      error: 'Latitude and longitude are required',
+      statusCode: 400
     };
   }
+
+  // Round coordinates to 2 decimal places for better cache hits
+  const lat = Math.round(latitude * 100) / 100;
+  const lon = Math.round(longitude * 100) / 100;
+
+  return withCache(
+    'open_meteo',
+    { endpoint: 'air_quality', lat, lon, days },
+    async () => {
+      try {
+        // Build API URL with parameters
+        const params = new URLSearchParams({
+          latitude: latitude.toString(),
+          longitude: longitude.toString(),
+          hourly: 'pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,aerosol_optical_depth,dust,uv_index,uv_index_clear_sky',
+          current: 'european_aqi,us_aqi,pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,dust',
+          forecast_days: Math.min(days, 5).toString(),
+          timezone: 'auto'
+        });
+
+        const url = `${AIR_QUALITY_API_URL}?${params.toString()}`;
+
+        // Make API request
+        const response = await axios.get(url, {
+          timeout: 10000,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        // Process and return data
+        return {
+          success: true,
+          data: processAirQualityData(response.data)
+        };
+      } catch (error) {
+        console.error('Open-Meteo Air Quality API Error:', error.message);
+
+        return {
+          success: false,
+          error: error.response?.data?.reason || error.message || 'Failed to fetch air quality data',
+          statusCode: error.response?.status || 500
+        };
+      }
+    },
+    CACHE_TTL.AIR_QUALITY
+  );
 }
 
 /**

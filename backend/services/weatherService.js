@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { withCache, CACHE_TTL } = require('./cacheService');
 
 /**
  * Visual Crossing Weather API Service
@@ -136,45 +137,52 @@ async function testApiConnection() {
  * @returns {Promise<object>} Current weather data
  */
 async function getCurrentWeather(location) {
-  const url = buildApiUrl(location, '', '', {
-    include: 'current'
-  });
+  return withCache(
+    'visual_crossing',
+    { endpoint: 'current', location },
+    async () => {
+      const url = buildApiUrl(location, '', '', {
+        include: 'current'
+      });
 
-  const result = await makeApiRequest(url);
+      const result = await makeApiRequest(url);
 
-  if (!result.success) {
-    return result;
-  }
+      if (!result.success) {
+        return result;
+      }
 
-  const data = result.data;
-  const current = data.currentConditions;
+      const data = result.data;
+      const current = data.currentConditions;
 
-  return {
-    success: true,
-    location: {
-      address: data.resolvedAddress,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      timezone: data.timezone
+      return {
+        success: true,
+        location: {
+          address: data.resolvedAddress,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          timezone: data.timezone
+        },
+        current: {
+          datetime: current.datetime,
+          temperature: current.temp,
+          feelsLike: current.feelslike,
+          humidity: current.humidity,
+          precipitation: current.precip,
+          snow: current.snow,
+          windSpeed: current.windspeed,
+          windDirection: current.winddir,
+          pressure: current.pressure,
+          cloudCover: current.cloudcover,
+          visibility: current.visibility,
+          uvIndex: current.uvindex,
+          conditions: current.conditions,
+          icon: current.icon
+        },
+        queryCost: result.queryCost
+      };
     },
-    current: {
-      datetime: current.datetime,
-      temperature: current.temp,
-      feelsLike: current.feelslike,
-      humidity: current.humidity,
-      precipitation: current.precip,
-      snow: current.snow,
-      windSpeed: current.windspeed,
-      windDirection: current.winddir,
-      pressure: current.pressure,
-      cloudCover: current.cloudcover,
-      visibility: current.visibility,
-      uvIndex: current.uvindex,
-      conditions: current.conditions,
-      icon: current.icon
-    },
-    queryCost: result.queryCost
-  };
+    CACHE_TTL.CURRENT_WEATHER
+  );
 }
 
 /**
@@ -185,57 +193,64 @@ async function getCurrentWeather(location) {
  */
 async function getForecast(location, days = 7) {
   const today = new Date();
-  const endDate = new Date(today);
-  endDate.setDate(today.getDate() + Math.min(days, 15));
-
   const startDateStr = today.toISOString().split('T')[0];
-  const endDateStr = endDate.toISOString().split('T')[0];
 
-  const url = buildApiUrl(location, startDateStr, endDateStr, {
-    include: 'days'
-  });
+  return withCache(
+    'visual_crossing',
+    { endpoint: 'forecast', location, days, date: startDateStr },
+    async () => {
+      const endDate = new Date(today);
+      endDate.setDate(today.getDate() + Math.min(days, 15));
+      const endDateStr = endDate.toISOString().split('T')[0];
 
-  const result = await makeApiRequest(url);
+      const url = buildApiUrl(location, startDateStr, endDateStr, {
+        include: 'days'
+      });
 
-  if (!result.success) {
-    return result;
-  }
+      const result = await makeApiRequest(url);
 
-  const data = result.data;
+      if (!result.success) {
+        return result;
+      }
 
-  return {
-    success: true,
-    location: {
-      address: data.resolvedAddress,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      timezone: data.timezone
+      const data = result.data;
+
+      return {
+        success: true,
+        location: {
+          address: data.resolvedAddress,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          timezone: data.timezone
+        },
+        forecast: data.days.map(day => ({
+          date: day.datetime,
+          tempMax: day.tempmax,
+          tempMin: day.tempmin,
+          tempAvg: day.temp,
+          feelsLike: day.feelslike,
+          humidity: day.humidity,
+          precipitation: day.precip,
+          precipProbability: day.precipprob,
+          snow: day.snow,
+          snowDepth: day.snowdepth,
+          windSpeed: day.windspeed,
+          windDirection: day.winddir,
+          pressure: day.pressure,
+          cloudCover: day.cloudcover,
+          visibility: day.visibility,
+          uvIndex: day.uvindex,
+          sunrise: day.sunrise,
+          sunset: day.sunset,
+          conditions: day.conditions,
+          description: day.description,
+          icon: day.icon
+        })),
+        queryCost: result.queryCost
+      };
     },
-    forecast: data.days.map(day => ({
-      date: day.datetime,
-      tempMax: day.tempmax,
-      tempMin: day.tempmin,
-      tempAvg: day.temp,
-      feelsLike: day.feelslike,
-      humidity: day.humidity,
-      precipitation: day.precip,
-      precipProbability: day.precipprob,
-      snow: day.snow,
-      snowDepth: day.snowdepth,
-      windSpeed: day.windspeed,
-      windDirection: day.winddir,
-      pressure: day.pressure,
-      cloudCover: day.cloudcover,
-      visibility: day.visibility,
-      uvIndex: day.uvindex,
-      sunrise: day.sunrise,
-      sunset: day.sunset,
-      conditions: day.conditions,
-      description: day.description,
-      icon: day.icon
-    })),
-    queryCost: result.queryCost
-  };
+    CACHE_TTL.FORECAST
+  );
 }
 
 /**

@@ -9,6 +9,7 @@ const locationRoutes = require('./routes/locations');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const airQualityRoutes = require('./routes/airQuality');
+const cacheRoutes = require('./routes/cache');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -47,6 +48,7 @@ app.use('/api/locations', locationRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/air-quality', airQualityRoutes);
+app.use('/api/cache', cacheRoutes);
 
 // 404 handler
 app.use((req, res) => {

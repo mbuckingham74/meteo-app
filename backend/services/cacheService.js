@@ -3,8 +3,19 @@ const crypto = require('crypto');
 
 /**
  * API Response Cache Service
- * Caches Visual Crossing API responses to reduce costs and improve performance
+ * Caches API responses to reduce costs and improve performance
  */
+
+/**
+ * Cache TTL (Time To Live) in minutes
+ */
+const CACHE_TTL = {
+  CURRENT_WEATHER: 15,      // 15 minutes
+  FORECAST: 120,            // 2 hours
+  HISTORICAL: 1440,         // 24 hours
+  AIR_QUALITY: 30,          // 30 minutes
+  CLIMATE_STATS: 10080      // 7 days
+};
 
 /**
  * Generate cache key from request parameters
@@ -186,6 +197,15 @@ async function withCache(apiSource, params, apiFunction, ttlMinutes = 60, locati
   };
 }
 
+// Schedule automatic cleanup of expired cache entries every hour
+setInterval(() => {
+  clearExpiredCache().then(count => {
+    if (count > 0) {
+      console.log(`🧹 Auto cleanup: Removed ${count} expired cache entries`);
+    }
+  });
+}, 60 * 60 * 1000); // 1 hour
+
 module.exports = {
   generateCacheKey,
   getCachedResponse,
@@ -193,5 +213,6 @@ module.exports = {
   clearExpiredCache,
   clearLocationCache,
   getCacheStats,
-  withCache
+  withCache,
+  CACHE_TTL
 };
