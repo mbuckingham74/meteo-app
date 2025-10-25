@@ -23,6 +23,12 @@ services:
       - "5001:5001"
     environment:
       - NODE_ENV=development
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME:-meteo_app}
+      - VISUAL_CROSSING_API_KEY=${VISUAL_CROSSING_API_KEY}
     volumes:
       - ./backend:/app
       - /app/node_modules

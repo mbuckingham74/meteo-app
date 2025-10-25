@@ -171,18 +171,25 @@ All services communicate via the `meteo-network` Docker bridge network:
 
 ## Weather API Integration
 
-### OpenWeather API
-- **Purpose**: Current weather, forecasts, and recent historical data
-- **Endpoint**: https://openweathermap.org/api
-- **Key ENV Variable**: `OPENWEATHER_API_KEY`
-- **Use Cases**: Real-time weather, 5-day forecasts, air quality
-
 ### Visual Crossing Weather API
-- **Purpose**: Historical weather data (10+ years)
+This application uses **Visual Crossing Weather API exclusively** for all weather data needs.
+
+- **Purpose**: Historical weather data (10+ years), current conditions, and forecasts
 - **Endpoint**: https://www.visualcrossing.com/weather-api
 - **Key ENV Variable**: `VISUAL_CROSSING_API_KEY`
-- **Use Cases**: Historical climate data, long-term trends, monthly averages
-- **API Type**: Timeline Weather API (provides historical and forecast data)
+- **API Type**: Timeline Weather API
+- **Use Cases**:
+  - Historical climate data (10+ years)
+  - Long-term weather trends and patterns
+  - Monthly climate averages
+  - Current conditions
+  - Daily and hourly forecasts
+
+**Why Visual Crossing?**
+- Single API for all data needs (historical, current, forecast)
+- Comprehensive 10-year historical data
+- Detailed hourly and daily data
+- Cost-effective for proof-of-concept projects
 
 ### API Response Caching
 Weather data is cached in the `api_cache` table to:
