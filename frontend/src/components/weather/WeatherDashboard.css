@@ -398,6 +398,15 @@
 }
 
 @media (max-width: 768px) {
+  .weather-dashboard {
+    padding: 12px;
+  }
+
+  .dashboard-header {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
   .dashboard-title {
     font-size: 24px;
   }
@@ -406,12 +415,21 @@
     font-size: 32px;
   }
 
+  .dashboard-subtitle {
+    font-size: 14px;
+  }
+
   .dashboard-controls {
     flex-direction: column;
     align-items: stretch;
+    padding: 16px;
   }
 
   .location-form {
+    min-width: 100%;
+  }
+
+  .location-search-section {
     min-width: 100%;
   }
 
@@ -427,6 +445,27 @@
     width: 100%;
   }
 
+  .location-actions {
+    flex-direction: column;
+  }
+
+  .location-action-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .location-info {
+    padding: 16px;
+  }
+
+  .location-name {
+    font-size: 22px;
+  }
+
+  .chart-controls {
+    padding: 16px;
+  }
+
   .chart-controls-header {
     flex-direction: column;
     align-items: flex-start;
@@ -434,10 +473,54 @@
 
   .chart-toggles {
     gap: 12px;
+    width: 100%;
   }
 
   .chart-toggle {
     flex: 1 1 calc(50% - 6px);
     min-width: 140px;
+  }
+
+  .chart-card {
+    padding: 16px;
+  }
+
+  .charts-grid {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .weather-dashboard {
+    padding: 8px;
+  }
+
+  .dashboard-header {
+    padding: 12px;
+  }
+
+  .dashboard-title {
+    font-size: 20px;
+  }
+
+  .dashboard-controls {
+    padding: 12px;
+  }
+
+  .location-info {
+    padding: 12px;
+  }
+
+  .chart-controls {
+    padding: 12px;
+  }
+
+  .chart-card {
+    padding: 12px;
+  }
+
+  .chart-toggle {
+    flex: 1 1 100%;
+    min-width: 100%;
   }
 }

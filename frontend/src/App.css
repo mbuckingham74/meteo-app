@@ -1,6 +1,8 @@
 .App {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background var(--transition-normal), color var(--transition-normal);
 }
 
 * {
@@ -10,4 +12,27 @@
 body {
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+  .App {
+    padding-bottom: 20px;
+  }
+
+  /* Improve touch targets on mobile */
+  button,
+  a,
+  input[type="checkbox"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better text readability on mobile */
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
 }

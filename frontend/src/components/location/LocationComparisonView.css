@@ -333,6 +333,10 @@
 /* Responsive Design */
 
 @media (max-width: 768px) {
+  .location-comparison-view {
+    padding: 12px;
+  }
+
   .comparison-header {
     flex-direction: column;
     align-items: flex-start;
@@ -342,15 +346,69 @@
     font-size: 24px;
   }
 
+  .comparison-controls {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .unit-select,
+  .add-location-button {
+    width: 100%;
+  }
+
   .comparison-grid {
     grid-template-columns: 1fr;
+  }
+
+  .comparison-card {
+    padding: 16px;
   }
 
   .current-temp {
     font-size: 42px;
   }
 
+  .comparison-insights {
+    padding: 16px;
+  }
+
+  .comparison-insights h3 {
+    font-size: 18px;
+  }
+
   .insights-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .location-comparison-view {
+    padding: 8px;
+  }
+
+  .comparison-header h2 {
+    font-size: 20px;
+  }
+
+  .comparison-card {
+    padding: 12px;
+  }
+
+  .current-temp {
+    font-size: 36px;
+  }
+
+  .comparison-insights {
+    padding: 12px;
+  }
+
+  .insight-card {
+    padding: 12px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .insight-icon {
+    font-size: 28px;
   }
 }
