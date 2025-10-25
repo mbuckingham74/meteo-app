@@ -1,0 +1,113 @@
+import axios from 'axios';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+
+/**
+ * Weather API Service
+ * Communicates with the backend API
+ */
+
+/**
+ * Get current weather for a location
+ * @param {string} location - City name (e.g., "London,UK")
+ * @returns {Promise<Object>} Current weather data
+ */
+export async function getCurrentWeather(location) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/weather/current/${encodeURIComponent(location)}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching current weather:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get weather forecast
+ * @param {string} location - City name
+ * @param {number} days - Number of days (1-15)
+ * @returns {Promise<Object>} Forecast data
+ */
+export async function getWeatherForecast(location, days = 7) {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/weather/forecast/${encodeURIComponent(location)}?days=${days}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching forecast:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get historical weather data
+ * @param {string} location - City name
+ * @param {string} startDate - Start date (YYYY-MM-DD)
+ * @param {string} endDate - End date (YYYY-MM-DD)
+ * @returns {Promise<Object>} Historical weather data
+ */
+export async function getHistoricalWeather(location, startDate, endDate) {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/weather/historical/${encodeURIComponent(location)}`,
+      {
+        params: { start: startDate, end: endDate }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching historical weather:', error);
+    throw error;
+  }
+}
+
+/**
+ * Search for locations
+ * @param {string} query - Search query
+ * @param {number} limit - Max results
+ * @returns {Promise<Array>} Matching locations
+ */
+export async function searchLocations(query, limit = 10) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/locations/search`, {
+      params: { q: query, limit }
+    });
+    return response.data.locations || [];
+  } catch (error) {
+    console.error('Error searching locations:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get all locations
+ * @param {number} limit - Max results
+ * @param {number} offset - Offset for pagination
+ * @returns {Promise<Array>} Locations
+ */
+export async function getAllLocations(limit = 100, offset = 0) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/locations`, {
+      params: { limit, offset }
+    });
+    return response.data.locations || [];
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+    throw error;
+  }
+}
+
+/**
+ * Test API connection
+ * @returns {Promise<Object>} Connection status
+ */
+export async function testApiConnection() {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/weather/test`);
+    return response.data;
+  } catch (error) {
+    console.error('Error testing API:', error);
+    throw error;
+  }
+}
