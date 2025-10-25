@@ -6,6 +6,8 @@ const { testConnection } = require('./config/database');
 // Import routes
 const weatherRoutes = require('./routes/weather');
 const locationRoutes = require('./routes/locations');
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -41,6 +43,8 @@ app.get('/api/health', async (req, res) => {
 // API Routes
 app.use('/api/weather', weatherRoutes);
 app.use('/api/locations', locationRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 
 // 404 handler
 app.use((req, res) => {
