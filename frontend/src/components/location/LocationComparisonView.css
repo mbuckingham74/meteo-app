@@ -19,7 +19,7 @@
   margin: 0;
   font-size: 28px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .comparison-controls {
@@ -30,22 +30,24 @@
 
 .unit-select {
   padding: 8px 12px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--border-light, #e5e7eb);
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
+  background: var(--bg-primary, white);
+  color: var(--text-primary, #111827);
   cursor: pointer;
   outline: none;
   transition: border-color 0.2s;
 }
 
 .unit-select:focus {
-  border-color: #667eea;
+  border-color: var(--accent-primary, #667eea);
 }
 
 .add-location-button {
   padding: 8px 16px;
-  background: #667eea;
+  background: var(--accent-primary, #667eea);
   color: white;
   border: none;
   border-radius: 8px;
@@ -56,7 +58,7 @@
 }
 
 .add-location-button:hover {
-  background: #5568d3;
+  background: var(--accent-hover, #5568d3);
 }
 
 /* Comparison Grid */
@@ -69,11 +71,12 @@
 }
 
 .comparison-card {
-  background: white;
+  background: var(--bg-elevated, white);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md, 0 2px 8px rgba(0, 0, 0, 0.1));
   padding: 20px;
   transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid var(--border-light, transparent);
 }
 
 .comparison-card:hover {
@@ -104,7 +107,7 @@
 .remove-card-button {
   background: none;
   border: none;
-  color: #9ca3af;
+  color: var(--text-tertiary, #9ca3af);
   font-size: 20px;
   cursor: pointer;
   padding: 4px 8px;
@@ -112,7 +115,7 @@
 }
 
 .remove-card-button:hover {
-  color: #ef4444;
+  color: var(--error-text, #ef4444);
 }
 
 .card-search {
@@ -129,16 +132,17 @@
   margin: 0 0 16px 0;
   font-size: 18px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary, #111827);
   text-align: center;
 }
 
 .current-weather {
   text-align: center;
   padding: 20px;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  background: var(--bg-tertiary, linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%));
   border-radius: 12px;
   margin-bottom: 16px;
+  border: 1px solid var(--border-light, transparent);
 }
 
 .temp-display {
@@ -151,13 +155,13 @@
 .current-temp {
   font-size: 48px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary, #111827) !important;
   line-height: 1;
 }
 
 .temp-label {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-tertiary, #6b7280);
   text-transform: uppercase;
   margin-top: 4px;
 }
@@ -196,19 +200,20 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  background: #f9fafb;
+  background: var(--bg-primary, #f9fafb);
   border-radius: 8px;
+  border: 1px solid var(--border-light, transparent);
 }
 
 .summary-label {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
   font-weight: 500;
 }
 
 .summary-value {
   font-size: 14px;
-  color: #111827;
+  color: var(--text-primary, #111827) !important;
   font-weight: 600;
 }
 
@@ -250,23 +255,24 @@
 .card-error p {
   margin: 0;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
 }
 
 /* Comparison Insights */
 
 .comparison-insights {
-  background: white;
+  background: var(--bg-elevated, white);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md, 0 2px 8px rgba(0, 0, 0, 0.1));
   padding: 24px;
+  border: 1px solid var(--border-light, transparent);
 }
 
 .comparison-insights h3 {
   margin: 0 0 20px 0;
   font-size: 20px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .insights-grid {
@@ -312,7 +318,7 @@
 .insight-label {
   margin: 0 0 4px 0;
   font-size: 11px;
-  color: #6b7280;
+  color: var(--text-tertiary, #6b7280);
   text-transform: uppercase;
   font-weight: 600;
 }
@@ -321,13 +327,13 @@
   margin: 0 0 2px 0;
   font-size: 16px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary, #111827) !important;
 }
 
 .insight-detail {
   margin: 0;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--text-secondary, #9ca3af);
 }
 
 /* Responsive Design */
