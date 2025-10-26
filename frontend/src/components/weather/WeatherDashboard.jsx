@@ -182,14 +182,6 @@ function WeatherDashboard() {
       {/* Data Display */}
       {!loading && !error && data && (
         <>
-          {/* Debug logging */}
-          {console.log('🔍 Location debug:', {
-            'data.location': data.location,
-            'locationData': locationData,
-            'location string': location,
-            'Final display': data.location?.address || locationData?.address || location || 'Unknown Location'
-          })}
-
           {/* City Box and Lookup Controls - Side by Side */}
           <div className="dashboard-main-row">
             {/* Location Info with Current Conditions - 75% */}

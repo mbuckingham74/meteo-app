@@ -7,6 +7,66 @@
   margin-top: 12px;
 }
 
+/* Loading overlay */
+.radar-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  border-radius: 8px;
+}
+
+.radar-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: radar-spin 0.8s linear infinite;
+}
+
+@keyframes radar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.radar-loading-text {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 500;
+}
+
+/* Error state */
+.radar-map-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.radar-map-error p {
+  margin: 4px 0;
+  color: #991b1b;
+}
+
+.radar-map-error .error-hint {
+  font-size: 12px;
+  color: #dc2626;
+}
+
 /* Leaflet map overrides */
 .radar-map-container .leaflet-container {
   background: #d4d4d4;
@@ -131,6 +191,32 @@
 [data-theme="dark"] .radar-map-container .leaflet-control-zoom a:hover {
   background: #374151;
   color: #ffffff;
+}
+
+[data-theme="dark"] .radar-loading-overlay {
+  background: rgba(31, 41, 55, 0.95);
+}
+
+[data-theme="dark"] .radar-spinner {
+  border-color: #4b5563;
+  border-top-color: #818cf8;
+}
+
+[data-theme="dark"] .radar-loading-text {
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .radar-map-error {
+  background: #7f1d1d;
+  border-color: #991b1b;
+}
+
+[data-theme="dark"] .radar-map-error p {
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .radar-map-error .error-hint {
+  color: #fecaca;
 }
 
 /* Responsive adjustments */

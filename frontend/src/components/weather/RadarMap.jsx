@@ -13,6 +13,21 @@ function ChangeMapView({ center, zoom }) {
 }
 
 /**
+ * Component to handle map ready event
+ */
+function MapReadyHandler({ onReady }) {
+  const map = useMap();
+
+  React.useEffect(() => {
+    map.whenReady(() => {
+      onReady();
+    });
+  }, [map, onReady]);
+
+  return null;
+}
+
+/**
  * RadarMap Component
  * Displays an OpenWeather weather overlays on a map
  *
@@ -24,13 +39,32 @@ function ChangeMapView({ center, zoom }) {
  */
 function RadarMap({ latitude, longitude, zoom = 8, height = 250 }) {
   const center = [latitude, longitude];
-  const OPENWEATHER_API_KEY = '8ad36fbd98b10ec9b5b42b9c32d11b62';
+  const OPENWEATHER_API_KEY = process.env.REACT_APP_OPENWEATHER_API_KEY;
 
   const [activeLayers, setActiveLayers] = useState({
     precipitation: true,
     clouds: true,
     temp: false
   });
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleMapReady = React.useCallback(() => {
+    // Small delay to ensure tiles start loading
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+  }, []);
+
+  if (!OPENWEATHER_API_KEY) {
+    console.error('OpenWeather API key not found. Please add REACT_APP_OPENWEATHER_API_KEY to your .env file.');
+    return (
+      <div className="radar-map-error" style={{ height: `${height}px` }}>
+        <p>⚠️ Radar map unavailable</p>
+        <p className="error-hint">API key not configured</p>
+      </div>
+    );
+  }
 
   const toggleLayer = (layer) => {
     setActiveLayers(prev => ({
@@ -41,6 +75,14 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250 }) {
 
   return (
     <div className="radar-map-container" style={{ height: `${height}px` }}>
+      {/* Loading overlay */}
+      {isLoading && (
+        <div className="radar-loading-overlay">
+          <div className="radar-spinner"></div>
+          <p className="radar-loading-text">Loading radar map...</p>
+        </div>
+      )}
+
       <MapContainer
         center={center}
         zoom={zoom}
@@ -83,6 +125,9 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250 }) {
 
         {/* Update map view when location changes */}
         <ChangeMapView center={center} zoom={zoom} />
+
+        {/* Handle map ready event */}
+        <MapReadyHandler onReady={handleMapReady} />
       </MapContainer>
 
       {/* Layer toggles */}
