@@ -27,6 +27,7 @@ import ThisDayInHistoryCard from '../cards/ThisDayInHistoryCard';
 import AirQualityCard from '../cards/AirQualityCard';
 import WeatherAlertsBanner from './WeatherAlertsBanner';
 import LocationSearchBar from '../location/LocationSearchBar';
+import TemperatureUnitToggle from '../units/TemperatureUnitToggle';
 import RadarMap from './RadarMap';
 import './WeatherDashboard.css';
 
@@ -234,6 +235,7 @@ function WeatherDashboard() {
                         longitude={data.location.longitude}
                         zoom={8}
                         height="100%"
+                        alerts={data.alerts}
                       />
                     )}
                   </div>
@@ -267,6 +269,11 @@ function WeatherDashboard() {
                   ⚠️ {locationError}
                 </div>
               )}
+            </div>
+
+            <div className="control-group">
+              <label className="control-label">Temperature Unit:</label>
+              <TemperatureUnitToggle />
             </div>
 
             <div className="control-group">

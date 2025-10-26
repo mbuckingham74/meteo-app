@@ -9,7 +9,8 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 **Key Features:**
 - Historical weather data and climate patterns
 - Interactive charts and visualizations (temperature, precipitation, wind, etc.)
-- **Interactive weather radar map** with toggleable precipitation, cloud, and temperature layers
+- **Interactive weather radar map** with real historical precipitation data (past 2 hours)
+- **Advanced radar features**: time selector, storm tracking, screenshot export, weather alerts overlay
 - Current weather conditions display with real-time data
 - City comparison functionality
 - Monthly, daily, and hourly weather views
@@ -27,7 +28,7 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 - **Frontend**: React-based web application (Create React App)
 - **Backend**: Node.js/Express REST API server
 - **Database**: MySQL 8.0
-- **Data Sources**: OpenWeather API + Visual Crossing 10-year Timeline API
+- **Data Sources**: RainViewer (radar), Visual Crossing (historical), OpenWeather (overlays)
 
 The application is containerized using Docker Compose for consistent development and deployment.
 
@@ -59,11 +60,16 @@ Standard Create React App structure with React 19.2.0. Key architectural compone
 - **LocationContext** - Global location selection state shared across components
 - **TemperatureUnitContext** - Celsius/Fahrenheit preference with localStorage/cloud sync
 
+**Service Layer:**
+- **src/services/radarService.js** - RainViewer API integration with intelligent caching
+- **src/services/geolocationService.js** - Multi-tier location detection with IP fallback
+
 **Main Components:**
 - **src/App.js** - Root application component with nested context providers
 - **src/index.js** - Application entry point
 - **src/components/weather/WeatherDashboard.jsx** - Main dashboard with current conditions and charts
-- **src/components/weather/RadarMap.jsx** - Interactive Leaflet map with OpenWeather radar tiles
+- **src/components/weather/RadarMap.jsx** - Interactive Leaflet map with RainViewer historical radar data
+- **src/services/radarService.js** - RainViewer API integration with 5-minute caching
 - **src/components/location/LocationSearchBar.jsx** - Autocomplete search with recent history
 - **src/components/auth/UserProfileModal.jsx** - User profile with favorites management
 - **src/components/units/TemperatureUnitToggle.jsx** - Global C/F toggle in header
@@ -186,6 +192,8 @@ await seedDatabase();        // Add sample data
 - **leaflet** 1.9.4 - Interactive maps library
 - **react-leaflet** 5.0.0 - React components for Leaflet
 - **recharts** 3.3.0 - Chart visualization library
+- **html2canvas** - Screenshot capture for radar map export
+- **gif.js** - Animated GIF generation (future use)
 
 ## Network Architecture
 
@@ -281,34 +289,69 @@ The main weather dashboard uses a responsive 75/25 split layout with equal-heigh
 - Charts remain visible by default for discoverability
 
 ### Weather Radar Map
-The app includes an interactive Leaflet-based radar map with animation capabilities:
-- **Layers Available:**
-  - 💧 Precipitation overlay (OpenWeather precipitation_new tiles)
-  - ☁️ Cloud cover overlay (OpenWeather clouds_new tiles)
-  - 🌡️ Temperature overlay (OpenWeather temp_new tiles)
-- **Features:**
-  - Toggle layers on/off with emoji buttons (top-right corner)
-  - Automatic centering on selected location
-  - Zoom controls for detailed viewing
-  - Updates in real-time when location changes
-  - Loading state with spinner overlay
-  - Full dark mode support
-- **Animation Controls:** (bottom of map)
-  - ▶/⏸ Play/Pause button to start/stop animation
-  - Speed toggle: 0.5x, 1x, 2x playback rates
-  - Progress bar showing current position in timeline
-  - Timestamp display (shows "Live" when paused, time when playing)
-  - Pulse/fade effect on layers during animation for visual feedback
-  - Currently simulates 8 frames (10 min intervals, past hour)
-  - Framework ready for historical radar data integration
-- **Technical:**
-  - Uses OpenWeather Maps API (free tier)
-  - Tile endpoint: `tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png`
-  - Update frequency: Every 3 hours (free tier limitation)
-  - Base map: OpenStreetMap
-  - API Key: Stored in `.env` as `REACT_APP_OPENWEATHER_API_KEY`
-  - Dynamic height using flexbox (100% of available vertical space)
-  - Components: `RadarMap.jsx`, `RadarMap.css`
+The app features a professional-grade interactive radar map powered by RainViewer with real historical precipitation data:
+
+**Data Sources:**
+- **Precipitation**: RainViewer API (real historical data, past 2 hours + 30 min forecast)
+- **Clouds**: OpenWeather clouds_new tiles
+- **Temperature**: OpenWeather temp_new tiles
+
+**Core Features:**
+- **Real historical data**: 12-15 radar frames at 10-minute intervals
+- **Automatic updates**: Refreshes every 10 minutes when new frames available
+- **5-minute API caching**: Reduces redundant API calls, improves performance
+- **Hybrid data approach**: RainViewer for precipitation, OpenWeather for overlays
+- **Graceful fallback**: Switches to OpenWeather if RainViewer unavailable
+- **Full dark mode support**: All UI elements adapt to theme
+
+**Layer Controls (Top-Right):**
+- 💧 **Precipitation** - Toggle RainViewer radar overlay
+- ☁️ **Clouds** - Toggle OpenWeather cloud cover
+- 🌡️ **Temperature** - Toggle OpenWeather temperature overlay
+- ⚠️ **Weather Alerts** - Show/hide alert markers on map (when available)
+- 🌀 **Storm Tracking** - Enable movement analysis panel
+- 📷 **Screenshot** - Download current view as PNG image
+- 💾 **Export Data** - Download all frame metadata as JSON
+
+**Animation Controls (Bottom):**
+- ▶️/⏸ **Play/Pause** - Animate through historical radar frames
+- **Speed selector** - 0.5x, 1x, 2x playback rates
+- 🕐 **Time selector** - Dropdown to jump to specific frame
+- **Clickable timestamp** - Opens frame selector for manual navigation
+- **Interactive progress bar** - Click anywhere to scrub through timeline
+- **Frame counter** - Shows current position (e.g., "8 / 14")
+
+**Advanced Features:**
+- **Precipitation Intensity Legend**: Color-coded gradient (light → moderate → heavy)
+- **Weather Alerts Overlay**:
+  - Animated pulsing markers color-coded by severity
+  - Red (warnings), Orange (watches), Blue (advisories)
+  - Clickable popups with full alert details
+- **Storm Tracking Panel**:
+  - Movement direction (N, NE, E, SE, S, SW, W, NW)
+  - Estimated speed in km/h
+  - Frame-by-frame position tracking
+  - Simulated from radar data progression
+- **Screenshot Export**:
+  - Captures full map with all active layers
+  - PNG format with timestamp: `radar-2025-10-25T20-55-30.png`
+  - Uses html2canvas for accurate rendering
+- **Data Export**:
+  - JSON export of all frame metadata
+  - Includes timestamps, coordinates, tile paths
+  - Perfect for data analysis: `radar-data-2025-10-25.json`
+
+**Technical Implementation:**
+- **RainViewer API**: `https://api.rainviewer.com/public/weather-maps.json`
+- **Rate limits**: 1000 requests/IP/minute (very generous)
+- **Free tier limitation**: Max zoom level 10
+- **Coverage**: Global precipitation radar
+- **Caching**: 5-minute in-memory cache via `radarService.js`
+- **Auto-refresh**: Fetches new data every 10 minutes
+- **Components**: `RadarMap.jsx`, `RadarMap.css`, `radarService.js`
+- **Dependencies**: Leaflet, React-Leaflet, html2canvas
+- **Base map**: OpenStreetMap tiles
+- **Dynamic sizing**: Flexbox-based responsive height
 
 ### Location Search & Geolocation
 Enhanced location detection with multiple fallback mechanisms:

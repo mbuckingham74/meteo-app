@@ -12,7 +12,8 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 ## 🌟 Key Highlights
 
 - **📊 Rich Data Visualization** - 15+ interactive charts for weather analysis
-- **⚠️ Weather Alerts** - Real-time severe weather warnings and advisories
+- **🌧️ Interactive Radar Map** - Real historical precipitation data with animation, alerts overlay, and storm tracking
+- **⚠️ Weather Alerts** - Real-time severe weather warnings with map markers
 - **💨 Air Quality Monitoring** - Live AQI data with health recommendations
 - **📈 10-Year Climate Analysis** - Historical trends and statistical insights
 - **🔐 User Accounts** - Cloud-synced favorites and preferences
@@ -43,13 +44,44 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **Multi-Day Forecasts** - 3, 7, or 14-day weather forecasts with dynamic time labels
 - **48-Hour Detailed View** - Hourly forecasts with temperature, feels-like, precipitation, and wind data
 - **Current Conditions Display** - Real-time temperature, feels-like, weather conditions, wind speed, humidity, visibility, and cloud cover
-- **Temperature Unit Toggle** - Global Celsius/Fahrenheit toggle in header that syncs across all components
+- **Temperature Unit Toggle** - Global Celsius/Fahrenheit toggle that syncs across all components
   - Persists to localStorage for guest users
   - Cloud-synced for authenticated users
   - Works consistently on all pages including location comparison
 - **Weather Alerts** - Real-time severe weather warnings, watches, and advisories with color-coded severity levels
   - Expandable alert details with onset/end times
   - Automatic severity classification (warning, watch, advisory)
+  - **Interactive map markers** showing alert locations with animated pulsing icons
+
+### 🌧️ Interactive Radar Map
+
+**Real Historical Precipitation Data:**
+- **Past 2 hours** of actual radar data (12-15 frames at 10-minute intervals)
+- **30 minutes forecast** - Future precipitation predictions
+- **RainViewer API integration** - Professional-grade radar data
+- **5-minute caching** - Automatic updates every 10 minutes
+
+**Layer Controls:**
+- 💧 **Precipitation Overlay** - Real historical radar from RainViewer
+- ☁️ **Cloud Cover** - OpenWeather cloud layer
+- 🌡️ **Temperature Overlay** - Temperature visualization
+- ⚠️ **Weather Alerts** - Animated markers for active warnings
+- 🌀 **Storm Tracking** - Movement direction and speed analysis
+
+**Animation Features:**
+- ▶️/⏸ **Play/Pause** - Animate through radar history
+- **Variable Speed** - 0.5x, 1x, 2x playback options
+- 🕐 **Time Selector** - Jump to any specific frame
+- **Clickable Timeline** - Scrub through timestamps
+- **Frame Counter** - Shows current position (e.g., "8 / 14")
+
+**Advanced Capabilities:**
+- **Precipitation Intensity Legend** - Color-coded scale (light → moderate → heavy)
+- **Weather Alerts Overlay** - Pulsing markers with severity-based colors and detailed popups
+- **Storm Tracking Panel** - Real-time movement direction (N, NE, E, etc.) and speed in km/h
+- 📷 **Screenshot Export** - Download current radar view as PNG
+- 💾 **Data Export** - Export frame metadata as JSON for analysis
+- **Full dark mode support** - All controls adapt to theme
 
 ### 📊 Interactive Charts
 
@@ -144,6 +176,9 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
   - LocationContext - Global location selection state
   - TemperatureUnitContext - Celsius/Fahrenheit preference
 - **Recharts** - Data visualization library
+- **Leaflet** - Interactive mapping library for radar visualization
+- **React-Leaflet** - React components for Leaflet maps
+- **html2canvas** - Screenshot capture for radar exports
 - **CSS3** - Custom styling with CSS variables for theming and gradient designs
 - **localStorage** - Client-side preferences and theme storage (with cloud sync for authenticated users)
 
@@ -157,7 +192,9 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **Intelligent API Caching** - MySQL-based cache layer reducing API calls by 99%
 
 ### External APIs
+- **RainViewer API** - Real-time precipitation radar data (past 2 hours + 30 min forecast)
 - **Visual Crossing Weather API** - Weather data, forecasts, historical climate data, and weather alerts
+- **OpenWeather API** - Cloud cover and temperature overlay tiles
 - **Open-Meteo Air Quality API** - Real-time and forecast air quality data (PM2.5, PM10, O₃, NO₂, CO, SO₂)
 - **Browser Geolocation API** - Current location detection
 
@@ -439,7 +476,9 @@ meteo-app/
 │   │   │   │   └── LocationComparisonView.jsx
 │   │   │   └── weather/             # Main dashboard
 │   │   │       ├── WeatherDashboard.jsx
-│   │   │       └── WeatherAlertsBanner.jsx      # NEW: Weather alerts display
+│   │   │       ├── RadarMap.jsx                 # NEW: Interactive radar with real historical data
+│   │   │       ├── RadarMap.css                 # Radar map styling
+│   │   │       └── WeatherAlertsBanner.jsx      # Weather alerts display
 │   │   ├── contexts/                # React Context providers
 │   │   │   ├── AuthContext.js
 │   │   │   ├── ThemeContext.js
@@ -452,6 +491,7 @@ meteo-app/
 │   │   │   └── useClimateData.js
 │   │   ├── services/                # API and local services
 │   │   │   ├── weatherApi.js
+│   │   │   ├── radarService.js              # NEW: RainViewer API integration
 │   │   │   ├── authApi.js
 │   │   │   ├── favoritesService.js
 │   │   │   └── geolocationService.js
@@ -492,11 +532,17 @@ meteo-app/
 1. **Search for a location** using the search bar in the controls panel
 2. **Use your current location** via the "Use My Location" button
 3. **Adjust settings**:
-   - Toggle temperature units (°C/°F) in the header (persists for all users)
+   - Toggle temperature units (°C/°F) in the dashboard controls
    - Select forecast duration (3, 7, or 14 days) in the controls panel
 4. **View current conditions** - See real-time temperature, weather, wind, humidity, and more
-5. **Customize chart visibility** using the chart controls panel
-6. **Save favorite locations** (requires login) - Access from user profile modal
+5. **Explore the interactive radar map**:
+   - Press play to animate through past 2 hours of precipitation
+   - Toggle different layers (precipitation, clouds, temperature)
+   - View weather alert markers if active
+   - Enable storm tracking to see movement analysis
+   - Download screenshots or export data
+6. **Customize chart visibility** using the chart controls panel
+7. **Save favorite locations** (requires login) - Access from user profile modal
 
 ### Location Comparison
 
@@ -627,7 +673,9 @@ MIT License - feel free to use this project for learning and development.
 
 ## 🙏 Data Attribution
 
+- Radar data provided by **[RainViewer API](https://www.rainviewer.com/)**
 - Weather data and alerts provided by **[Visual Crossing Weather API](https://www.visualcrossing.com/)**
+- Radar overlay tiles by **[OpenWeather API](https://openweathermap.org/)**
 - Air quality data provided by **[Open-Meteo Air Quality API](https://open-meteo.com/)**
 - Visualizations inspired by **[Weather Spark](https://weatherspark.com/)**
 
@@ -670,11 +718,19 @@ MIT License - feel free to use this project for learning and development.
 - [x] Graceful API rate limit handling
 
 **Recent Enhancements (2025)**
+- [x] **Interactive radar map with real historical precipitation data** (RainViewer API)
+  - Real past 2 hours + 30 min forecast data
+  - Time selector for frame navigation
+  - Storm tracking with movement direction and speed
+  - Screenshot and data export capabilities
+  - Weather alerts overlay with animated markers
+  - Precipitation intensity legend
 - [x] Comprehensive dark mode CSS refactor using variable system
 - [x] Global temperature unit sync across all components
 - [x] Enhanced location comparison insights
 - [x] Improved theme consistency across all UI elements
 - [x] Better error handling and fallback mechanisms
+- [x] Temperature unit toggle moved to dashboard controls for better UX
 
 ### 🚧 Planned Enhancements
 
@@ -682,9 +738,12 @@ MIT License - feel free to use this project for learning and development.
 - [ ] Push notifications for severe weather alerts
 - [ ] Extended historical data (20+ years of climate analysis)
 - [ ] Seasonal climate summaries and trends
-- [ ] Weather radar integration
+- [ ] Animated GIF export for radar loops
+- [ ] Advanced storm cell tracking with NEXRAD data
 - [ ] Marine and aviation weather data
 - [ ] Pollen and allergen forecasts
+- [ ] Lightning strike data integration
+- [ ] Satellite imagery overlay
 
 **User Experience**
 - [ ] Mobile app (iOS/Android with React Native)

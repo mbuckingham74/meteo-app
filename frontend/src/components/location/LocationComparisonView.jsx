@@ -3,6 +3,7 @@ import { useForecast } from '../../hooks/useWeatherData';
 import { formatTemperature } from '../../utils/weatherHelpers';
 import { useTemperatureUnit } from '../../contexts/TemperatureUnitContext';
 import LocationSearchBar from './LocationSearchBar';
+import TemperatureUnitToggle from '../units/TemperatureUnitToggle';
 import './LocationComparisonView.css';
 
 /**
@@ -15,7 +16,7 @@ function LocationComparisonView() {
     'New York,NY'
   ]);
 
-  const { unit, setUnit } = useTemperatureUnit();
+  const { unit } = useTemperatureUnit();
 
   // Fetch weather data for each location (always call hooks - pass null if no location)
   const location1Data = useForecast(locations[0] || null, 7);
@@ -87,14 +88,7 @@ function LocationComparisonView() {
       <div className="comparison-header">
         <h2>📊 Location Comparison</h2>
         <div className="comparison-controls">
-          <select
-            className="unit-select"
-            value={unit}
-            onChange={(e) => setUnit(e.target.value)}
-          >
-            <option value="C">Celsius</option>
-            <option value="F">Fahrenheit</option>
-          </select>
+          <TemperatureUnitToggle />
           {locations.length < 4 && (
             <button className="add-location-button" onClick={handleAddLocation}>
               + Add Location
