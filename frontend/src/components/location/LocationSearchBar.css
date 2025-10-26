@@ -10,22 +10,22 @@
   position: relative;
   display: flex;
   align-items: center;
-  background: white;
-  border: 2px solid #e5e7eb;
+  background: var(--bg-elevated, white);
+  border: 2px solid var(--border-light, #e5e7eb);
   border-radius: 12px;
   padding: 0 12px;
   transition: all 0.2s;
 }
 
 .search-input-wrapper:focus-within {
-  border-color: #667eea;
+  border-color: var(--accent-primary, #667eea);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .search-icon {
   font-size: 20px;
   margin-right: 8px;
-  color: #9ca3af;
+  color: var(--text-tertiary, #9ca3af);
 }
 
 .search-input {
@@ -34,12 +34,12 @@
   outline: none;
   padding: 14px 8px;
   font-size: 15px;
-  color: #111827;
+  color: var(--text-primary, #111827);
   background: transparent;
 }
 
 .search-input::placeholder {
-  color: #9ca3af;
+  color: var(--text-tertiary, #9ca3af);
 }
 
 .search-loading {
@@ -60,13 +60,13 @@
   cursor: pointer;
   padding: 4px 8px;
   font-size: 18px;
-  color: #9ca3af;
+  color: var(--text-tertiary, #9ca3af);
   transition: color 0.2s;
   margin-left: 4px;
 }
 
 .search-clear:hover {
-  color: #4b5563;
+  color: var(--text-secondary, #4b5563);
 }
 
 /* Dropdown Styles */
@@ -76,7 +76,7 @@
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: white;
+  background: var(--bg-elevated, white);
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   max-height: 400px;
@@ -101,14 +101,14 @@
 }
 
 .dropdown-section + .dropdown-section {
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--border-light, #f3f4f6);
 }
 
 .dropdown-section-header {
   padding: 8px 16px;
   font-size: 12px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--text-tertiary, #6b7280);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -123,11 +123,11 @@
 
 .dropdown-item:hover,
 .dropdown-item.selected {
-  background: #f9fafb;
+  background: var(--bg-secondary, #f9fafb);
 }
 
 .dropdown-item.selected {
-  background: #eff6ff;
+  background: var(--accent-bg, #eff6ff);
 }
 
 .location-icon {
@@ -144,7 +144,7 @@
 .location-name {
   font-size: 14px;
   font-weight: 500;
-  color: #111827;
+  color: var(--text-primary, #111827) !important;
   margin-bottom: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -153,7 +153,7 @@
 
 .location-coords {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280) !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -164,7 +164,7 @@
 .dropdown-empty {
   padding: 40px 20px;
   text-align: center;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
 }
 
 .empty-icon {
@@ -181,7 +181,7 @@
 
 .empty-hint {
   font-size: 12px !important;
-  color: #9ca3af !important;
+  color: var(--text-tertiary, #9ca3af) !important;
 }
 
 /* Loading State */
@@ -189,7 +189,7 @@
 .dropdown-loading {
   padding: 40px 20px;
   text-align: center;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
 }
 
 .loading-spinner {
@@ -211,17 +211,17 @@
 }
 
 .search-dropdown::-webkit-scrollbar-track {
-  background: #f9fafb;
+  background: var(--bg-secondary, #f9fafb);
   border-radius: 0 12px 12px 0;
 }
 
 .search-dropdown::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: var(--border-medium, #d1d5db);
   border-radius: 4px;
 }
 
 .search-dropdown::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--border-dark, #9ca3af);
 }
 
 /* Dark Mode Support */

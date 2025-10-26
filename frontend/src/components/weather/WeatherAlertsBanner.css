@@ -22,35 +22,19 @@
 
 /* Severity-based styling */
 .weather-alert-warning {
-  background: #fef2f2;
-}
-
-[data-theme='dark'] .weather-alert-warning {
-  background: #4c0519;
+  background: var(--error-bg, #fef2f2);
 }
 
 .weather-alert-watch {
-  background: #fffbeb;
-}
-
-[data-theme='dark'] .weather-alert-watch {
-  background: #451a03;
+  background: var(--warning-bg, #fffbeb);
 }
 
 .weather-alert-advisory {
-  background: #eff6ff;
-}
-
-[data-theme='dark'] .weather-alert-advisory {
-  background: #172554;
+  background: var(--info-bg, #eff6ff);
 }
 
 .weather-alert-info {
-  background: #f9fafb;
-}
-
-[data-theme='dark'] .weather-alert-info {
-  background: #1f2937;
+  background: var(--bg-secondary, #f9fafb);
 }
 
 /* Alert Header */
