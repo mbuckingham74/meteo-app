@@ -266,12 +266,19 @@ The main weather dashboard uses a responsive 75/25 split layout with equal-heigh
     - "Use My Location" button with robust geolocation
     - Forecast day selector (3, 7, 14 days)
     - "Compare Locations" navigation link
-  - **Charts Section:** (15 toggleable chart options)
-    - Show All / Hide All quick controls
-    - Individual toggles for each chart type
+  - **Charts Section:** (15 navigation buttons)
+    - Show All / Hide All buttons control chart visibility
+    - Click any chart button → Smoothly scrolls to that chart
+    - Intuitive navigation: separate from visibility controls
     - Panel scrolls vertically if needed to access all options
   - Bottom edge perfectly aligns with radar map bottom
-- **Below:** Interactive charts with visibility toggles
+- **Below:** Interactive charts with smooth scroll navigation
+
+**Chart Navigation:**
+- Click chart name buttons to navigate to specific charts
+- All charts have unique IDs (chart-hourly, chart-temperature, etc.)
+- Smooth scroll animation for better UX
+- Charts remain visible by default for discoverability
 
 ### Weather Radar Map
 The app includes an interactive Leaflet-based radar map with animation capabilities:
