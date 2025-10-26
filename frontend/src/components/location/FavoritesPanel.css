@@ -1,10 +1,11 @@
 /* Favorites Panel Styles */
 
 .favorites-panel {
-  background: white;
+  background: var(--bg-elevated, white);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md, 0 2px 8px rgba(0, 0, 0, 0.1));
   overflow: hidden;
+  border: 1px solid var(--border-light, transparent);
 }
 
 .favorites-header {
@@ -83,19 +84,19 @@
   align-items: center;
   gap: 8px;
   padding: 12px;
-  background: #fffbeb;
-  border: 2px dashed #fbbf24;
+  background: var(--warning-bg, #fffbeb);
+  border: 2px dashed var(--warning-border, #fbbf24);
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  color: #92400e;
+  color: var(--warning-text, #92400e);
   font-weight: 500;
   transition: all 0.2s;
 }
 
 .add-current-button:hover {
-  background: #fef3c7;
-  border-color: #f59e0b;
+  background: var(--warning-bg-hover, #fef3c7);
+  border-color: var(--warning-border-hover, #f59e0b);
 }
 
 .add-current-button span:first-child {
@@ -115,7 +116,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px;
-  background: #f9fafb;
+  background: var(--bg-primary, #f9fafb);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
@@ -123,13 +124,13 @@
 }
 
 .favorite-item:hover {
-  background: #f3f4f6;
-  border-color: #e5e7eb;
+  background: var(--bg-tertiary, #f3f4f6);
+  border-color: var(--border-light, #e5e7eb);
 }
 
 .favorite-item.active {
-  background: #eff6ff;
-  border-color: #3b82f6;
+  background: var(--accent-bg, #eff6ff);
+  border-color: var(--accent-primary, #3b82f6);
 }
 
 .favorite-info {
@@ -140,7 +141,7 @@
 .favorite-name {
   font-size: 14px;
   font-weight: 500;
-  color: #111827;
+  color: var(--text-primary, #111827) !important;
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -151,7 +152,7 @@
 }
 
 .current-badge {
-  background: #3b82f6;
+  background: var(--accent-primary, #3b82f6);
   color: white;
   font-size: 10px;
   padding: 2px 6px;
@@ -162,7 +163,7 @@
 
 .favorite-coords {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -171,7 +172,7 @@
 .remove-button {
   background: none;
   border: none;
-  color: #9ca3af;
+  color: var(--text-tertiary, #9ca3af);
   font-size: 18px;
   cursor: pointer;
   padding: 4px 8px;
@@ -181,7 +182,7 @@
 }
 
 .remove-button:hover {
-  color: #ef4444;
+  color: var(--error-text, #ef4444);
 }
 
 /* Empty State */
@@ -189,7 +190,7 @@
 .favorites-empty {
   padding: 40px 20px;
   text-align: center;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
 }
 
 .empty-icon {
@@ -206,7 +207,7 @@
 
 .empty-hint {
   font-size: 12px !important;
-  color: #9ca3af !important;
+  color: var(--text-tertiary, #9ca3af) !important;
 }
 
 /* Footer */
@@ -214,14 +215,14 @@
 .favorites-footer {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-light, #e5e7eb);
   text-align: center;
 }
 
 .favorites-footer p {
   margin: 0;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
 }
 
 /* Responsive Design */
