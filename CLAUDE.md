@@ -253,6 +253,12 @@ Implemented in `backend/services/weatherService.js`:
 - Gracefully handles transient rate limit errors (429)
 - Prevents cascade failures across components
 
+**Conditional API Calls:**
+- "This Day in History" API calls only made in forecast mode
+- Saves 33% of API requests in historical comparison mode
+- Smart hook dependency tracking prevents unnecessary re-fetches
+- React hooks conditionally return null to skip unused data endpoints
+
 **Graceful Fallbacks:**
 - Geolocation: Uses raw coordinates if reverse geocoding fails
 - Weather data: Serves cached data when fresh requests are blocked
@@ -451,6 +457,13 @@ Enhanced side-by-side weather comparison for multiple cities (accessible via das
     - 7 days (current forecast)
     - 1, 3, 6 months (historical data)
     - 1, 3, 5 years (long-term climate comparison)
+  - **Smart Data Aggregation** - Automatic chart optimization based on time range:
+    - 7 days - 1 month: Daily data (7-30 points, no aggregation)
+    - 3-6 months: Weekly averages (~13-26 points)
+    - 1+ years: Monthly averages (12-60 points)
+    - Aggregation indicator badge shows when data is averaged
+    - Tooltips display number of days aggregated
+    - Prevents chart overcrowding and improves readability for climate trends
   - **Interactive "How to Use" Guide**:
     - Collapsible guide explaining the comparison tool
     - Quick Start steps for new users
@@ -459,10 +472,11 @@ Enhanced side-by-side weather comparison for multiple cities (accessible via das
       - "Where is winter milder?" (Chicago vs Phoenix, 6 months)
       - "Which location has a milder summer?" (New Smyrna Beach vs Seattle, 3 months)
   - **Weather Comparison Charts** - Visual comparisons for:
-    - Temperature bands (high/low)
-    - Precipitation patterns
-    - Wind speeds
+    - Temperature bands (high/low) with color-coded ranges
+    - Precipitation patterns with enhanced probability line (orange, dashed, 0-100% scale)
+    - Wind speeds with direction indicators
     - Historical comparison with 10-year averages (for historical ranges)
+    - Smart X-axis label rotation for large datasets
   - Interactive search for each location slot
   - Real-time weather data + historical climate data for each city
   - Comparison insights (warmest, coldest, wettest)
@@ -500,10 +514,24 @@ celsiusToFahrenheit(celsius) = (celsius * 9/5) + 32
 formatTemperature(value, unit) // Returns formatted string with °C or °F
 ```
 
+**Data Aggregation:**
+Smart weather data aggregation for improved chart readability:
+```javascript
+// frontend/src/utils/weatherHelpers.js
+aggregateWeatherData(data, timeRange) // Returns { aggregatedData, aggregationLabel }
+// Automatically aggregates based on time range:
+// - '7days', '1month': No aggregation (daily data)
+// - '3months', '6months': Weekly averages
+// - '1year', '3years', '5years': Monthly averages
+formatAggregatedDate(dateString, aggregationType) // Format labels for aggregated data
+```
+
 **Important:**
 - Page components (WeatherDashboard, LocationComparisonView) MUST use `useTemperatureUnit()` hook
 - Never create local `unit` state - always use the global context
 - Temperature toggles anywhere in the app sync globally via this context
+- Use `aggregateWeatherData()` in comparison views to prevent chart overcrowding
+- Always use `useMemo` for aggregation to prevent unnecessary recalculations
 
 ### Dark Mode Support
 The application uses a comprehensive CSS variable system for full dark mode compatibility across all components.
