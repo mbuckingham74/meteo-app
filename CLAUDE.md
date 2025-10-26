@@ -288,6 +288,35 @@ The main weather dashboard uses a responsive 75/25 split layout with equal-heigh
 - Smooth scroll animation for better UX
 - Charts remain visible by default for discoverability
 
+### Interactive 48-Hour Forecast Chart
+The hourly forecast chart features multiple clickable views for focused analysis:
+
+**View Modes:**
+- 📊 **Overview** (default) - Combined view showing temperature, feels-like, and precipitation on dual Y-axes
+- 🔥 **High Temperature** - Focused high temp view with area fill visualization
+- ❄️ **Low Temperature** - Detailed low temp analysis with blue gradient
+- 🌧️ **Precipitation** - Rainfall amounts with precipitation probability overlay
+- 💨 **Wind Speed** - Wind analysis with area fill and average calculations
+
+**Interactive Features:**
+- Click "Overview" button to return to combined view
+- **Clickable Summary Cards** - Four stat cards showing:
+  - High temperature (with fire emoji)
+  - Low temperature (with snowflake emoji)
+  - Total precipitation (with rain emoji)
+  - Average wind speed (with wind emoji)
+- Clicking any summary card switches to that metric's focused view
+- Card highlights and scales up when selected
+- Hover effects on all interactive elements
+
+**Technical Implementation:**
+- State management with `useState` for selected metric
+- Dynamic chart rendering based on `selectedMetric` state
+- Calculated statistics stored in `stats` object
+- Area charts with gradient fills for temperature views
+- All views maintain consistent tooltip and legend formatting
+- **Component:** `HourlyForecastChart.jsx`
+
 ### Weather Radar Map
 The app features a professional-grade interactive radar map powered by RainViewer with real historical precipitation data:
 
@@ -388,15 +417,24 @@ macOS often returns `kCLErrorLocationUnknown` (POSITION_UNAVAILABLE) due to:
 - Browser lacking Location Services permission
 The IP fallback ensures location detection works 99% of the time.
 
+**User-Friendly Displays:**
+- When reverse geocoding fails or returns coordinates only, displays "Your Location" instead of raw lat/long
+- Regex detection: `/^-?\d+\.\d+,\s*-?\d+\.\d+$/` identifies coordinate-only addresses
+- Improves UX when API rate limits prevent address lookups
+- Coordinates still available in location metadata for API calls
+
 ### Global Controls
-- **Temperature Unit Toggle** (Header): Switches between °C and °F
+- **Temperature Unit Toggle** (Dashboard Controls): Switches between °C and °F
   - Persists to localStorage for guests
   - Syncs to cloud for authenticated users
   - Updates all components in real-time via TemperatureUnitContext
-- **Theme Toggle** (Header): Light/Dark/Auto mode
+- **Theme Toggle** (Header): Simple cycling button
+  - Click to cycle: Light → Dark → Auto → Light
+  - Simplified from dropdown menu for better UX
   - Follows system preferences in Auto mode
   - Persists to localStorage/cloud
   - CSS variables ensure smooth transitions
+  - **Component:** `ThemeToggle.jsx` with `cycleTheme()` function
 
 ### Favorites Management
 - Moved to user profile modal (authentication required)
@@ -405,19 +443,35 @@ The IP fallback ensures location detection works 99% of the time.
 - Click any favorite to load location instantly
 
 ### Compare Locations
-Side-by-side weather comparison for multiple cities (accessible via dashboard link):
+Enhanced side-by-side weather comparison for multiple cities (accessible via dashboard link):
 - **Features:**
   - Compare 2-4 locations simultaneously
+  - **Pre-populated with Seattle vs New Smyrna Beach** - Shows functionality immediately on page load
+  - **Time Range Selector** - Choose from:
+    - 7 days (current forecast)
+    - 1, 3, 6 months (historical data)
+    - 1, 3, 5 years (long-term climate comparison)
+  - **Interactive "How to Use" Guide**:
+    - Collapsible guide explaining the comparison tool
+    - Quick Start steps for new users
+    - Clickable example questions that pre-populate locations and time ranges:
+      - "Which city gets more rain annually?" (Seattle vs Miami, 1 year)
+      - "Where is winter milder?" (Chicago vs Phoenix, 6 months)
+      - "Which location has a milder summer?" (New Smyrna Beach vs Seattle, 3 months)
+  - **Weather Comparison Charts** - Visual comparisons for:
+    - Temperature bands (high/low)
+    - Precipitation patterns
+    - Wind speeds
+    - Historical comparison with 10-year averages (for historical ranges)
   - Interactive search for each location slot
-  - Real-time weather data for each city
-  - 7-day averages and totals
+  - Real-time weather data + historical climate data for each city
   - Comparison insights (warmest, coldest, wettest)
   - Temperature difference calculations
   - Add/remove locations dynamically
 - **Display:**
   - Large temperature display with high/low range
-  - 7-day average temperature
-  - Total precipitation (7 days)
+  - Averages calculated based on selected time range
+  - Total precipitation for period
   - Average humidity percentage
   - Current conditions badge
 - **Insights Panel:**
@@ -427,6 +481,7 @@ Side-by-side weather comparison for multiple cities (accessible via dashboard li
   - 📊 Temperature difference between extremes
 - **Dark Mode:** Fully supported with readable text and proper contrast
 - **Components:** `LocationComparisonView.jsx`, `LocationComparisonView.css`
+- **State Management:** Time range selector, guide visibility, pre-populated locations on mount
 
 ### Temperature Conversion
 Temperature unit preference is managed globally through TemperatureUnitContext:

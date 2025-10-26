@@ -42,7 +42,13 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 ### 🌤️ Weather Forecasts
 
 - **Multi-Day Forecasts** - 3, 7, or 14-day weather forecasts with dynamic time labels
-- **48-Hour Detailed View** - Hourly forecasts with temperature, feels-like, precipitation, and wind data
+- **48-Hour Interactive Chart** - Hourly forecasts with clickable metric views:
+  - 📊 **Overview Mode** - Combined temperature, feels-like, and precipitation
+  - 🔥 **High Temperature** - Focused view with area fill showing warmest hours
+  - ❄️ **Low Temperature** - Detailed low temperature analysis
+  - 🌧️ **Precipitation** - Rainfall amounts with probability overlay
+  - 💨 **Wind Speed** - Wind analysis with average calculations
+  - **Clickable Summary Cards** - Tap any stat to switch views instantly
 - **Current Conditions Display** - Real-time temperature, feels-like, weather conditions, wind speed, humidity, visibility, and cloud cover
 - **Temperature Unit Toggle** - Global Celsius/Fahrenheit toggle that syncs across all components
   - Persists to localStorage for guest users
@@ -107,12 +113,23 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **Smart Search** - Location search with autocomplete and keyboard navigation
 - **Popular Locations** - Quick access to major cities worldwide
 - **Geolocation Detection** - Automatic detection of current location via browser with intelligent fallback
+  - Multi-tier fallback system (browser geolocation → IP-based fallback)
   - Works even when reverse geocoding is rate-limited
-  - Uses coordinates directly if address lookup fails
+  - Displays "Your Location" instead of raw coordinates for better UX
 - **Favorites System** - Save and manage favorite locations with cloud sync (authentication required)
   - Access favorites from user profile modal
   - Automatic sync across all devices
-- **Location Comparison** - Side-by-side weather comparison for 2-4 locations with insights
+- **Location Comparison** - Enhanced side-by-side weather comparison:
+  - Compare 2-4 locations simultaneously
+  - **Time Range Selector** - Choose 7 days, 1/3/6 months, or 1/3/5 years
+  - **Pre-populated Examples** - Loads Seattle vs New Smyrna Beach comparison by default
+  - **Interactive Guide** - Clickable example questions to explore comparisons:
+    - "Which city gets more rain annually?"
+    - "Where is winter milder?"
+    - "Which location has a milder summer?"
+  - **Weather Comparison Charts** - Temperature, precipitation, and wind visualizations
+  - **Historical Climate Data** - 10-year averages for long-term comparisons
+  - **Comparison Insights** - Automatic analysis showing warmest, coldest, wettest locations and temperature differences
 
 ### 💨 Air Quality Index (AQI)
 
@@ -146,6 +163,7 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 
 ### 🎨 Theme System
 
+- **Simple Cycling Toggle** - Click to cycle through Light → Dark → Auto modes
 - **Light Mode** - Clean, bright interface for daytime use
 - **Dark Mode** - Easy on the eyes for low-light environments with comprehensive CSS variable system
 - **Auto Mode** - Automatically follows system preferences
@@ -546,10 +564,19 @@ meteo-app/
 
 ### Location Comparison
 
-1. Click **"Compare Locations"** from the main dashboard
-2. Search and select locations to compare (2-4 locations)
-3. View side-by-side weather data and comparison insights
-4. See which location is warmest, coldest, wettest, and temperature differences
+1. Click **"Compare Locations"** from the main dashboard (loads with Seattle vs New Smyrna Beach pre-populated)
+2. **Choose a time range** (7 days, 1/3/6 months, or 1/3/5 years) to analyze different periods
+3. **Try the example questions** - Click any example to instantly load relevant locations and time ranges:
+   - "Which city gets more rain annually?"
+   - "Where is winter milder?"
+   - "Which location has a milder summer?"
+4. **Search and select your own locations** (2-4 locations) for custom comparisons
+5. View **side-by-side weather data** with detailed charts:
+   - Temperature band charts showing daily highs/lows
+   - Precipitation totals and patterns
+   - Wind speed comparisons
+   - Historical climate comparisons (for longer time ranges)
+6. See **automatic insights** showing which location is warmest, coldest, wettest, and temperature differences
 
 ### Favorites Management
 
@@ -725,9 +752,22 @@ MIT License - feel free to use this project for learning and development.
   - Screenshot and data export capabilities
   - Weather alerts overlay with animated markers
   - Precipitation intensity legend
+- [x] **Enhanced location comparison page**
+  - Time range selector (7 days to 5 years)
+  - Pre-populated with Seattle vs New Smyrna Beach example
+  - Interactive "How to Use" guide with clickable questions
+  - Historical climate data integration for long-term comparisons
+  - Weather comparison charts (temperature, precipitation, wind)
+  - Automatic insights and statistics
+- [x] **Interactive hourly forecast chart**
+  - Clickable metric views (Overview, High, Low, Precipitation, Wind)
+  - Focused visualizations for each metric
+  - Interactive summary cards with state management
 - [x] Comprehensive dark mode CSS refactor using variable system
 - [x] Global temperature unit sync across all components
-- [x] Enhanced location comparison insights
+- [x] Simplified theme toggle (cycling button: Light → Dark → Auto)
+- [x] Improved "Use My Location" to display "Your Location" instead of coordinates
+- [x] Fixed radar map height in flex layouts (min-height issue resolved)
 - [x] Improved theme consistency across all UI elements
 - [x] Better error handling and fallback mechanisms
 - [x] Temperature unit toggle moved to dashboard controls for better UX
