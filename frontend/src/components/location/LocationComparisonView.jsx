@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useForecast } from '../../hooks/useWeatherData';
 import { formatTemperature } from '../../utils/weatherHelpers';
+import { useTemperatureUnit } from '../../contexts/TemperatureUnitContext';
 import LocationSearchBar from './LocationSearchBar';
 import './LocationComparisonView.css';
 
@@ -14,7 +15,7 @@ function LocationComparisonView() {
     'New York,NY'
   ]);
 
-  const [unit, setUnit] = useState('C');
+  const { unit, setUnit } = useTemperatureUnit();
 
   // Fetch weather data for each location (always call hooks - pass null if no location)
   const location1Data = useForecast(locations[0] || null, 7);
