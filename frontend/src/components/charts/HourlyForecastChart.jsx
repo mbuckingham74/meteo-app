@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ComposedChart,
   Line,
   Bar,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -15,9 +16,11 @@ import { METRIC_COLORS } from '../../utils/colorScales';
 
 /**
  * Hourly Forecast Chart Component
- * Displays 48-hour detailed forecast with temperature, feels-like, precipitation, and wind
+ * Displays 48-hour detailed forecast with clickable metric views
  */
 function HourlyForecastChart({ hourlyData, unit = 'C', height = 400 }) {
+  const [selectedMetric, setSelectedMetric] = useState('overview'); // 'overview', 'high', 'low', 'precipitation', 'wind'
+
   if (!hourlyData || hourlyData.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
@@ -48,6 +51,14 @@ function HourlyForecastChart({ hourlyData, unit = 'C', height = 400 }) {
       conditions: hour.conditions
     };
   });
+
+  // Calculate summary statistics
+  const stats = {
+    high: Math.max(...chartData.map(d => d.temperature)),
+    low: Math.min(...chartData.map(d => d.temperature)),
+    totalPrecip: chartData.reduce((sum, d) => sum + d.precipitation, 0),
+    avgWind: chartData.reduce((sum, d) => sum + d.windSpeed, 0) / chartData.length
+  };
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload }) => {
@@ -95,127 +106,428 @@ function HourlyForecastChart({ hourlyData, unit = 'C', height = 400 }) {
     );
   };
 
+  // Render chart based on selected metric
+  const renderChart = () => {
+    switch (selectedMetric) {
+      case 'high':
+        return (
+          <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis
+              dataKey="displayTime"
+              tick={{ fontSize: 11, fill: '#6b7280' }}
+              stroke="#9ca3af"
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: '#6b7280' }}
+              stroke="#9ca3af"
+              label={{
+                value: `Temperature (°${unit})`,
+                angle: -90,
+                position: 'insideLeft',
+                style: { textAnchor: 'middle', fill: '#6b7280' }
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+            <Area
+              type="monotone"
+              dataKey="temperature"
+              stroke="#dc2626"
+              fill="#fecaca"
+              fillOpacity={0.3}
+              strokeWidth={3}
+              name="High Temperature"
+            />
+            <Line
+              type="monotone"
+              dataKey="temperature"
+              stroke="#dc2626"
+              strokeWidth={3}
+              name="Temperature"
+              dot={{ r: 3, fill: '#dc2626' }}
+            />
+          </ComposedChart>
+        );
+
+      case 'low':
+        return (
+          <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis
+              dataKey="displayTime"
+              tick={{ fontSize: 11, fill: '#6b7280' }}
+              stroke="#9ca3af"
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: '#6b7280' }}
+              stroke="#9ca3af"
+              label={{
+                value: `Temperature (°${unit})`,
+                angle: -90,
+                position: 'insideLeft',
+                style: { textAnchor: 'middle', fill: '#6b7280' }
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+            <Area
+              type="monotone"
+              dataKey="temperature"
+              stroke="#2563eb"
+              fill="#bfdbfe"
+              fillOpacity={0.3}
+              strokeWidth={3}
+              name="Low Temperature"
+            />
+            <Line
+              type="monotone"
+              dataKey="temperature"
+              stroke="#2563eb"
+              strokeWidth={3}
+              name="Temperature"
+              dot={{ r: 3, fill: '#2563eb' }}
+            />
+          </ComposedChart>
+        );
+
+      case 'precipitation':
+        return (
+          <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis
+              dataKey="displayTime"
+              tick={{ fontSize: 11, fill: '#6b7280' }}
+              stroke="#9ca3af"
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: '#6b7280' }}
+              stroke="#9ca3af"
+              label={{
+                value: 'Precipitation (mm)',
+                angle: -90,
+                position: 'insideLeft',
+                style: { textAnchor: 'middle', fill: '#6b7280' }
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+            <Bar
+              dataKey="precipitation"
+              fill={METRIC_COLORS.precipitation}
+              fillOpacity={0.8}
+              name="Precipitation"
+              radius={[4, 4, 0, 0]}
+            />
+            <Line
+              type="monotone"
+              dataKey="precipProb"
+              stroke="#0891b2"
+              strokeWidth={2}
+              name="Precip Probability (%)"
+              dot={false}
+              strokeDasharray="3 3"
+            />
+          </ComposedChart>
+        );
+
+      case 'wind':
+        return (
+          <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis
+              dataKey="displayTime"
+              tick={{ fontSize: 11, fill: '#6b7280' }}
+              stroke="#9ca3af"
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: '#6b7280' }}
+              stroke="#9ca3af"
+              label={{
+                value: 'Wind Speed (km/h)',
+                angle: -90,
+                position: 'insideLeft',
+                style: { textAnchor: 'middle', fill: '#6b7280' }
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+            <Area
+              type="monotone"
+              dataKey="windSpeed"
+              stroke={METRIC_COLORS.windSpeed}
+              fill="#d1d5db"
+              fillOpacity={0.3}
+              strokeWidth={3}
+              name="Wind Speed"
+            />
+            <Line
+              type="monotone"
+              dataKey="windSpeed"
+              stroke={METRIC_COLORS.windSpeed}
+              strokeWidth={3}
+              name="Average Wind"
+              dot={{ r: 2 }}
+            />
+          </ComposedChart>
+        );
+
+      default: // 'overview'
+        return (
+          <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis
+              dataKey="displayTime"
+              tick={{ fontSize: 11, fill: '#6b7280' }}
+              stroke="#9ca3af"
+              label={{
+                value: 'Time (hours)',
+                position: 'insideBottom',
+                offset: -5,
+                style: { textAnchor: 'middle', fill: '#6b7280', fontSize: 12 }
+              }}
+            />
+            <YAxis
+              yAxisId="left"
+              tick={{ fontSize: 12, fill: '#6b7280' }}
+              stroke="#9ca3af"
+              label={{
+                value: `Temperature (°${unit})`,
+                angle: -90,
+                position: 'insideLeft',
+                style: { textAnchor: 'middle', fill: '#6b7280' }
+              }}
+            />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              tick={{ fontSize: 12, fill: '#6b7280' }}
+              stroke="#9ca3af"
+              label={{
+                value: 'Precipitation (mm)',
+                angle: 90,
+                position: 'insideRight',
+                style: { textAnchor: 'middle', fill: '#6b7280' }
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+
+            {/* Temperature line */}
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="temperature"
+              stroke={METRIC_COLORS.temperature}
+              strokeWidth={2.5}
+              name="Temperature"
+              dot={{ r: 2 }}
+            />
+
+            {/* Feels-like line */}
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="feelsLike"
+              stroke="#9333ea"
+              strokeWidth={2}
+              name="Feels Like"
+              dot={false}
+              strokeDasharray="3 3"
+            />
+
+            {/* Precipitation bars */}
+            <Bar
+              yAxisId="right"
+              dataKey="precipitation"
+              fill={METRIC_COLORS.precipitation}
+              fillOpacity={0.6}
+              name="Precipitation"
+              radius={[2, 2, 0, 0]}
+            />
+          </ComposedChart>
+        );
+    }
+  };
+
+  // Get title based on selected metric
+  const getChartTitle = () => {
+    switch (selectedMetric) {
+      case 'high': return '48-Hour High Temperature';
+      case 'low': return '48-Hour Low Temperature';
+      case 'precipitation': return '48-Hour Precipitation';
+      case 'wind': return '48-Hour Wind Speed';
+      default: return '48-Hour Detailed Forecast';
+    }
+  };
+
   return (
     <div>
       <h3 style={{ marginBottom: '16px', color: '#111827', fontSize: '18px', fontWeight: '600' }}>
-        48-Hour Detailed Forecast
+        {getChartTitle()}
       </h3>
 
       <ResponsiveContainer width="100%" height={height}>
-        <ComposedChart
-          data={chartData}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis
-            dataKey="displayTime"
-            tick={{ fontSize: 11, fill: '#6b7280' }}
-            stroke="#9ca3af"
-            label={{
-              value: 'Time (hours)',
-              position: 'insideBottom',
-              offset: -5,
-              style: { textAnchor: 'middle', fill: '#6b7280', fontSize: 12 }
-            }}
-          />
-          <YAxis
-            yAxisId="left"
-            tick={{ fontSize: 12, fill: '#6b7280' }}
-            stroke="#9ca3af"
-            label={{
-              value: `Temperature (°${unit})`,
-              angle: -90,
-              position: 'insideLeft',
-              style: { textAnchor: 'middle', fill: '#6b7280' }
-            }}
-          />
-          <YAxis
-            yAxisId="right"
-            orientation="right"
-            tick={{ fontSize: 12, fill: '#6b7280' }}
-            stroke="#9ca3af"
-            label={{
-              value: 'Precipitation (mm)',
-              angle: 90,
-              position: 'insideRight',
-              style: { textAnchor: 'middle', fill: '#6b7280' }
-            }}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend wrapperStyle={{ paddingTop: '20px' }} />
-
-          {/* Temperature line */}
-          <Line
-            yAxisId="left"
-            type="monotone"
-            dataKey="temperature"
-            stroke={METRIC_COLORS.temperature}
-            strokeWidth={2.5}
-            name="Temperature"
-            dot={{ r: 2 }}
-          />
-
-          {/* Feels-like line */}
-          <Line
-            yAxisId="left"
-            type="monotone"
-            dataKey="feelsLike"
-            stroke="#9333ea"
-            strokeWidth={2}
-            name="Feels Like"
-            dot={false}
-            strokeDasharray="3 3"
-          />
-
-          {/* Precipitation bars */}
-          <Bar
-            yAxisId="right"
-            dataKey="precipitation"
-            fill={METRIC_COLORS.precipitation}
-            fillOpacity={0.6}
-            name="Precipitation"
-            radius={[2, 2, 0, 0]}
-          />
-        </ComposedChart>
+        {renderChart()}
       </ResponsiveContainer>
 
-      {/* Summary stats */}
-      <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
-        <div style={{ padding: '10px', background: '#fef3c7', borderRadius: '6px', textAlign: 'center' }}>
-          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#78350f', textTransform: 'uppercase' }}>
-            High
+      {/* Metric selector buttons */}
+      <div style={{ marginTop: '16px', display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setSelectedMetric('overview')}
+          style={{
+            padding: '8px 16px',
+            background: selectedMetric === 'overview' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#f3f4f6',
+            color: selectedMetric === 'overview' ? 'white' : '#4b5563',
+            border: 'none',
+            borderRadius: '6px',
+            fontSize: '12px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+          onMouseEnter={(e) => {
+            if (selectedMetric !== 'overview') {
+              e.target.style.background = '#e5e7eb';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (selectedMetric !== 'overview') {
+              e.target.style.background = '#f3f4f6';
+            }
+          }}
+        >
+          📊 Overview
+        </button>
+      </div>
+
+      {/* Summary stats - now clickable */}
+      <div style={{ marginTop: '8px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
+        <button
+          onClick={() => setSelectedMetric('high')}
+          style={{
+            padding: '10px',
+            background: selectedMetric === 'high' ? '#fcd34d' : '#fef3c7',
+            borderRadius: '6px',
+            textAlign: 'center',
+            border: selectedMetric === 'high' ? '2px solid #f59e0b' : '2px solid transparent',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            transform: selectedMetric === 'high' ? 'scale(1.05)' : 'scale(1)'
+          }}
+          onMouseEnter={(e) => {
+            if (selectedMetric !== 'high') {
+              e.target.style.transform = 'scale(1.02)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (selectedMetric !== 'high') {
+              e.target.style.transform = 'scale(1)';
+            }
+          }}
+        >
+          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#78350f', textTransform: 'uppercase', fontWeight: '600' }}>
+            🔥 High
           </p>
           <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#92400e' }}>
-            {formatTemperature(Math.max(...chartData.map(d => d.temperature)), unit)}
+            {formatTemperature(stats.high, unit)}
           </p>
-        </div>
+        </button>
 
-        <div style={{ padding: '10px', background: '#dbeafe', borderRadius: '6px', textAlign: 'center' }}>
-          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#1e3a8a', textTransform: 'uppercase' }}>
-            Low
+        <button
+          onClick={() => setSelectedMetric('low')}
+          style={{
+            padding: '10px',
+            background: selectedMetric === 'low' ? '#93c5fd' : '#dbeafe',
+            borderRadius: '6px',
+            textAlign: 'center',
+            border: selectedMetric === 'low' ? '2px solid #3b82f6' : '2px solid transparent',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            transform: selectedMetric === 'low' ? 'scale(1.05)' : 'scale(1)'
+          }}
+          onMouseEnter={(e) => {
+            if (selectedMetric !== 'low') {
+              e.target.style.transform = 'scale(1.02)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (selectedMetric !== 'low') {
+              e.target.style.transform = 'scale(1)';
+            }
+          }}
+        >
+          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#1e3a8a', textTransform: 'uppercase', fontWeight: '600' }}>
+            ❄️ Low
           </p>
           <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#1e40af' }}>
-            {formatTemperature(Math.min(...chartData.map(d => d.temperature)), unit)}
+            {formatTemperature(stats.low, unit)}
           </p>
-        </div>
+        </button>
 
-        <div style={{ padding: '10px', background: '#e0f2fe', borderRadius: '6px', textAlign: 'center' }}>
-          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#075985', textTransform: 'uppercase' }}>
-            Total Precip
+        <button
+          onClick={() => setSelectedMetric('precipitation')}
+          style={{
+            padding: '10px',
+            background: selectedMetric === 'precipitation' ? '#67e8f9' : '#e0f2fe',
+            borderRadius: '6px',
+            textAlign: 'center',
+            border: selectedMetric === 'precipitation' ? '2px solid #06b6d4' : '2px solid transparent',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            transform: selectedMetric === 'precipitation' ? 'scale(1.05)' : 'scale(1)'
+          }}
+          onMouseEnter={(e) => {
+            if (selectedMetric !== 'precipitation') {
+              e.target.style.transform = 'scale(1.02)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (selectedMetric !== 'precipitation') {
+              e.target.style.transform = 'scale(1)';
+            }
+          }}
+        >
+          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#075985', textTransform: 'uppercase', fontWeight: '600' }}>
+            🌧️ Total Precip
           </p>
           <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#0369a1' }}>
-            {chartData.reduce((sum, d) => sum + d.precipitation, 0).toFixed(1)} mm
+            {stats.totalPrecip.toFixed(1)} mm
           </p>
-        </div>
+        </button>
 
-        <div style={{ padding: '10px', background: '#f3f4f6', borderRadius: '6px', textAlign: 'center' }}>
-          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#374151', textTransform: 'uppercase' }}>
-            Avg Wind
+        <button
+          onClick={() => setSelectedMetric('wind')}
+          style={{
+            padding: '10px',
+            background: selectedMetric === 'wind' ? '#d1d5db' : '#f3f4f6',
+            borderRadius: '6px',
+            textAlign: 'center',
+            border: selectedMetric === 'wind' ? '2px solid #6b7280' : '2px solid transparent',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            transform: selectedMetric === 'wind' ? 'scale(1.05)' : 'scale(1)'
+          }}
+          onMouseEnter={(e) => {
+            if (selectedMetric !== 'wind') {
+              e.target.style.transform = 'scale(1.02)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (selectedMetric !== 'wind') {
+              e.target.style.transform = 'scale(1)';
+            }
+          }}
+        >
+          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#374151', textTransform: 'uppercase', fontWeight: '600' }}>
+            💨 Avg Wind
           </p>
           <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#4b5563' }}>
-            {(chartData.reduce((sum, d) => sum + d.windSpeed, 0) / chartData.length).toFixed(1)} km/h
+            {stats.avgWind.toFixed(1)} km/h
           </p>
-        </div>
+        </button>
       </div>
 
       {/* Info panel */}

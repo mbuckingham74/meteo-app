@@ -18,38 +18,62 @@ async function getLocationFromIP() {
     {
       name: 'ip-api.com',
       url: 'http://ip-api.com/json/',
-      parser: (data) => ({
-        address: `${data.city}, ${data.regionName}, ${data.country}`,
-        latitude: data.lat,
-        longitude: data.lon,
-        timezone: data.timezone,
-        accuracy: 5000,
-        method: 'ip'
-      })
+      parser: (data) => {
+        // Use city name if available, otherwise fall back to "Your Location"
+        const hasValidCity = data.city && data.city !== 'Unknown' && data.city.trim() !== '';
+        const address = hasValidCity
+          ? `${data.city}, ${data.regionName}, ${data.country}`
+          : 'Your Location';
+
+        return {
+          address,
+          latitude: data.lat,
+          longitude: data.lon,
+          timezone: data.timezone,
+          accuracy: 5000,
+          method: 'ip'
+        };
+      }
     },
     {
       name: 'geojs.io',
       url: 'https://get.geojs.io/v1/ip/geo.json',
-      parser: (data) => ({
-        address: `${data.city}, ${data.region}, ${data.country}`,
-        latitude: parseFloat(data.latitude),
-        longitude: parseFloat(data.longitude),
-        timezone: data.timezone,
-        accuracy: 5000,
-        method: 'ip'
-      })
+      parser: (data) => {
+        // Use city name if available, otherwise fall back to "Your Location"
+        const hasValidCity = data.city && data.city !== 'Unknown' && data.city.trim() !== '';
+        const address = hasValidCity
+          ? `${data.city}, ${data.region}, ${data.country}`
+          : 'Your Location';
+
+        return {
+          address,
+          latitude: parseFloat(data.latitude),
+          longitude: parseFloat(data.longitude),
+          timezone: data.timezone,
+          accuracy: 5000,
+          method: 'ip'
+        };
+      }
     },
     {
       name: 'ipapi.co',
       url: 'https://ipapi.co/json/',
-      parser: (data) => ({
-        address: `${data.city}, ${data.region_code || data.region}, ${data.country_name}`,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        timezone: data.timezone,
-        accuracy: 5000,
-        method: 'ip'
-      })
+      parser: (data) => {
+        // Use city name if available, otherwise fall back to "Your Location"
+        const hasValidCity = data.city && data.city !== 'Unknown' && data.city.trim() !== '';
+        const address = hasValidCity
+          ? `${data.city}, ${data.region_code || data.region}, ${data.country_name}`
+          : 'Your Location';
+
+        return {
+          address,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          timezone: data.timezone,
+          accuracy: 5000,
+          method: 'ip'
+        };
+      }
     }
   ];
 
@@ -128,17 +152,30 @@ export async function getCurrentLocation() {
 
             console.log('✅ Reverse geocoding successful:', location);
 
-            resolve({
-              ...location,
-              accuracy: position.coords.accuracy
-            });
+            // Check if the address is actually just coordinates (happens when backend is rate limited)
+            // Pattern: "12.3456, -78.9012" or similar
+            const isCoordinatesOnly = /^-?\d+\.\d+,\s*-?\d+\.\d+$/.test(location.address);
+
+            if (isCoordinatesOnly) {
+              console.warn('⚠️ Reverse geocoding returned coordinates as address, using friendly fallback');
+              resolve({
+                ...location,
+                address: 'Your Location', // User-friendly display instead of coordinates
+                accuracy: position.coords.accuracy
+              });
+            } else {
+              resolve({
+                ...location,
+                accuracy: position.coords.accuracy
+              });
+            }
           } catch (error) {
             console.warn('⚠️ Reverse geocoding failed, using coordinates only:', error.message);
 
-            // If reverse geocoding fails (e.g., API rate limit), return coordinates only
+            // If reverse geocoding fails (e.g., API rate limit), return user-friendly fallback
             // The weather API can still work with lat,lon coordinates
             const fallbackLocation = {
-              address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+              address: 'Your Location', // User-friendly display instead of raw coordinates
               latitude: latitude,
               longitude: longitude,
               timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
