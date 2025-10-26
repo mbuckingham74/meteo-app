@@ -2,9 +2,12 @@
 
 A comprehensive weather dashboard inspired by Weather Spark, providing detailed weather forecasts, historical climate data analysis, air quality monitoring, and location comparison tools.
 
+**Built by:** [Michael Buckingham](https://github.com/mbuckingham74) | **Repository:** [meteo-app](https://github.com/mbuckingham74/meteo-app)
+
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)
 ![React](https://img.shields.io/badge/react-18.2.0-blue.svg)
+[![GitHub](https://img.shields.io/badge/GitHub-mbuckingham74-181717?logo=github)](https://github.com/mbuckingham74)
 
 ## 🌟 Key Highlights
 
@@ -29,6 +32,7 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
+- [Author](#author)
 
 ---
 
@@ -696,6 +700,14 @@ MIT License - feel free to use this project for learning and development.
 - [ ] GraphQL API option
 - [ ] Webhook support for automated weather updates
 - [ ] CDN integration for static assets
+
+---
+
+## 👨‍💻 Author
+
+**Michael Buckingham**
+- GitHub: [@mbuckingham74](https://github.com/mbuckingham74)
+- Project: [meteo-app](https://github.com/mbuckingham74/meteo-app)
 
 ---
 
