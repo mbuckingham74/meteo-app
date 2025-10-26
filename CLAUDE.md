@@ -386,19 +386,56 @@ Side-by-side weather comparison for multiple cities (accessible via dashboard li
 - **Components:** `LocationComparisonView.jsx`, `LocationComparisonView.css`
 
 ### Temperature Conversion
+Temperature unit preference is managed globally through TemperatureUnitContext:
+
+**Architecture:**
+- **Context:** `TemperatureUnitContext` provides global `unit` state and `setUnit` function
+- **Page Components:** Use `useTemperatureUnit()` hook to access and update unit preference
+- **Child Components:** Receive `unit` as a prop from parent page components
+- **Persistence:** Saves to localStorage for guests, cloud-synced for authenticated users
+
+**Conversion:**
 All temperature values from the API (Celsius) are converted using:
 ```javascript
 // frontend/src/utils/weatherHelpers.js
 celsiusToFahrenheit(celsius) = (celsius * 9/5) + 32
+formatTemperature(value, unit) // Returns formatted string with °C or °F
 ```
-Components use the `convertTemp()` helper in WeatherDashboard or `formatTemperature()` in charts.
+
+**Important:**
+- Page components (WeatherDashboard, LocationComparisonView) MUST use `useTemperatureUnit()` hook
+- Never create local `unit` state - always use the global context
+- Temperature toggles anywhere in the app sync globally via this context
 
 ### Dark Mode Support
-All text colors use CSS variables that automatically adapt to theme:
+The application uses a comprehensive CSS variable system for full dark mode compatibility across all components.
+
+**Text Colors:**
 - `--text-primary`: Main text (white in dark mode)
 - `--text-secondary`: Secondary text (light gray in dark mode)
 - `--text-tertiary`: Tertiary text (medium gray in dark mode)
-Use `!important` when needed to override specificity issues.
+
+**Background Colors:**
+- `--bg-primary`, `--bg-secondary`, `--bg-tertiary`: Background layers
+- `--bg-elevated`: Elevated surfaces (cards, modals)
+
+**Accent & State Colors:**
+- `--accent-primary`, `--accent-bg`, `--accent-text`: Primary accent colors
+- `--error-bg`, `--error-border`, `--error-text`: Error states
+- `--warning-bg`, `--warning-border`, `--warning-text`: Warning states
+- `--success-bg`, `--success-border`, `--success-text`: Success states
+- `--info-bg`, `--info-border`, `--info-text`: Info states
+
+**Temperature & Insight Colors:**
+- `--temp-hot`, `--temp-cold`: Temperature indicators
+- `--insight-warm-bg/border`, `--insight-cold-bg/border`: Comparison insights
+- `--insight-wet-bg/border`, `--insight-diff-bg/border`: Weather insights
+
+**Best Practices:**
+- Always use CSS variables with fallback values: `var(--text-primary, #111827)`
+- Use `!important` when needed to override specificity issues
+- All CSS variables defined in `src/styles/themes.css` with light and dark variants
+- Avoids hardcoded hex colors to ensure consistent theming
 
 ## Data Visualization Strategy
 

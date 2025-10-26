@@ -39,7 +39,10 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **Multi-Day Forecasts** - 3, 7, or 14-day weather forecasts with dynamic time labels
 - **48-Hour Detailed View** - Hourly forecasts with temperature, feels-like, precipitation, and wind data
 - **Current Conditions Display** - Real-time temperature, feels-like, weather conditions, wind speed, humidity, visibility, and cloud cover
-- **Temperature Unit Toggle** - Global Celsius/Fahrenheit toggle in header (works for all users)
+- **Temperature Unit Toggle** - Global Celsius/Fahrenheit toggle in header that syncs across all components
+  - Persists to localStorage for guest users
+  - Cloud-synced for authenticated users
+  - Works consistently on all pages including location comparison
 - **Weather Alerts** - Real-time severe weather warnings, watches, and advisories with color-coded severity levels
   - Expandable alert details with onset/end times
   - Automatic severity classification (warning, watch, advisory)
@@ -108,10 +111,16 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 ### 🎨 Theme System
 
 - **Light Mode** - Clean, bright interface for daytime use
-- **Dark Mode** - Easy on the eyes for low-light environments
+- **Dark Mode** - Easy on the eyes for low-light environments with comprehensive CSS variable system
 - **Auto Mode** - Automatically follows system preferences
 - **Smart Persistence** - Theme saved to cloud for logged-in users, localStorage for guests
 - **Real-time Sync** - Theme preference syncs across all devices for authenticated users
+- **Complete Dark Mode Coverage** - All components fully optimized for dark theme including:
+  - All charts and visualizations
+  - Location search and comparison views
+  - Weather alerts and air quality cards
+  - User profile and authentication modals
+  - Consistent theming across all UI elements
 
 ### ⚙️ Customization
 
@@ -653,6 +662,15 @@ MIT License - feel free to use this project for learning and development.
 - [x] MySQL-based API response caching (99% reduction in API calls)
 - [x] Automatic cache expiration and cleanup
 - [x] Cache monitoring and management endpoints
+- [x] Request throttling and exponential backoff retry
+- [x] Graceful API rate limit handling
+
+**Recent Enhancements (2025)**
+- [x] Comprehensive dark mode CSS refactor using variable system
+- [x] Global temperature unit sync across all components
+- [x] Enhanced location comparison insights
+- [x] Improved theme consistency across all UI elements
+- [x] Better error handling and fallback mechanisms
 
 ### 🚧 Planned Enhancements
 
