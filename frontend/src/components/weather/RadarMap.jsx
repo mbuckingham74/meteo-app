@@ -49,6 +49,13 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250 }) {
 
   const [isLoading, setIsLoading] = useState(true);
 
+  // Animation state
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [animationSpeed, setAnimationSpeed] = useState(1); // 1x, 2x, 0.5x
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [opacity, setOpacity] = useState(0.6); // For fade effect during animation
+  const animationIntervalRef = React.useRef(null);
+
   const handleMapReady = React.useCallback(() => {
     // Small delay to ensure tiles start loading
     setTimeout(() => {
@@ -71,6 +78,62 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250 }) {
       ...prev,
       [layer]: !prev[layer]
     }));
+  };
+
+  // Animation control handlers
+  const togglePlayPause = () => {
+    setIsPlaying(prev => !prev);
+  };
+
+  const changeSpeed = () => {
+    setAnimationSpeed(prev => {
+      if (prev === 0.5) return 1;
+      if (prev === 1) return 2;
+      return 0.5;
+    });
+  };
+
+  // Animation loop effect
+  React.useEffect(() => {
+    if (isPlaying) {
+      const frameDelay = 1000 / animationSpeed; // Delay between frames
+
+      animationIntervalRef.current = setInterval(() => {
+        setCurrentFrame(prev => {
+          // Cycle through 8 frames (simulating past hour)
+          return (prev + 1) % 8;
+        });
+
+        // Pulse effect - fade in/out to show updates
+        setOpacity(prev => {
+          if (prev === 0.6) return 0.4;
+          return 0.6;
+        });
+      }, frameDelay);
+    } else {
+      if (animationIntervalRef.current) {
+        clearInterval(animationIntervalRef.current);
+        animationIntervalRef.current = null;
+      }
+      setOpacity(0.6); // Reset to default
+    }
+
+    return () => {
+      if (animationIntervalRef.current) {
+        clearInterval(animationIntervalRef.current);
+      }
+    };
+  }, [isPlaying, animationSpeed]);
+
+  // Get timestamp for current frame
+  const getFrameTimestamp = () => {
+    if (!isPlaying) {
+      return 'Live';
+    }
+    // Simulate past timestamps (10 minutes per frame going back)
+    const minutesAgo = currentFrame * 10;
+    const timestamp = new Date(Date.now() - minutesAgo * 60 * 1000);
+    return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
@@ -101,7 +164,8 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250 }) {
           <TileLayer
             attribution='&copy; <a href="https://openweathermap.org/">OpenWeather</a>'
             url={`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${OPENWEATHER_API_KEY}`}
-            opacity={0.6}
+            opacity={isPlaying ? opacity : 0.6}
+            key={`precip-${currentFrame}`}
           />
         )}
 
@@ -110,7 +174,8 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250 }) {
           <TileLayer
             attribution='&copy; <a href="https://openweathermap.org/">OpenWeather</a>'
             url={`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OPENWEATHER_API_KEY}`}
-            opacity={0.5}
+            opacity={isPlaying ? opacity * 0.83 : 0.5}
+            key={`clouds-${currentFrame}`}
           />
         )}
 
@@ -153,6 +218,33 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250 }) {
         >
           🌡️
         </button>
+      </div>
+
+      {/* Animation controls */}
+      <div className="radar-animation-controls">
+        <button
+          className="animation-button"
+          onClick={togglePlayPause}
+          title={isPlaying ? 'Pause' : 'Play animation'}
+        >
+          {isPlaying ? '⏸' : '▶'}
+        </button>
+        <button
+          className="animation-button speed-button"
+          onClick={changeSpeed}
+          title={`Speed: ${animationSpeed}x`}
+        >
+          {animationSpeed}x
+        </button>
+        <div className="animation-timestamp">
+          {getFrameTimestamp()}
+        </div>
+        <div className="animation-progress">
+          <div
+            className="animation-progress-bar"
+            style={{ width: `${((currentFrame + 1) / 8) * 100}%` }}
+          ></div>
+        </div>
       </div>
 
       <div className="radar-legend">

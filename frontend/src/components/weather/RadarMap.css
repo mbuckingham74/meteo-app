@@ -122,6 +122,76 @@
   background: rgba(102, 126, 234, 0.15);
 }
 
+/* Animation controls */
+.radar-animation-controls {
+  position: absolute;
+  bottom: 42px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+}
+
+.animation-button {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+}
+
+.animation-button:hover {
+  border-color: #667eea;
+  background: #f9fafb;
+}
+
+.animation-button:active {
+  transform: scale(0.95);
+}
+
+.speed-button {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.animation-timestamp {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.animation-progress {
+  flex: 1;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.animation-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #818cf8 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
 /* Radar legend */
 .radar-legend {
   position: absolute;
@@ -219,6 +289,37 @@
   color: #fecaca;
 }
 
+[data-theme="dark"] .radar-animation-controls {
+  background: rgba(31, 41, 55, 0.95);
+}
+
+[data-theme="dark"] .animation-button {
+  background: #1f2937;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+[data-theme="dark"] .animation-button:hover {
+  border-color: #818cf8;
+  background: #374151;
+}
+
+[data-theme="dark"] .speed-button {
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .animation-timestamp {
+  color: #f9fafb;
+}
+
+[data-theme="dark"] .animation-progress {
+  background: #4b5563;
+}
+
+[data-theme="dark"] .animation-progress-bar {
+  background: linear-gradient(90deg, #818cf8 0%, #a5b4fc 100%);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .radar-map-container {
@@ -233,5 +334,29 @@
   .legend-gradient {
     width: 80px;
     height: 6px;
+  }
+
+  .radar-animation-controls {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .animation-button {
+    padding: 4px 8px;
+    font-size: 14px;
+    min-width: 32px;
+  }
+
+  .speed-button {
+    font-size: 11px;
+  }
+
+  .animation-timestamp {
+    font-size: 11px;
+    padding: 0 4px;
+  }
+
+  .animation-progress {
+    height: 4px;
   }
 }
