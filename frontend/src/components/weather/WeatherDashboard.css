@@ -144,7 +144,7 @@
 
 .location-button {
   padding: 10px 24px;
-  background: #667eea;
+  background: var(--accent-primary, #667eea);
   color: white;
   border: none;
   border-radius: 8px;
@@ -155,7 +155,7 @@
 }
 
 .location-button:hover {
-  background: #5568d3;
+  background: var(--accent-hover, #5568d3);
 }
 
 .control-group {
@@ -216,8 +216,8 @@
 .error-state {
   text-align: center;
   padding: 40px 20px;
-  background: #fef2f2;
-  border: 2px solid #fecaca;
+  background: var(--error-bg, #fef2f2);
+  border: 2px solid var(--error-border, #fecaca);
   border-radius: 12px;
   margin: 20px 0;
 }
@@ -404,19 +404,19 @@
 
 .toggle-all-button {
   padding: 8px 16px;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background: var(--bg-tertiary, #f3f4f6);
+  border: 1px solid var(--border-light, #d1d5db);
   border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  color: #374151;
+  color: var(--text-secondary, #374151);
 }
 
 .toggle-all-button:hover {
-  background: #e5e7eb;
-  border-color: #9ca3af;
+  background: var(--hover-bg, #e5e7eb);
+  border-color: var(--text-tertiary, #9ca3af);
 }
 
 .chart-nav-list {
