@@ -612,7 +612,6 @@ function WeatherDashboard() {
       {/* Footer */}
       <footer className="dashboard-footer">
         <p>Data provided by Visual Crossing Weather API</p>
-        <p>Weather Spark-inspired visualizations</p>
       </footer>
     </div>
   );
