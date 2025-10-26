@@ -16,7 +16,7 @@ import { formatTemperature, formatDateShort } from '../../utils/weatherHelpers';
  * Temperature Band Chart Component
  * Weather Spark-style color-coded temperature visualization
  */
-function TemperatureBandChart({ data, unit = 'C', height = 400, days }) {
+function TemperatureBandChart({ data, unit = 'C', height = 400, days, aggregationLabel }) {
   if (!data || data.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
@@ -29,16 +29,19 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days }) {
     const numDays = days || data.length;
     if (numDays === 7) return 'Next Week';
     if (numDays === 14) return 'Next 2 Weeks';
-    return `Next ${numDays} Days`;
+    if (numDays <= 31) return `Next ${numDays} Days`;
+    // For aggregated data, use a more generic label
+    return 'Temperature Trends';
   };
 
   // Format data for Recharts
   const chartData = data.map(day => ({
     date: day.date,
-    displayDate: formatDateShort(day.date),
+    displayDate: day.displayLabel || formatDateShort(day.date), // Use displayLabel if available (for aggregated data)
     high: day.tempMax || day.tempHigh,
     low: day.tempMin || day.tempLow,
-    avg: day.tempAvg || day.temp
+    avg: day.tempAvg || day.temp,
+    aggregatedDays: day.aggregatedDays // Track if this is aggregated data
   }));
 
   // Custom tooltip
@@ -58,6 +61,11 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days }) {
         <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#111827' }}>
           {data.displayDate}
         </p>
+        {data.aggregatedDays && (
+          <p style={{ margin: '0 0 8px 0', fontSize: '11px', color: '#667eea', fontStyle: 'italic' }}>
+            ({data.aggregatedDays} days averaged)
+          </p>
+        )}
         <p style={{ margin: '4px 0', color: '#dc2626' }}>
           High: {formatTemperature(data.high, unit)}
         </p>
@@ -84,8 +92,12 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days }) {
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
             dataKey="displayDate"
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
             stroke="#9ca3af"
+            angle={chartData.length > 20 ? -45 : 0}
+            textAnchor={chartData.length > 20 ? 'end' : 'middle'}
+            height={chartData.length > 20 ? 80 : 30}
+            interval={chartData.length > 30 ? 'preserveStartEnd' : 0}
           />
           <YAxis
             tick={{ fontSize: 12, fill: '#6b7280' }}

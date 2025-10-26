@@ -17,7 +17,7 @@ import { formatDateShort, formatTemperature } from '../../utils/weatherHelpers';
  * Historical Comparison Chart Component
  * Compares current forecast with historical climate normals
  */
-function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', height = 400 }) {
+function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', height = 400, aggregationLabel }) {
   if (!forecastData || forecastData.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
@@ -40,7 +40,8 @@ function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', h
 
     return {
       date: forecast.date,
-      displayDate: formatDateShort(forecast.date),
+      displayDate: forecast.displayLabel || formatDateShort(forecast.date),
+      aggregatedDays: forecast.aggregatedDays,
       // Forecast temperatures
       forecastMax: forecast.tempMax,
       forecastMin: forecast.tempMin,
@@ -75,6 +76,11 @@ function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', h
         <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#111827' }}>
           {data.displayDate}
         </p>
+        {data.aggregatedDays && (
+          <p style={{ margin: '0 0 8px 0', fontSize: '11px', color: '#667eea', fontStyle: 'italic' }}>
+            ({data.aggregatedDays} days averaged)
+          </p>
+        )}
 
         <div style={{ marginBottom: '8px' }}>
           <p style={{ margin: '2px 0', fontSize: '12px', fontWeight: '600', color: '#6366f1' }}>
@@ -145,8 +151,12 @@ function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', h
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
             dataKey="displayDate"
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
             stroke="#9ca3af"
+            angle={chartData.length > 20 ? -45 : 0}
+            textAnchor={chartData.length > 20 ? 'end' : 'middle'}
+            height={chartData.length > 20 ? 80 : 30}
+            interval={chartData.length > 30 ? 'preserveStartEnd' : 0}
           />
           <YAxis
             tick={{ fontSize: 12, fill: '#6b7280' }}

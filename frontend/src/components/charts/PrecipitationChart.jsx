@@ -17,7 +17,7 @@ import { formatDateShort, formatPrecipitation } from '../../utils/weatherHelpers
  * Precipitation Chart Component
  * Shows precipitation amounts and probability
  */
-function PrecipitationChart({ data, height = 350, days }) {
+function PrecipitationChart({ data, height = 350, days, aggregationLabel }) {
   if (!data || data.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
@@ -30,16 +30,19 @@ function PrecipitationChart({ data, height = 350, days }) {
     const numDays = days || data.length;
     if (numDays === 7) return 'Next Week';
     if (numDays === 14) return 'Next 2 Weeks';
-    return `Next ${numDays} Days`;
+    if (numDays <= 31) return `Next ${numDays} Days`;
+    // For aggregated data, use a more generic label
+    return 'Precipitation Trends';
   };
 
   // Format data for Recharts
   const chartData = data.map(day => ({
     date: day.date,
-    displayDate: formatDateShort(day.date),
+    displayDate: day.displayLabel || formatDateShort(day.date),
     precipitation: day.precipitation || day.precip || 0,
     probability: day.precipProbability || day.precipProb || 0,
-    snow: day.snow || 0
+    snow: day.snow || 0,
+    aggregatedDays: day.aggregatedDays
   }));
 
   // Custom tooltip
@@ -59,6 +62,11 @@ function PrecipitationChart({ data, height = 350, days }) {
         <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#111827' }}>
           {data.displayDate}
         </p>
+        {data.aggregatedDays && (
+          <p style={{ margin: '0 0 8px 0', fontSize: '11px', color: '#667eea', fontStyle: 'italic' }}>
+            ({data.aggregatedDays} days {aggregationLabel?.includes('monthly') ? 'summed' : 'averaged'})
+          </p>
+        )}
         <p style={{ margin: '4px 0', color: '#3b82f6' }}>
           Precipitation: {formatPrecipitation(data.precipitation)}
         </p>
@@ -67,7 +75,7 @@ function PrecipitationChart({ data, height = 350, days }) {
             Snow: {data.snow.toFixed(1)} mm
           </p>
         )}
-        <p style={{ margin: '4px 0', color: '#94a3b8' }}>
+        <p style={{ margin: '4px 0', color: PRECIPITATION_COLORS.probability, fontWeight: '600' }}>
           Probability: {Math.round(data.probability)}%
         </p>
       </div>
@@ -87,8 +95,12 @@ function PrecipitationChart({ data, height = 350, days }) {
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
             dataKey="displayDate"
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
             stroke="#9ca3af"
+            angle={chartData.length > 20 ? -45 : 0}
+            textAnchor={chartData.length > 20 ? 'end' : 'middle'}
+            height={chartData.length > 20 ? 80 : 30}
+            interval={chartData.length > 30 ? 'preserveStartEnd' : 0}
           />
           <YAxis
             yAxisId="left"
@@ -104,6 +116,7 @@ function PrecipitationChart({ data, height = 350, days }) {
           <YAxis
             yAxisId="right"
             orientation="right"
+            domain={[0, 100]}
             tick={{ fontSize: 12, fill: '#6b7280' }}
             stroke="#9ca3af"
             label={{
@@ -140,9 +153,10 @@ function PrecipitationChart({ data, height = 350, days }) {
             type="monotone"
             dataKey="probability"
             stroke={PRECIPITATION_COLORS.probability}
-            strokeWidth={2}
+            strokeWidth={3}
             name="Probability"
-            dot={{ r: 4 }}
+            dot={{ r: 5, fill: PRECIPITATION_COLORS.probability }}
+            strokeDasharray="5 5"
           />
         </ComposedChart>
       </ResponsiveContainer>

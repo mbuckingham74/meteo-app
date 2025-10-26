@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useForecast, useHistoricalWeather } from '../../hooks/useWeatherData';
 import { useForecastComparison, useThisDayInHistory } from '../../hooks/useClimateData';
-import { formatTemperature } from '../../utils/weatherHelpers';
+import { formatTemperature, aggregateWeatherData } from '../../utils/weatherHelpers';
 import { useTemperatureUnit } from '../../contexts/TemperatureUnitContext';
 import LocationSearchBar from './LocationSearchBar';
 import TemperatureUnitToggle from '../units/TemperatureUnitToggle';
@@ -144,11 +144,44 @@ function LocationComparisonView() {
     10
   );
 
-  // Fetch "This Day in History" for each location
-  const location1History = useThisDayInHistory(locations[0] || null, null, 10);
-  const location2History = useThisDayInHistory(locations[1] || null, null, 10);
-  const location3History = useThisDayInHistory(locations[2] || null, null, 10);
-  const location4History = useThisDayInHistory(locations[3] || null, null, 10);
+  // Fetch "This Day in History" for each location (only for forecast mode)
+  const location1History = useThisDayInHistory(
+    dateRange.type === 'forecast' ? (locations[0] || null) : null,
+    null,
+    10
+  );
+  const location2History = useThisDayInHistory(
+    dateRange.type === 'forecast' ? (locations[1] || null) : null,
+    null,
+    10
+  );
+  const location3History = useThisDayInHistory(
+    dateRange.type === 'forecast' ? (locations[2] || null) : null,
+    null,
+    10
+  );
+  const location4History = useThisDayInHistory(
+    dateRange.type === 'forecast' ? (locations[3] || null) : null,
+    null,
+    10
+  );
+
+  // Pre-aggregate all location data (must be at top level, not in map)
+  // Maintain index alignment with locations array
+  const aggregatedDataSets = useMemo(() => {
+    const dataArray = [
+      locations[0] ? location1Data : null,
+      locations[1] ? location2Data : null,
+      locations[2] ? location3Data : null,
+      locations[3] ? location4Data : null
+    ];
+
+    return dataArray.map(data => {
+      if (!data) return { aggregatedData: [], aggregationLabel: null };
+      const rawWeatherData = data?.data?.forecast || data?.data?.historical || [];
+      return aggregateWeatherData(rawWeatherData, timeRange);
+    });
+  }, [locations, location1Data, location2Data, location3Data, location4Data, timeRange]);
 
   const allData = [
     locations[0] ? location1Data : null,
@@ -399,7 +432,14 @@ function LocationComparisonView() {
           const historyData = allHistoryData[index];
           const loading = data?.loading;
           const error = data?.error;
-          const weatherData = data?.data?.forecast || data?.data?.historical || [];
+
+          // Get pre-aggregated data for this location
+          const aggregationResult = aggregatedDataSets[index] || {
+            aggregatedData: [],
+            aggregationLabel: null
+          };
+          const weatherData = aggregationResult.aggregatedData || [];
+          const aggregationLabel = aggregationResult.aggregationLabel;
 
           return (
             <div key={index} className="comparison-card">
@@ -432,6 +472,12 @@ function LocationComparisonView() {
               {error && (
                 <div className="card-error">
                   <p>⚠️ {error}</p>
+                </div>
+              )}
+
+              {!loading && !error && weatherData.length === 0 && (
+                <div className="card-error">
+                  <p>⚠️ No weather data available</p>
                 </div>
               )}
 
@@ -498,45 +544,57 @@ function LocationComparisonView() {
                     </div>
                   )}
 
-                  {/* Weather Charts */}
-                  <div className="comparison-charts">
-                    <div className="comparison-chart">
-                      <TemperatureBandChart
-                        data={weatherData}
-                        unit={unit}
-                        height={200}
-                        days={weatherData.length}
-                      />
-                    </div>
+                  {/* Weather Charts - only render if we have valid data */}
+                  {weatherData && weatherData.length > 0 && (
+                    <div className="comparison-charts">
+                      {aggregationLabel && (
+                        <div className="aggregation-indicator">
+                          <span>📊 {aggregationLabel}</span>
+                        </div>
+                      )}
 
-                    <div className="comparison-chart">
-                      <PrecipitationChart
-                        data={weatherData}
-                        height={180}
-                        days={weatherData.length}
-                      />
-                    </div>
-
-                    <div className="comparison-chart">
-                      <WindChart
-                        data={weatherData}
-                        height={180}
-                        days={weatherData.length}
-                      />
-                    </div>
-
-                    {/* Historical Comparison (only for forecast mode) */}
-                    {dateRange.type === 'forecast' && comparisonData?.data && weatherData && (
                       <div className="comparison-chart">
-                        <HistoricalComparisonChart
-                          forecastData={weatherData}
-                          historicalData={comparisonData.data}
+                        <TemperatureBandChart
+                          data={weatherData}
                           unit={unit}
-                          height={220}
+                          height={200}
+                          days={weatherData.length}
+                          aggregationLabel={aggregationLabel}
                         />
                       </div>
-                    )}
-                  </div>
+
+                      <div className="comparison-chart">
+                        <PrecipitationChart
+                          data={weatherData}
+                          height={180}
+                          days={weatherData.length}
+                          aggregationLabel={aggregationLabel}
+                        />
+                      </div>
+
+                      <div className="comparison-chart">
+                        <WindChart
+                          data={weatherData}
+                          height={180}
+                          days={weatherData.length}
+                          aggregationLabel={aggregationLabel}
+                        />
+                      </div>
+
+                      {/* Historical Comparison (only for forecast mode) */}
+                      {dateRange.type === 'forecast' && comparisonData?.data && (
+                        <div className="comparison-chart">
+                          <HistoricalComparisonChart
+                            forecastData={weatherData}
+                            historicalData={comparisonData.data}
+                            unit={unit}
+                            height={220}
+                            aggregationLabel={aggregationLabel}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Historical Insights (only for forecast mode) */}
                   {dateRange.type === 'forecast' && historyData?.data && (

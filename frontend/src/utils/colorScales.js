@@ -52,7 +52,7 @@ export const PRECIPITATION_COLORS = {
   rain: '#3b82f6',      // Blue
   snow: '#e0f2fe',      // Light blue/white
   mixed: '#8b5cf6',     // Purple
-  probability: '#94a3b8' // Gray
+  probability: '#f97316' // Orange (changed from gray for better visibility)
 };
 
 /**

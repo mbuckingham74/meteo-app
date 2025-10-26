@@ -16,7 +16,7 @@ import { formatDateShort, formatWindSpeed, getWindDirection } from '../../utils/
  * Wind Chart Component
  * Shows wind speed and direction over time
  */
-function WindChart({ data, height = 350, days }) {
+function WindChart({ data, height = 350, days, aggregationLabel }) {
   if (!data || data.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
@@ -29,16 +29,19 @@ function WindChart({ data, height = 350, days }) {
     const numDays = days || data.length;
     if (numDays === 7) return 'Next Week';
     if (numDays === 14) return 'Next 2 Weeks';
-    return `Next ${numDays} Days`;
+    if (numDays <= 31) return `Next ${numDays} Days`;
+    // For aggregated data, use a more generic label
+    return 'Wind Trends';
   };
 
   // Format data for Recharts
   const chartData = data.map(day => ({
     date: day.date,
-    displayDate: formatDateShort(day.date),
+    displayDate: day.displayLabel || formatDateShort(day.date),
     windSpeed: day.windSpeed,
     windDirection: day.windDirection,
-    windDirectionLabel: getWindDirection(day.windDirection)
+    windDirectionLabel: getWindDirection(day.windDirection),
+    aggregatedDays: day.aggregatedDays
   }));
 
   // Custom tooltip
@@ -58,6 +61,11 @@ function WindChart({ data, height = 350, days }) {
         <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#111827' }}>
           {data.displayDate}
         </p>
+        {data.aggregatedDays && (
+          <p style={{ margin: '0 0 8px 0', fontSize: '11px', color: '#667eea', fontStyle: 'italic' }}>
+            ({data.aggregatedDays} days averaged)
+          </p>
+        )}
         <p style={{ margin: '4px 0', color: '#10b981' }}>
           Speed: {formatWindSpeed(data.windSpeed)}
         </p>
@@ -121,8 +129,12 @@ function WindChart({ data, height = 350, days }) {
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
             dataKey="displayDate"
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
             stroke="#9ca3af"
+            angle={chartData.length > 20 ? -45 : 0}
+            textAnchor={chartData.length > 20 ? 'end' : 'middle'}
+            height={chartData.length > 20 ? 80 : 30}
+            interval={chartData.length > 30 ? 'preserveStartEnd' : 0}
           />
           <YAxis
             tick={{ fontSize: 12, fill: '#6b7280' }}

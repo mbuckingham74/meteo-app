@@ -175,3 +175,120 @@ export function getMonthRange(year, month) {
     endDate: end.toISOString().split('T')[0]
   };
 }
+
+/**
+ * Aggregate weather data for better chart readability
+ * @param {Array} data - Array of weather data objects
+ * @param {string} timeRange - Time range identifier (e.g., '7days', '1year')
+ * @returns {Object} { aggregatedData, aggregationLabel }
+ */
+export function aggregateWeatherData(data, timeRange) {
+  if (!data || data.length === 0) {
+    return { aggregatedData: [], aggregationLabel: null };
+  }
+
+  // Determine aggregation level based on time range
+  let aggregationType = 'daily';
+  let aggregationLabel = null;
+
+  if (timeRange === '7days' || timeRange === '1month') {
+    // Keep daily data for short ranges (7-30 points)
+    return { aggregatedData: data, aggregationLabel: null };
+  } else if (timeRange === '3months' || timeRange === '6months') {
+    // Use weekly averages for medium ranges (~13-26 points)
+    aggregationType = 'weekly';
+    aggregationLabel = 'Showing weekly averages';
+  } else {
+    // Use monthly averages for long ranges (12-60 points)
+    aggregationType = 'monthly';
+    aggregationLabel = 'Showing monthly averages';
+  }
+
+  // Group data by period
+  const groups = {};
+
+  data.forEach(day => {
+    const date = new Date(day.date);
+    let key;
+
+    if (aggregationType === 'weekly') {
+      // Group by week (ISO week)
+      const startOfYear = new Date(date.getFullYear(), 0, 1);
+      const weekNum = Math.ceil(((date - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+      key = `${date.getFullYear()}-W${weekNum}`;
+    } else if (aggregationType === 'monthly') {
+      // Group by month
+      key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    if (!groups[key]) {
+      groups[key] = [];
+    }
+    groups[key].push(day);
+  });
+
+  // Calculate averages for each group
+  const aggregatedData = Object.keys(groups).sort().map(key => {
+    const groupData = groups[key];
+    const firstDate = new Date(groupData[0].date);
+
+    // Calculate averages for all metrics
+    const avgTemp = groupData.reduce((sum, d) => sum + (d.tempAvg || d.temp || 0), 0) / groupData.length;
+    const avgTempMax = groupData.reduce((sum, d) => sum + (d.tempMax || d.tempHigh || 0), 0) / groupData.length;
+    const avgTempMin = groupData.reduce((sum, d) => sum + (d.tempMin || d.tempLow || 0), 0) / groupData.length;
+    const totalPrecip = groupData.reduce((sum, d) => sum + (d.precipitation || d.precip || 0), 0);
+    const avgHumidity = groupData.reduce((sum, d) => sum + (d.humidity || 0), 0) / groupData.length;
+    const avgWindSpeed = groupData.reduce((sum, d) => sum + (d.windSpeed || 0), 0) / groupData.length;
+    const avgWindDirection = groupData.reduce((sum, d) => sum + (d.windDirection || 0), 0) / groupData.length;
+    const avgPrecipProb = groupData.reduce((sum, d) => sum + (d.precipProbability || d.precipProb || 0), 0) / groupData.length;
+
+    // Create display label
+    let displayLabel;
+    if (aggregationType === 'weekly') {
+      displayLabel = `Week of ${firstDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    } else {
+      displayLabel = firstDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    }
+
+    return {
+      date: groupData[0].date, // Use first date as representative
+      displayLabel,
+      temp: avgTemp,
+      tempAvg: avgTemp,
+      tempMax: avgTempMax,
+      tempMin: avgTempMin,
+      tempHigh: avgTempMax,
+      tempLow: avgTempMin,
+      precipitation: totalPrecip,
+      precip: totalPrecip,
+      humidity: avgHumidity,
+      windSpeed: avgWindSpeed,
+      windDirection: avgWindDirection,
+      precipProbability: avgPrecipProb,
+      precipProb: avgPrecipProb,
+      conditions: groupData[0].conditions, // Take first day's conditions
+      snow: groupData.reduce((sum, d) => sum + (d.snow || 0), 0),
+      aggregatedDays: groupData.length // Track how many days were aggregated
+    };
+  });
+
+  return { aggregatedData, aggregationLabel };
+}
+
+/**
+ * Format date for aggregated data labels
+ * @param {string} dateString - Date string
+ * @param {string} aggregationType - 'daily', 'weekly', or 'monthly'
+ * @returns {string} Formatted date label
+ */
+export function formatAggregatedDate(dateString, aggregationType = 'daily') {
+  const date = new Date(dateString);
+
+  if (aggregationType === 'monthly') {
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  } else if (aggregationType === 'weekly') {
+    return `Week of ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+  } else {
+    return formatDateShort(dateString);
+  }
+}
