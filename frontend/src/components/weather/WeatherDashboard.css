@@ -59,6 +59,8 @@
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-light);
   height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .controls-title {
@@ -278,6 +280,10 @@
   border-radius: 12px;
   padding: 20px;
   border: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .current-main {
@@ -351,6 +357,10 @@
 .current-footer {
   padding-top: 12px;
   border-top: 1px solid var(--border-light);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .radar-placeholder {
@@ -361,13 +371,14 @@
   display: block;
 }
 
-/* Chart Controls */
-.chart-controls {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 24px;
+/* Chart Controls Section (inside dashboard-controls) */
+.chart-controls-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 2px solid var(--border-light);
+  margin-top: 8px;
 }
 
 .chart-controls-header {
@@ -381,8 +392,9 @@
 
 .chart-controls-header h3 {
   margin: 0;
-  font-size: 18px;
-  color: #111827;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .chart-toggle-buttons {
@@ -576,8 +588,8 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .chart-controls {
-    padding: 16px;
+  .chart-controls-section {
+    padding-top: 12px;
   }
 
   .chart-controls-header {
@@ -625,8 +637,8 @@
     padding: 12px;
   }
 
-  .chart-controls {
-    padding: 12px;
+  .chart-controls-section {
+    padding-top: 10px;
   }
 
   .chart-card {

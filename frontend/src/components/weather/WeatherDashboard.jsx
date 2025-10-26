@@ -241,7 +241,7 @@ function WeatherDashboard() {
                         latitude={data.location.latitude}
                         longitude={data.location.longitude}
                         zoom={8}
-                        height={250}
+                        height="100%"
                       />
                     )}
                   </div>
@@ -291,16 +291,9 @@ function WeatherDashboard() {
                 </select>
               </label>
             </div>
-          </div>
-        </div>
 
-          {/* Weather Alerts */}
-          {data.alerts && data.alerts.length > 0 && (
-            <WeatherAlertsBanner alerts={data.alerts} />
-          )}
-
-          {/* Chart Visibility Controls */}
-          <div className="chart-controls">
+            {/* Chart Visibility Controls */}
+            <div className="chart-controls-section">
             <div className="chart-controls-header">
               <h3>📊 Charts ({visibleChartCount}/{Object.keys(visibleCharts).length} visible)</h3>
               <div className="chart-toggle-buttons">
@@ -476,7 +469,14 @@ function WeatherDashboard() {
                 <span>📉 Temperature Probability</span>
               </label>
             </div>
+            </div>
           </div>
+        </div>
+
+          {/* Weather Alerts */}
+          {data.alerts && data.alerts.length > 0 && (
+            <WeatherAlertsBanner alerts={data.alerts} />
+          )}
 
           {/* Charts */}
           <div className="charts-grid">
