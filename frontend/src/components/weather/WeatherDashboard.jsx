@@ -140,14 +140,6 @@ function WeatherDashboard() {
     return unit === 'F' ? Math.round(celsiusToFahrenheit(tempCelsius)) : Math.round(tempCelsius);
   };
 
-  // Toggle chart visibility
-  const toggleChart = (chartName) => {
-    setVisibleCharts(prev => ({
-      ...prev,
-      [chartName]: !prev[chartName]
-    }));
-  };
-
   // Count visible charts
   const visibleChartCount = Object.values(visibleCharts).filter(Boolean).length;
 
@@ -292,183 +284,108 @@ function WeatherDashboard() {
               </label>
             </div>
 
-            {/* Chart Visibility Controls */}
+            {/* Chart Navigation */}
             <div className="chart-controls-section">
-            <div className="chart-controls-header">
-              <h3>📊 Charts ({visibleChartCount}/{Object.keys(visibleCharts).length} visible)</h3>
-              <div className="chart-toggle-buttons">
-                <button
-                  className="toggle-all-button"
-                  onClick={() => setVisibleCharts({
-                    hourly: true,
-                    temperature: true,
-                    precipitation: true,
-                    wind: true,
-                    cloudCover: true,
-                    uvIndex: true,
-                    overview: true,
-                    humidityDew: true,
-                    sunriseSunset: true,
-                    feelsLike: true,
-                    airQuality: true,
-                    thisDayHistory: true,
-                    historicalComparison: true,
-                    recordTemps: true,
-                    tempProbability: true
-                  })}
-                >
-                  Show All
+              <div className="chart-controls-header">
+                <h3>📊 Charts</h3>
+                <div className="chart-toggle-buttons">
+                  <button
+                    className="toggle-all-button"
+                    onClick={() => setVisibleCharts({
+                      hourly: true,
+                      temperature: true,
+                      precipitation: true,
+                      wind: true,
+                      cloudCover: true,
+                      uvIndex: true,
+                      overview: true,
+                      humidityDew: true,
+                      sunriseSunset: true,
+                      feelsLike: true,
+                      airQuality: true,
+                      thisDayHistory: true,
+                      historicalComparison: true,
+                      recordTemps: true,
+                      tempProbability: true
+                    })}
+                  >
+                    Show All
+                  </button>
+                  <button
+                    className="toggle-all-button"
+                    onClick={() => setVisibleCharts({
+                      hourly: false,
+                      temperature: false,
+                      precipitation: false,
+                      wind: false,
+                      cloudCover: false,
+                      uvIndex: false,
+                      overview: false,
+                      humidityDew: false,
+                      sunriseSunset: false,
+                      feelsLike: false,
+                      airQuality: false,
+                      thisDayHistory: false,
+                      historicalComparison: false,
+                      recordTemps: false,
+                      tempProbability: false
+                    })}
+                  >
+                    Hide All
+                  </button>
+                </div>
+              </div>
+              <div className="chart-nav-list">
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-hourly')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  🕐 48-Hour Forecast
                 </button>
-                <button
-                  className="toggle-all-button"
-                  onClick={() => setVisibleCharts({
-                    hourly: false,
-                    temperature: false,
-                    precipitation: false,
-                    wind: false,
-                    cloudCover: false,
-                    uvIndex: false,
-                    overview: false,
-                    humidityDew: false,
-                    sunriseSunset: false,
-                    feelsLike: false,
-                    airQuality: false,
-                    thisDayHistory: false,
-                    historicalComparison: false,
-                    recordTemps: false,
-                    tempProbability: false
-                  })}
-                >
-                  Hide All
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-temperature')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  🌡️ Temperature Bands
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-precipitation')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  🌧️ Precipitation
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-wind')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  💨 Wind
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-cloudCover')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  ☁️ Cloud Cover
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-uvIndex')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  ☀️ UV Index
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  📈 Multi-Metric Overview
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-humidityDew')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  💧 Humidity & Dewpoint
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-sunriseSunset')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  🌅 Sunrise & Sunset
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-feelsLike')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  🌡️ Feels Like Temperature
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-airQuality')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  💨 Air Quality Index
+                </button>
+
+                {/* Historical/Climate section */}
+                <div style={{ width: '100%', height: '1px', background: 'var(--border-light)', margin: '8px 0' }} />
+
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-thisDayHistory')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  📅 This Day in History
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-historicalComparison')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  📊 Historical Comparison
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-recordTemps')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  🏆 Record Temperatures
+                </button>
+                <button className="chart-nav-button" onClick={() => document.getElementById('chart-tempProbability')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  📉 Temperature Probability
                 </button>
               </div>
-            </div>
-            <div className="chart-toggles">
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.hourly}
-                  onChange={() => toggleChart('hourly')}
-                />
-                <span>🕐 48-Hour Forecast</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.temperature}
-                  onChange={() => toggleChart('temperature')}
-                />
-                <span>🌡️ Temperature Bands</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.precipitation}
-                  onChange={() => toggleChart('precipitation')}
-                />
-                <span>🌧️ Precipitation</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.wind}
-                  onChange={() => toggleChart('wind')}
-                />
-                <span>💨 Wind</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.cloudCover}
-                  onChange={() => toggleChart('cloudCover')}
-                />
-                <span>☁️ Cloud Cover</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.uvIndex}
-                  onChange={() => toggleChart('uvIndex')}
-                />
-                <span>☀️ UV Index</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.overview}
-                  onChange={() => toggleChart('overview')}
-                />
-                <span>📈 Multi-Metric Overview</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.humidityDew}
-                  onChange={() => toggleChart('humidityDew')}
-                />
-                <span>💧 Humidity & Dewpoint</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.sunriseSunset}
-                  onChange={() => toggleChart('sunriseSunset')}
-                />
-                <span>🌅 Sunrise & Sunset</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.feelsLike}
-                  onChange={() => toggleChart('feelsLike')}
-                />
-                <span>🌡️ Feels Like Temperature</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.airQuality}
-                  onChange={() => toggleChart('airQuality')}
-                />
-                <span>💨 Air Quality Index</span>
-              </label>
-
-              {/* Historical/Climate toggles */}
-              <div style={{ width: '100%', height: '1px', background: 'var(--border-light)', margin: '8px 0' }} />
-
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.thisDayHistory}
-                  onChange={() => toggleChart('thisDayHistory')}
-                />
-                <span>📅 This Day in History</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.historicalComparison}
-                  onChange={() => toggleChart('historicalComparison')}
-                />
-                <span>📊 Historical Comparison</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.recordTemps}
-                  onChange={() => toggleChart('recordTemps')}
-                />
-                <span>🏆 Record Temperatures</span>
-              </label>
-              <label className="chart-toggle">
-                <input
-                  type="checkbox"
-                  checked={visibleCharts.tempProbability}
-                  onChange={() => toggleChart('tempProbability')}
-                />
-                <span>📉 Temperature Probability</span>
-              </label>
-            </div>
             </div>
           </div>
         </div>
@@ -482,7 +399,7 @@ function WeatherDashboard() {
           <div className="charts-grid">
             {/* Hourly Forecast - Full Width */}
             {visibleCharts.hourly && (
-              <div className="chart-card chart-card-wide">
+              <div id="chart-hourly" className="chart-card chart-card-wide">
                 <HourlyForecastChart
                   hourlyData={hourlyData.data?.hourly || []}
                   unit={unit}
@@ -492,7 +409,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.temperature && (
-              <div className="chart-card">
+              <div id="chart-temperature" className="chart-card">
                 <TemperatureBandChart
                   data={data.forecast || []}
                   unit={unit}
@@ -503,7 +420,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.precipitation && (
-              <div className="chart-card">
+              <div id="chart-precipitation" className="chart-card">
                 <PrecipitationChart
                   data={data.forecast || []}
                   height={350}
@@ -513,7 +430,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.wind && (
-              <div className="chart-card">
+              <div id="chart-wind" className="chart-card">
                 <WindChart
                   data={data.forecast || []}
                   height={350}
@@ -523,7 +440,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.cloudCover && (
-              <div className="chart-card">
+              <div id="chart-cloudCover" className="chart-card">
                 <CloudCoverChart
                   data={data.forecast || []}
                   height={350}
@@ -533,7 +450,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.uvIndex && (
-              <div className="chart-card">
+              <div id="chart-uvIndex" className="chart-card">
                 <UVIndexChart
                   data={data.forecast || []}
                   height={350}
@@ -543,7 +460,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.overview && (
-              <div className="chart-card chart-card-wide">
+              <div id="chart-overview" className="chart-card chart-card-wide">
                 <WeatherOverviewChart
                   data={data.forecast || []}
                   unit={unit}
@@ -555,7 +472,7 @@ function WeatherDashboard() {
 
             {/* Enhanced Weather Charts */}
             {visibleCharts.humidityDew && (
-              <div className="chart-card">
+              <div id="chart-humidityDew" className="chart-card">
                 <HumidityDewpointChart
                   data={data.forecast || []}
                   unit={unit}
@@ -565,7 +482,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.sunriseSunset && (
-              <div className="chart-card">
+              <div id="chart-sunriseSunset" className="chart-card">
                 <SunChart
                   data={data.forecast || []}
                   days={days}
@@ -574,7 +491,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.feelsLike && (
-              <div className="chart-card">
+              <div id="chart-feelsLike" className="chart-card">
                 <FeelsLikeChart
                   data={data.forecast || []}
                   unit={unit}
@@ -584,7 +501,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.airQuality && data.location && (
-              <div className="chart-card">
+              <div id="chart-airQuality" className="chart-card">
                 <AirQualityCard
                   latitude={data.location.latitude}
                   longitude={data.location.longitude}
@@ -594,7 +511,7 @@ function WeatherDashboard() {
 
             {/* Historical/Climate Charts */}
             {visibleCharts.thisDayHistory && (
-              <div className="chart-card chart-card-wide">
+              <div id="chart-thisDayHistory" className="chart-card chart-card-wide">
                 <ThisDayInHistoryCard
                   historyData={thisDayHistory.data}
                   unit={unit}
@@ -603,7 +520,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.historicalComparison && (
-              <div className="chart-card chart-card-wide">
+              <div id="chart-historicalComparison" className="chart-card chart-card-wide">
                 <HistoricalComparisonChart
                   forecastData={data.forecast || []}
                   historicalData={forecastComparison.data || []}
@@ -614,7 +531,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.recordTemps && (
-              <div className="chart-card chart-card-wide">
+              <div id="chart-recordTemps" className="chart-card chart-card-wide">
                 <RecordTemperaturesChart
                   records={recordTemps.data?.records || []}
                   unit={unit}
@@ -624,7 +541,7 @@ function WeatherDashboard() {
             )}
 
             {visibleCharts.tempProbability && (
-              <div className="chart-card chart-card-wide">
+              <div id="chart-tempProbability" className="chart-card chart-card-wide">
                 <TemperatureProbabilityChart
                   probabilityData={tempProbability.data}
                   unit={unit}
