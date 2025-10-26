@@ -253,21 +253,28 @@ Implemented in `backend/services/weatherService.js`:
 ## UI/UX Architecture
 
 ### Dashboard Layout
-The main weather dashboard uses a responsive 75/25 split layout:
+The main weather dashboard uses a responsive 75/25 split layout with equal-height containers:
 - **75% - Location & Current Conditions Box:**
   - Header with city name (left) and coordinates/timezone (right)
   - Current weather conditions card (centered, full-width)
   - Displays: temperature, feels-like, conditions, wind, humidity, visibility, cloud cover
-  - **Interactive radar map** with toggleable precipitation, cloud, and temperature layers
-- **25% - Location Panel:**
-  - Location search bar with autocomplete and recent history
-  - "Use My Location" button with robust geolocation
-  - Forecast day selector (3, 7, 14 days)
-  - "Compare Locations" navigation link
+  - **Interactive radar map** with animation controls and toggleable layers
+  - Map dynamically fills remaining vertical space to match right panel height
+- **25% - Unified Controls Panel:**
+  - **Location Section:**
+    - Location search bar with autocomplete and recent history
+    - "Use My Location" button with robust geolocation
+    - Forecast day selector (3, 7, 14 days)
+    - "Compare Locations" navigation link
+  - **Charts Section:** (15 toggleable chart options)
+    - Show All / Hide All quick controls
+    - Individual toggles for each chart type
+    - Panel scrolls vertically if needed to access all options
+  - Bottom edge perfectly aligns with radar map bottom
 - **Below:** Interactive charts with visibility toggles
 
 ### Weather Radar Map
-The app includes an interactive Leaflet-based radar map:
+The app includes an interactive Leaflet-based radar map with animation capabilities:
 - **Layers Available:**
   - 💧 Precipitation overlay (OpenWeather precipitation_new tiles)
   - ☁️ Cloud cover overlay (OpenWeather clouds_new tiles)
@@ -277,13 +284,24 @@ The app includes an interactive Leaflet-based radar map:
   - Automatic centering on selected location
   - Zoom controls for detailed viewing
   - Updates in real-time when location changes
-  - Dark mode support
+  - Loading state with spinner overlay
+  - Full dark mode support
+- **Animation Controls:** (bottom of map)
+  - ▶/⏸ Play/Pause button to start/stop animation
+  - Speed toggle: 0.5x, 1x, 2x playback rates
+  - Progress bar showing current position in timeline
+  - Timestamp display (shows "Live" when paused, time when playing)
+  - Pulse/fade effect on layers during animation for visual feedback
+  - Currently simulates 8 frames (10 min intervals, past hour)
+  - Framework ready for historical radar data integration
 - **Technical:**
   - Uses OpenWeather Maps API (free tier)
   - Tile endpoint: `tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png`
   - Update frequency: Every 3 hours (free tier limitation)
   - Base map: OpenStreetMap
-  - API Key stored in RadarMap component (consider moving to .env)
+  - API Key: Stored in `.env` as `REACT_APP_OPENWEATHER_API_KEY`
+  - Dynamic height using flexbox (100% of available vertical space)
+  - Components: `RadarMap.jsx`, `RadarMap.css`
 
 ### Location Search & Geolocation
 Enhanced location detection with multiple fallback mechanisms:
