@@ -361,6 +361,30 @@ The IP fallback ensures location detection works 99% of the time.
 - Cloud-synced across all devices
 - Click any favorite to load location instantly
 
+### Compare Locations
+Side-by-side weather comparison for multiple cities (accessible via dashboard link):
+- **Features:**
+  - Compare 2-4 locations simultaneously
+  - Interactive search for each location slot
+  - Real-time weather data for each city
+  - 7-day averages and totals
+  - Comparison insights (warmest, coldest, wettest)
+  - Temperature difference calculations
+  - Add/remove locations dynamically
+- **Display:**
+  - Large temperature display with high/low range
+  - 7-day average temperature
+  - Total precipitation (7 days)
+  - Average humidity percentage
+  - Current conditions badge
+- **Insights Panel:**
+  - 🔥 Warmest location with average temp
+  - ❄️ Coldest location with average temp
+  - 🌧️ Wettest location with total precipitation
+  - 📊 Temperature difference between extremes
+- **Dark Mode:** Fully supported with readable text and proper contrast
+- **Components:** `LocationComparisonView.jsx`, `LocationComparisonView.css`
+
 ### Temperature Conversion
 All temperature values from the API (Celsius) are converted using:
 ```javascript
