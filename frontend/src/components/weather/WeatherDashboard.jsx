@@ -40,7 +40,7 @@ function WeatherDashboard() {
   const { location, locationData, selectLocation } = useLocation();
   const { unit } = useTemperatureUnit();
 
-  const [days, setDays] = useState(7);
+  const days = 7; // Default forecast days for charts
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [locationError, setLocationError] = useState(null);
 
@@ -141,6 +141,15 @@ function WeatherDashboard() {
     return unit === 'F' ? Math.round(celsiusToFahrenheit(tempCelsius)) : Math.round(tempCelsius);
   };
 
+  // Get city name for button (extract first part of address, truncate if too long)
+  const getCityName = () => {
+    const address = data?.location?.address || locationData?.address || location || 'Location';
+    // Extract city name (everything before first comma, or full string if no comma)
+    const cityName = address.split(',')[0].trim();
+    // Truncate if longer than 20 characters
+    return cityName.length > 20 ? cityName.substring(0, 20) + '...' : cityName;
+  };
+
   // Count visible charts
   const visibleChartCount = Object.values(visibleCharts).filter(Boolean).length;
 
@@ -179,6 +188,14 @@ function WeatherDashboard() {
           <div className="dashboard-main-row">
             {/* Location Info with Current Conditions - 75% */}
             <div className="location-info">
+              {/* Current Conditions Header */}
+              <div className="section-header">
+                <h3 className="section-title">
+                  <span className="section-icon">🌡️</span>
+                  Current Conditions
+                </h3>
+              </div>
+
               {/* Header: City name left, Coords/Timezone right */}
               <div className="location-header">
                 <h2 className="location-name">
@@ -225,6 +242,16 @@ function WeatherDashboard() {
                       <span className="stat-icon">☁️</span>
                       <span className="stat-value">{currentWeather.data.current.cloudCover}%</span>
                       <span className="stat-label">Clouds</span>
+                    </div>
+                    <div className="current-stat">
+                      <span className="stat-icon">🌧️</span>
+                      <span className="stat-value">
+                        {hourlyData?.data?.hourly
+                          ? hourlyData.data.hourly.slice(0, 24).reduce((sum, hour) => sum + (hour.precipitation || 0), 0).toFixed(1)
+                          : '0.0'
+                        } mm
+                      </span>
+                      <span className="stat-label">24h Precip</span>
                     </div>
                   </div>
 
@@ -276,20 +303,17 @@ function WeatherDashboard() {
               <TemperatureUnitToggle />
             </div>
 
-            <div className="control-group">
-              <label className="control-label">
-                Forecast Days:
-                <select
-                  className="control-select"
-                  value={days}
-                  onChange={(e) => setDays(parseInt(e.target.value))}
-                >
-                  <option value={3}>3 days</option>
-                  <option value={7}>7 days</option>
-                  <option value={14}>14 days</option>
-                </select>
-              </label>
-            </div>
+            {/* View Forecast Button */}
+            <button
+              className="view-forecast-button"
+              onClick={() => document.getElementById('forecast-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            >
+              <span className="button-icon">📊</span>
+              <span className="button-text">
+                <strong>View {getCityName()} Forecast & Charts</strong>
+                <span className="button-subtitle">Interactive weather visualizations</span>
+              </span>
+            </button>
 
             {/* Chart Navigation */}
             <div className="chart-controls-section">
@@ -401,6 +425,14 @@ function WeatherDashboard() {
           {data.alerts && data.alerts.length > 0 && (
             <WeatherAlertsBanner alerts={data.alerts} />
           )}
+
+          {/* Forecast Section Header */}
+          <div id="forecast-section" className="section-header forecast-header">
+            <h3 className="section-title">
+              <span className="section-icon">📊</span>
+              Forecast & Charts
+            </h3>
+          </div>
 
           {/* Charts */}
           <div className="charts-grid">

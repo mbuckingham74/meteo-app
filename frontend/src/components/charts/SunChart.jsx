@@ -93,34 +93,41 @@ function SunChart({ data, days }) {
   };
 
   return (
-    <div style={{ width: '100%', height: 400 }}>
+    <div style={{ width: '100%', height: 450 }}>
       <h3 style={{
-        margin: '0 0 20px 0',
-        fontSize: '20px',
-        fontWeight: '600',
-        color: 'var(--text-primary)'
+        margin: '0 0 24px 0',
+        fontSize: '22px',
+        fontWeight: '700',
+        color: '#111827'
       }}>
         🌅 Sunrise & Sunset - {getTimeLabel()}
       </h3>
 
       <ResponsiveContainer>
-        <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" />
+        <BarChart data={chartData} margin={{ top: 5, right: 30, left: 30, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
           <XAxis
             dataKey="date"
-            stroke="var(--text-tertiary)"
-            style={{ fontSize: '12px' }}
+            stroke="#374151"
+            tick={{ fill: '#374151', fontSize: 13, fontWeight: 500 }}
+            style={{ fontSize: '13px' }}
           />
           <YAxis
-            stroke="var(--text-tertiary)"
-            style={{ fontSize: '12px' }}
+            stroke="#374151"
+            tick={{ fill: '#374151', fontSize: 13, fontWeight: 500 }}
+            style={{ fontSize: '13px' }}
             tickFormatter={minutesToTime}
             domain={[300, 1200]} // 5 AM to 8 PM
             ticks={[360, 480, 600, 720, 840, 960, 1080, 1200]}
-            label={{ value: 'Time', angle: -90, position: 'insideLeft', style: { fill: 'var(--text-secondary)' } }}
+            label={{
+              value: 'Time of Day',
+              angle: -90,
+              position: 'insideLeft',
+              style: { fill: '#111827', fontSize: 14, fontWeight: 600 }
+            }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend wrapperStyle={{ paddingTop: '20px' }} />
+          <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '14px', fontWeight: 600 }} />
           <Bar dataKey="sunrise" fill="#f59e0b" name="Sunrise" radius={[4, 4, 0, 0]} />
           <Bar dataKey="sunset" fill="#f97316" name="Sunset" radius={[4, 4, 0, 0]} />
           <Bar dataKey="daylight" fill="#3b82f6" name="Daylight Duration (min)" hide />

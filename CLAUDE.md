@@ -267,32 +267,53 @@ Implemented in `backend/services/weatherService.js`:
 ## UI/UX Architecture
 
 ### Dashboard Layout
-The main weather dashboard uses a responsive 75/25 split layout with equal-height containers:
-- **75% - Location & Current Conditions Box:**
-  - Header with city name (left) and coordinates/timezone (right)
-  - Current weather conditions card (centered, full-width)
-  - Displays: temperature, feels-like, conditions, wind, humidity, visibility, cloud cover
+The main weather dashboard uses a responsive 75/25 split layout with clear section delineation:
+
+**Section Headers:**
+- **"Current Conditions"** header appears above city name and weather data
+- **"Forecast & Charts"** header separates forecast section from current conditions
+- Provides clear visual hierarchy and improved navigation
+
+**Layout Structure:**
+- **75% - Current Conditions Box:**
+  - Section header: "🌡️ Current Conditions"
+  - City name (left) and coordinates/timezone (right)
+  - Current weather: temperature, feels-like, conditions
+  - **5 compact stat boxes**: Wind, Humidity, Visibility, Clouds, 24h Precipitation
   - **Interactive radar map** with animation controls and toggleable layers
   - Map dynamically fills remaining vertical space to match right panel height
 - **25% - Unified Controls Panel:**
   - **Location Section:**
     - Location search bar with autocomplete and recent history
     - "Use My Location" button with robust geolocation
-    - Forecast day selector (3, 7, 14 days)
     - "Compare Locations" navigation link
+  - **Temperature Unit Toggle**: Celsius/Fahrenheit selector
+  - **Prominent Forecast Button:**
+    - "View [CityName] Forecast & Charts" - personalized with current city
+    - Gradient purple styling matching app theme
+    - Smooth scroll to forecast section with one click
+    - Replaces confusing "Forecast Days" dropdown (fixed to 7 days)
   - **Charts Section:** (15 navigation buttons)
     - Show All / Hide All buttons control chart visibility
     - Click any chart button → Smoothly scrolls to that chart
-    - Intuitive navigation: separate from visibility controls
     - Panel scrolls vertically if needed to access all options
-  - Bottom edge perfectly aligns with radar map bottom
-- **Below:** Interactive charts with smooth scroll navigation
+- **Below:** "Forecast & Charts" section with interactive visualizations
 
 **Chart Navigation:**
-- Click chart name buttons to navigate to specific charts
+- Large "View [CityName] Forecast & Charts" button provides quick access
+- Individual chart navigation buttons for precise scrolling
 - All charts have unique IDs (chart-hourly, chart-temperature, etc.)
 - Smooth scroll animation for better UX
 - Charts remain visible by default for discoverability
+
+**Chart Visibility Enhancements:**
+- All charts feature bold, clearly visible titles (22px, weight 700)
+- Explicit color values ensure labels render in both light/dark modes
+- Axis labels with units (e.g., "Humidity (%)", "Temperature (°F)", "Time of Day")
+- Larger tick labels (13px, weight 500) for better readability
+- Bold legends (14px, weight 600) for clear data identification
+- Increased chart height (450px) for improved visualization
+- Enhanced grid lines with proper opacity for subtle guidance
 
 ### Interactive 48-Hour Forecast Chart
 The hourly forecast chart features multiple clickable views for focused analysis:

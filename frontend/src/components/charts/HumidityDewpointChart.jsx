@@ -63,40 +63,53 @@ function HumidityDewpointChart({ data, days, unit = 'C' }) {
   };
 
   return (
-    <div style={{ width: '100%', height: 400 }}>
+    <div style={{ width: '100%', height: 450 }}>
       <h3 style={{
-        margin: '0 0 20px 0',
-        fontSize: '20px',
-        fontWeight: '600',
-        color: 'var(--text-primary)'
+        margin: '0 0 24px 0',
+        fontSize: '22px',
+        fontWeight: '700',
+        color: '#111827'
       }}>
         💧 Humidity & Dewpoint - {getTimeLabel()}
       </h3>
 
       <ResponsiveContainer>
-        <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" />
+        <LineChart data={chartData} margin={{ top: 5, right: 40, left: 25, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
           <XAxis
             dataKey="date"
-            stroke="var(--text-tertiary)"
-            style={{ fontSize: '12px' }}
+            stroke="#374151"
+            tick={{ fill: '#374151', fontSize: 13, fontWeight: 500 }}
+            style={{ fontSize: '13px' }}
           />
           <YAxis
             yAxisId="left"
-            stroke="var(--text-tertiary)"
-            style={{ fontSize: '12px' }}
-            label={{ value: 'Humidity (%)', angle: -90, position: 'insideLeft', style: { fill: 'var(--text-secondary)' } }}
+            stroke="#60a5fa"
+            tick={{ fill: '#374151', fontSize: 13, fontWeight: 500 }}
+            style={{ fontSize: '13px' }}
+            label={{
+              value: 'Humidity (%)',
+              angle: -90,
+              position: 'insideLeft',
+              style: { fill: '#111827', fontSize: 14, fontWeight: 600 }
+            }}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
-            stroke="var(--text-tertiary)"
-            style={{ fontSize: '12px' }}
-            label={{ value: `Dewpoint (°${unit})`, angle: 90, position: 'insideRight', style: { fill: 'var(--text-secondary)' } }}
+            stroke="#34d399"
+            tick={{ fill: '#374151', fontSize: 13, fontWeight: 500 }}
+            style={{ fontSize: '13px' }}
+            label={{
+              value: `Dewpoint (°${unit})`,
+              angle: 90,
+              position: 'insideRight',
+              style: { fill: '#111827', fontSize: 14, fontWeight: 600 }
+            }}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            wrapperStyle={{ paddingTop: '20px' }}
+            wrapperStyle={{ paddingTop: '20px', fontSize: '14px', fontWeight: 600 }}
             iconType="line"
           />
           <Line

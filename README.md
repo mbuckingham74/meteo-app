@@ -771,6 +771,15 @@ MIT License - feel free to use this project for learning and development.
 - [x] Improved theme consistency across all UI elements
 - [x] Better error handling and fallback mechanisms
 - [x] Temperature unit toggle moved to dashboard controls for better UX
+- [x] **Dashboard UX improvements (Latest)**
+  - Section headers for clear delineation ("Current Conditions" and "Forecast & Charts")
+  - Prominent "View [CityName] Forecast & Charts" button with gradient styling
+  - Personalized button text showing current city name
+  - Removed confusing "Forecast Days" dropdown (standardized to 7 days)
+  - Enhanced chart visibility with bold labels and axis information
+  - Increased font sizes for titles, axis labels, and legends
+  - Better chart readability with explicit color values
+  - 5 compact stat boxes including new 24-hour precipitation total
 
 ### 🚧 Planned Enhancements
 
