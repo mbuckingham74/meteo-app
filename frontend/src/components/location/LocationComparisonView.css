@@ -179,11 +179,11 @@
 }
 
 .high-temp {
-  color: #dc2626;
+  color: var(--temp-hot, #dc2626);
 }
 
 .low-temp {
-  color: #3b82f6;
+  color: var(--temp-cold, #3b82f6);
 }
 
 /* Forecast Summary */
@@ -220,11 +220,12 @@
 .conditions-badge {
   text-align: center;
   padding: 8px;
-  background: #eff6ff;
+  background: var(--accent-bg, #eff6ff);
   border-radius: 6px;
   font-size: 13px;
-  color: #1e40af;
+  color: var(--accent-text, #1e40af);
   font-weight: 500;
+  border: 1px solid var(--border-light, transparent);
 }
 
 /* Loading and Error States */
@@ -291,23 +292,23 @@
 }
 
 .insight-card.warm {
-  background: #fef2f2;
-  border-color: #fecaca;
+  background: var(--insight-warm-bg, #fef2f2);
+  border-color: var(--insight-warm-border, #fecaca);
 }
 
 .insight-card.cold {
-  background: #eff6ff;
-  border-color: #bfdbfe;
+  background: var(--insight-cold-bg, #eff6ff);
+  border-color: var(--insight-cold-border, #bfdbfe);
 }
 
 .insight-card.wet {
-  background: #ecfdf5;
-  border-color: #a7f3d0;
+  background: var(--insight-wet-bg, #ecfdf5);
+  border-color: var(--insight-wet-border, #a7f3d0);
 }
 
 .insight-card.difference {
-  background: #fef3c7;
-  border-color: #fde68a;
+  background: var(--insight-diff-bg, #fef3c7);
+  border-color: var(--insight-diff-border, #fde68a);
 }
 
 .insight-icon {

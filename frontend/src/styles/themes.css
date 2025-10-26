@@ -36,6 +36,29 @@
   --info-border: #bfdbfe;
   --info-text: #1e40af;
 
+  /* Temperature Colors */
+  --temp-hot: #dc2626;
+  --temp-cold: #3b82f6;
+
+  /* Accent Variants */
+  --accent-bg: #eff6ff;
+  --accent-text: #1e40af;
+
+  /* Insight Card Colors */
+  --insight-warm-bg: #fef2f2;
+  --insight-warm-border: #fecaca;
+  --insight-cold-bg: #eff6ff;
+  --insight-cold-border: #bfdbfe;
+  --insight-wet-bg: #ecfdf5;
+  --insight-wet-border: #a7f3d0;
+  --insight-diff-bg: #fef3c7;
+  --insight-diff-border: #fde68a;
+
+  /* Hover States */
+  --hover-bg: #e5e7eb;
+  --warning-bg-hover: #fef3c7;
+  --warning-border-hover: #f59e0b;
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -84,6 +107,29 @@
   --info-bg: #1e3a8a;
   --info-border: #1e40af;
   --info-text: #93c5fd;
+
+  /* Temperature Colors */
+  --temp-hot: #fca5a5;
+  --temp-cold: #93c5fd;
+
+  /* Accent Variants */
+  --accent-bg: #1e3a8a;
+  --accent-text: #93c5fd;
+
+  /* Insight Card Colors */
+  --insight-warm-bg: #7f1d1d;
+  --insight-warm-border: #991b1b;
+  --insight-cold-bg: #1e3a8a;
+  --insight-cold-border: #1e40af;
+  --insight-wet-bg: #064e3b;
+  --insight-wet-border: #065f46;
+  --insight-diff-bg: #78350f;
+  --insight-diff-border: #92400e;
+
+  /* Hover States */
+  --hover-bg: #374151;
+  --warning-bg-hover: #92400e;
+  --warning-border-hover: #fb923c;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
