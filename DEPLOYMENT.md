@@ -1,204 +1,517 @@
-# Deployment Guide
+# Meteo App - Production Deployment Guide
 
-This guide explains how to safely manage API keys and deploy the Meteo App.
+This guide covers deploying the Meteo App to production with Docker Compose and Nginx Proxy Manager.
 
-## 🔐 Security: Managing API Keys
+## Architecture Overview
 
-### ⚠️ NEVER commit API keys to Git
+**Network Architecture:**
+- `meteo-internal` - Internal network for MySQL ↔ Backend (isolated)
+- `npm_network` - External NPM network for Frontend and Backend (public-facing)
 
-Your `.env` file is already in `.gitignore` to prevent accidental commits.
+**Services:**
+- `meteo-mysql-prod` - MySQL 8.0 database (internal only)
+- `meteo-backend-prod` - Node.js Express API (dual network)
+- `meteo-frontend-prod` - React app served by Nginx (NPM network)
 
-### Local Development Setup
+**Domains:**
+- `meteo-app.tachyonfuture.com` → Frontend
+- `api.meteo-app.tachyonfuture.com` → Backend API
 
-1. **Copy the example environment file:**
-   ```bash
-   cp backend/.env.example backend/.env
-   ```
+---
 
-2. **Add your API key to `backend/.env`:**
-   ```bash
-   VISUAL_CROSSING_API_KEY=your_actual_key_here
-   DB_PASSWORD=your_mysql_password
-   ```
+## Prerequisites
 
-3. **Verify `.env` is not tracked:**
-   ```bash
-   git status
-   # Should NOT show backend/.env
-   ```
+1. **Server Requirements:**
+   - Docker and Docker Compose installed
+   - Nginx Proxy Manager (NPM) running
+   - Ports 80 and 443 available for NPM
 
-## 🚀 Deployment Options
+2. **DNS Configuration (Cloudflare):**
+   - Create A record: `meteo-app.tachyonfuture.com` → Your server IP
+   - Create A record: `api.meteo-app.tachyonfuture.com` → Your server IP
 
-### Option 1: Docker Compose (Recommended for POC)
+3. **API Keys:**
+   - Visual Crossing Weather API key
+   - OpenWeather API key
 
-Docker Compose will read environment variables from your shell or a `.env` file in the project root.
+---
 
-1. **Create a `.env` file in the project root** (same level as docker-compose.yml):
-   ```bash
-   # .env (project root)
-   DB_USER=root
-   DB_PASSWORD=your_mysql_password
-   DB_NAME=meteo_app
-   VISUAL_CROSSING_API_KEY=your_api_key_here
-   ```
+## Step-by-Step Deployment
 
-2. **Start the application:**
-   ```bash
-   docker-compose up -d
-   ```
+### 1. Prepare Environment Configuration
 
-3. **Verify environment variables are loaded:**
-   ```bash
-   docker exec meteo-backend env | grep VISUAL_CROSSING
-   ```
+Copy the production environment template and fill in your values:
 
-### Option 2: GitHub Secrets (for CI/CD)
-
-If you set up GitHub Actions for deployment:
-
-1. **Go to your repository on GitHub:**
-   - Navigate to `Settings` → `Secrets and variables` → `Actions`
-
-2. **Add Repository Secrets:**
-   - Click `New repository secret`
-   - Name: `VISUAL_CROSSING_API_KEY`
-   - Value: `BTU88L6G4NBB69QRDGJ7UJEVQ`
-   - Click `Add secret`
-
-3. **Repeat for other secrets:**
-   - `DB_PASSWORD`
-   - Any other sensitive values
-
-4. **Use in GitHub Actions workflow** (.github/workflows/deploy.yml):
-   ```yaml
-   env:
-     VISUAL_CROSSING_API_KEY: ${{ secrets.VISUAL_CROSSING_API_KEY }}
-     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-   ```
-
-### Option 3: Cloud Platform Environment Variables
-
-#### Heroku
 ```bash
-heroku config:set VISUAL_CROSSING_API_KEY=your_key_here
-heroku config:set DB_PASSWORD=your_password_here
+cd /path/to/meteo-app
+cp .env.production.example .env.production
 ```
 
-#### AWS (Elastic Beanstalk)
+Edit `.env.production` with your actual values:
+
 ```bash
-aws elasticbeanstalk set-environment \
-  --environment-name meteo-app-env \
-  --option-settings \
-    Namespace=aws:elasticbeanstalk:application:environment,\
-    OptionName=VISUAL_CROSSING_API_KEY,Value=your_key_here
+# Database Configuration
+DB_ROOT_PASSWORD=your_secure_root_password_here
+DB_NAME=meteo_app
+DB_USER=meteo_user
+DB_PASSWORD=your_secure_db_password_here
+
+# Weather API Keys
+OPENWEATHER_API_KEY=your_openweather_api_key
+VISUAL_CROSSING_API_KEY=your_visual_crossing_api_key
+
+# Backend Configuration
+JWT_SECRET=your_secure_jwt_secret_minimum_32_characters
+
+# CORS Configuration
+CORS_ORIGIN=https://meteo-app.tachyonfuture.com
+
+# Frontend API URL
+REACT_APP_API_URL=https://api.meteo-app.tachyonfuture.com
 ```
 
-#### DigitalOcean App Platform
-Add environment variables in the App Platform console under `Settings` → `App-Level Environment Variables`
-
-#### Vercel
+**Security Note:** Generate secure passwords and JWT secret:
 ```bash
-vercel env add VISUAL_CROSSING_API_KEY
-# Enter your key when prompted
+# Generate random passwords
+openssl rand -base64 32
+
+# Generate JWT secret (minimum 32 characters)
+openssl rand -hex 32
 ```
 
-## 🔄 Updating Environment Variables
+---
 
-### Local Development
-Just edit `backend/.env` and restart your server:
+### 2. Ensure NPM Network Exists
+
+NPM should already have a Docker network. Verify it exists:
+
 ```bash
-docker-compose restart backend
-# or
-cd backend && npm run dev
+docker network ls | grep npm_network
 ```
 
-### Production
-1. Update the secret in your deployment platform
-2. Restart the application to load new values
+If it doesn't exist, create it:
 
-## 📋 Environment Variables Checklist
+```bash
+docker network create npm_network
+```
 
-Before deploying, ensure these are set:
+---
 
-### Required
-- ✅ `VISUAL_CROSSING_API_KEY` - Your Visual Crossing API key
-- ✅ `DB_PASSWORD` - MySQL database password
+### 3. Build and Start Services
 
-### Optional (have defaults)
-- `PORT` - Backend server port (default: 5001)
-- `NODE_ENV` - Environment (default: development)
-- `DB_HOST` - Database host (default: mysql for Docker, localhost for local)
-- `DB_PORT` - Database port (default: 3306)
-- `DB_USER` - Database user (default: root)
-- `DB_NAME` - Database name (default: meteo_app)
+Start the production stack using the production docker-compose file:
 
-## 🧪 Testing Your Setup
+```bash
+# Build and start all services
+docker-compose -f docker-compose.prod.yml --env-file .env.production up -d --build
 
-1. **Verify environment variables are loaded:**
+# View logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Check container status
+docker-compose -f docker-compose.prod.yml ps
+```
+
+**Expected Output:**
+```
+NAME                   STATUS    PORTS
+meteo-mysql-prod       running   3306/tcp
+meteo-backend-prod     running   5001/tcp
+meteo-frontend-prod    running   80/tcp
+```
+
+---
+
+### 4. Verify Services Health
+
+Check that all services are running and healthy:
+
+```bash
+# Check MySQL
+docker exec meteo-mysql-prod mysqladmin ping -u meteo_user -p<DB_PASSWORD>
+
+# Check Backend health endpoint (from inside container network)
+docker exec meteo-backend-prod wget -qO- http://localhost:5001/api/health
+
+# Check Frontend
+docker exec meteo-frontend-prod wget -qO- http://localhost:80/health
+```
+
+---
+
+### 5. Configure Nginx Proxy Manager
+
+You have two options: **CLI (automated)** or **Manual (GUI)**
+
+#### Option A: Automated CLI Setup (Recommended)
+
+Set your NPM credentials and run the configuration script:
+
+```bash
+export NPM_EMAIL="admin@example.com"
+export NPM_PASSWORD="your_npm_password"
+export NPM_API_URL="http://localhost:81/api"  # Adjust if NPM runs on different port
+
+./scripts/configure-npm.sh
+```
+
+The script will:
+- Authenticate with NPM API
+- Create proxy host for frontend (`meteo-app.tachyonfuture.com`)
+- Create proxy host for API (`api.meteo-app.tachyonfuture.com`)
+- Request Let's Encrypt SSL certificates
+- Enable HTTPS with forced SSL redirect
+
+**Troubleshooting:**
+- If authentication fails, verify your NPM credentials
+- If SSL fails, ensure DNS records are propagating (can take 5-15 minutes)
+- Check NPM logs: `docker logs -f nginx-proxy-manager`
+
+#### Option B: Manual GUI Setup
+
+1. **Access NPM Admin Panel:**
+   - Navigate to `http://your-server-ip:81`
+   - Login with your NPM credentials
+
+2. **Create Frontend Proxy Host:**
+   - Click "Proxy Hosts" → "Add Proxy Host"
+   - **Details tab:**
+     - Domain Names: `meteo-app.tachyonfuture.com`
+     - Scheme: `http`
+     - Forward Hostname/IP: `meteo-frontend-prod`
+     - Forward Port: `80`
+     - Enable: Cache Assets, Block Common Exploits, Websockets Support
+   - **SSL tab:**
+     - SSL Certificate: Request a new SSL Certificate
+     - Force SSL: ✓
+     - HTTP/2 Support: ✓
+     - HSTS Enabled: ✓
+   - Click "Save"
+
+3. **Create Backend API Proxy Host:**
+   - Click "Add Proxy Host"
+   - **Details tab:**
+     - Domain Names: `api.meteo-app.tachyonfuture.com`
+     - Scheme: `http`
+     - Forward Hostname/IP: `meteo-backend-prod`
+     - Forward Port: `5001`
+     - Enable: Block Common Exploits
+     - **Do NOT enable caching** (API responses are dynamic)
+   - **SSL tab:**
+     - SSL Certificate: Request a new SSL Certificate
+     - Force SSL: ✓
+     - HTTP/2 Support: ✓
+     - HSTS Enabled: ✓
+   - Click "Save"
+
+---
+
+### 6. Verify Deployment
+
+After NPM configuration completes (SSL certificates can take 2-5 minutes):
+
+```bash
+# Test Frontend
+curl -I https://meteo-app.tachyonfuture.com
+
+# Test Backend API
+curl https://api.meteo-app.tachyonfuture.com/api/health
+
+# Expected response:
+# {
+#   "status": "ok",
+#   "message": "Meteo API is running",
+#   "database": "connected",
+#   "visualCrossingApi": "configured",
+#   "timestamp": "2025-10-26T..."
+# }
+```
+
+Open your browser and navigate to:
+- **Frontend:** https://meteo-app.tachyonfuture.com
+- **API Health:** https://api.meteo-app.tachyonfuture.com/api/health
+
+---
+
+## Database Management
+
+### Initialize Database Schema
+
+The database schema is automatically initialized on first start via `docker-entrypoint-initdb.d`.
+
+To manually reinitialize (⚠️ **DESTRUCTIVE** - drops all data):
+
+```bash
+docker exec -i meteo-mysql-prod mysql -u root -p${DB_ROOT_PASSWORD} ${DB_NAME} < database/schema.sql
+docker exec -i meteo-mysql-prod mysql -u root -p${DB_ROOT_PASSWORD} ${DB_NAME} < database/seed.sql
+```
+
+### Backup Database
+
+```bash
+# Create backup
+docker exec meteo-mysql-prod mysqldump -u root -p${DB_ROOT_PASSWORD} ${DB_NAME} > backup_$(date +%Y%m%d_%H%M%S).sql
+
+# Restore from backup
+docker exec -i meteo-mysql-prod mysql -u root -p${DB_ROOT_PASSWORD} ${DB_NAME} < backup_20251026_120000.sql
+```
+
+### Connect to Database
+
+```bash
+docker exec -it meteo-mysql-prod mysql -u meteo_user -p${DB_PASSWORD} meteo_app
+```
+
+---
+
+## Maintenance
+
+### View Logs
+
+```bash
+# All services
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Specific service
+docker-compose -f docker-compose.prod.yml logs -f backend
+
+# Last 100 lines
+docker-compose -f docker-compose.prod.yml logs --tail=100
+```
+
+### Update Application
+
+```bash
+# Pull latest code
+git pull origin main
+
+# Rebuild and restart
+docker-compose -f docker-compose.prod.yml up -d --build
+
+# View rolling restart
+docker-compose -f docker-compose.prod.yml logs -f
+```
+
+### Restart Services
+
+```bash
+# Restart all
+docker-compose -f docker-compose.prod.yml restart
+
+# Restart specific service
+docker-compose -f docker-compose.prod.yml restart backend
+```
+
+### Stop Services
+
+```bash
+# Stop all (keeps volumes)
+docker-compose -f docker-compose.prod.yml down
+
+# Stop and remove volumes (⚠️ DESTROYS DATA)
+docker-compose -f docker-compose.prod.yml down -v
+```
+
+---
+
+## Monitoring
+
+### Health Checks
+
+Docker Compose includes health checks for all services:
+
+```bash
+# Check service health status
+docker ps --format "table {{.Names}}\t{{.Status}}"
+
+# Expected output:
+# meteo-frontend-prod    Up 5 minutes (healthy)
+# meteo-backend-prod     Up 5 minutes (healthy)
+# meteo-mysql-prod       Up 5 minutes (healthy)
+```
+
+### Resource Usage
+
+```bash
+# Container resource usage
+docker stats meteo-frontend-prod meteo-backend-prod meteo-mysql-prod
+
+# Disk usage
+docker system df
+```
+
+---
+
+## Troubleshooting
+
+### Frontend Not Loading
+
+1. Check container is running:
    ```bash
-   # Inside backend container
-   docker exec meteo-backend node -e "console.log(process.env.VISUAL_CROSSING_API_KEY)"
+   docker ps | grep meteo-frontend-prod
    ```
 
-2. **Check the health endpoint:**
+2. Check nginx logs:
+   ```bash
+   docker logs meteo-frontend-prod
+   ```
+
+3. Verify NPM proxy host is configured correctly
+4. Check DNS propagation: `dig meteo-app.tachyonfuture.com`
+
+### Backend API Errors
+
+1. Check backend logs:
+   ```bash
+   docker logs -f meteo-backend-prod
+   ```
+
+2. Verify database connection:
    ```bash
    curl http://localhost:5001/api/health
-   # Should return: {"status":"ok","database":"connected",...}
    ```
 
-3. **Test database connection:**
+3. Check environment variables:
    ```bash
-   cd backend
-   npm run db:init
+   docker exec meteo-backend-prod env | grep -E 'DB_|API_KEY'
    ```
 
-## 🆘 Troubleshooting
+### Database Connection Issues
 
-### API Key Not Working
-- Verify the key is in `backend/.env` (for local) or environment variables (for Docker)
-- Check for extra spaces or quotes around the key
-- Restart your server/container after changing .env
+1. Check MySQL is running:
+   ```bash
+   docker exec meteo-mysql-prod mysqladmin ping
+   ```
 
-### Database Connection Failed
-- Ensure MySQL container is running: `docker ps | grep mysql`
-- Verify `DB_PASSWORD` is correct
-- Check `DB_HOST` is set to `mysql` (in Docker) or `localhost` (local)
+2. Verify backend can reach MySQL:
+   ```bash
+   docker exec meteo-backend-prod ping -c 3 mysql-prod
+   ```
 
-### Changes to .env Not Reflected
-- Restart the backend: `docker-compose restart backend`
-- For docker-compose, you may need: `docker-compose down && docker-compose up`
+3. Check MySQL logs:
+   ```bash
+   docker logs meteo-mysql-prod
+   ```
 
-## 📦 Production Deployment Checklist
+### CORS Errors
 
-- [ ] All secrets are stored in environment variables (not in code)
-- [ ] `.env` files are in `.gitignore`
-- [ ] Database backups are configured
-- [ ] API rate limits are monitored
-- [ ] Error logging is configured
-- [ ] HTTPS is enabled
-- [ ] CORS is properly configured for your domain
-- [ ] Database connection pooling is optimized
-- [ ] API response caching is enabled
+If you see CORS errors in the browser console:
 
-## 🔒 Security Best Practices
+1. Verify `CORS_ORIGIN` in `.env.production` matches your frontend domain exactly
+2. Restart backend: `docker-compose -f docker-compose.prod.yml restart backend`
+3. Check backend CORS configuration in logs
 
-1. **Never commit secrets to Git**
-   - Always use `.gitignore` for `.env` files
-   - Use `.env.example` as a template (without real values)
+### SSL Certificate Issues
 
-2. **Rotate API keys periodically**
-   - Visual Crossing: Generate new keys every few months
-   - Update in all deployment environments
+1. Verify DNS records are pointing to your server
+2. Check NPM logs: `docker logs nginx-proxy-manager`
+3. Ensure ports 80 and 443 are open on your firewall
+4. Try regenerating SSL certificate in NPM admin panel
 
-3. **Use different keys for different environments**
-   - Development: One API key
-   - Production: Different API key
-   - This helps track usage and limit exposure
+---
 
-4. **Monitor API usage**
-   - Check Visual Crossing dashboard for unusual activity
-   - Set up alerts for quota limits
+## Security Considerations
 
-5. **Principle of least privilege**
-   - Database users should have minimal required permissions
-   - Consider read-only replicas for reporting queries
+1. **Environment Variables:**
+   - Never commit `.env.production` to version control
+   - Use strong, unique passwords (minimum 32 characters)
+   - Rotate secrets periodically
+
+2. **Database Security:**
+   - MySQL is only accessible on internal network (not exposed to NPM)
+   - Use strong root and user passwords
+   - Regular backups recommended
+
+3. **API Security:**
+   - CORS is restricted to production frontend domain
+   - Rate limiting should be implemented for production
+   - API keys are never exposed to frontend
+
+4. **SSL/TLS:**
+   - Force HTTPS on all domains
+   - HSTS enabled for security
+   - Let's Encrypt auto-renewal via NPM
+
+---
+
+## Performance Optimization
+
+### API Caching
+
+The backend implements intelligent API caching in MySQL:
+- Current weather: 30 minutes TTL
+- Forecasts: 6 hours TTL
+- Historical data: 7 days TTL
+- Air quality: 60 minutes TTL
+
+Check cache statistics:
+```bash
+curl https://api.meteo-app.tachyonfuture.com/api/cache/stats
+```
+
+### Frontend Optimization
+
+- Static assets cached for 1 year (nginx)
+- Gzip compression enabled
+- React production build with minification
+
+### Database Optimization
+
+MySQL is configured with:
+- InnoDB buffer pool size optimized for container
+- Query caching enabled
+- Indexes on frequently queried columns
+
+---
+
+## Scaling Considerations
+
+### Horizontal Scaling
+
+To scale frontend or backend:
+
+```bash
+docker-compose -f docker-compose.prod.yml up -d --scale backend=3 --scale frontend=2
+```
+
+**Note:** This requires additional NPM configuration for load balancing.
+
+### Database Scaling
+
+For production workloads, consider:
+- Moving MySQL to dedicated server
+- Implementing read replicas
+- Using managed database service (AWS RDS, DigitalOcean)
+
+---
+
+## Support
+
+For issues or questions:
+- Check logs first: `docker-compose -f docker-compose.prod.yml logs -f`
+- Review troubleshooting section above
+- Check GitHub issues: [repository URL]
+
+---
+
+## Quick Reference
+
+```bash
+# Start production
+docker-compose -f docker-compose.prod.yml --env-file .env.production up -d
+
+# Stop production
+docker-compose -f docker-compose.prod.yml down
+
+# View logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Update app
+git pull && docker-compose -f docker-compose.prod.yml up -d --build
+
+# Backup database
+docker exec meteo-mysql-prod mysqldump -u root -p${DB_ROOT_PASSWORD} ${DB_NAME} > backup.sql
+
+# Check health
+curl https://api.meteo-app.tachyonfuture.com/api/health
+```

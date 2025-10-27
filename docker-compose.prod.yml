@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # Production MySQL Database (isolated on internal network only)
+  mysql-prod:
+    image: mysql:8.0
+    container_name: meteo-mysql-prod
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_prod_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    networks:
+      - meteo-internal
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USER}", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Service (dual network: internal + NPM)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: meteo-backend-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5001
+      DB_HOST: mysql-prod
+      DB_PORT: 3306
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
+      VISUAL_CROSSING_API_KEY: ${VISUAL_CROSSING_API_KEY}
+      CORS_ORIGIN: https://meteo-app.tachyonfuture.com
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      mysql-prod:
+        condition: service_healthy
+    networks:
+      - meteo-internal
+      - npm_network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Web Service (NPM network only)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        REACT_APP_API_URL: https://api.meteo-app.tachyonfuture.com
+    container_name: meteo-frontend-prod
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - npm_network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mysql_prod_data:
+    name: meteo_mysql_prod_data
+
+networks:
+  # Internal network for MySQL <-> Backend communication (isolated)
+  meteo-internal:
+    driver: bridge
+    name: meteo-internal
+
+  # External NPM network for proxy access
+  npm_network:
+    external: true
+    name: npm_network

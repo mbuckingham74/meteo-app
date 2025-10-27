@@ -15,7 +15,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+// CORS Configuration - allow all origins in development, specific origin in production
+const corsOptions = process.env.NODE_ENV === 'production'
+  ? { origin: process.env.CORS_ORIGIN || 'https://meteo-app.tachyonfuture.com' }
+  : {}; // Allow all origins in development
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Request logging middleware
