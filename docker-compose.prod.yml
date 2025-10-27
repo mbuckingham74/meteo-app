@@ -60,7 +60,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
       args:
-        REACT_APP_API_URL: https://api.meteo-app.tachyonfuture.com
+        REACT_APP_API_URL: https://api.meteo-beta.tachyonfuture.com
     container_name: meteo-frontend-prod
     restart: unless-stopped
     depends_on:
