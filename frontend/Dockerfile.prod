@@ -14,9 +14,12 @@ RUN npm install --omit=dev
 # Copy source code
 COPY . .
 
-# Build argument for API URL (passed from docker-compose)
+# Build arguments (passed from docker-compose)
 ARG REACT_APP_API_URL
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
+ARG REACT_APP_OPENWEATHER_API_KEY
+ENV REACT_APP_OPENWEATHER_API_KEY=$REACT_APP_OPENWEATHER_API_KEY
 
 # Build the React app for production
 RUN npm run build
