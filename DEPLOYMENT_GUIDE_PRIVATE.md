@@ -99,6 +99,8 @@ nano .env.production  # Edit with actual credentials
 
 ### 2. Deploy Latest Changes
 
+**Recommended: Use the deployment script (handles environment variables correctly)**
+
 ```bash
 # SSH into server
 ssh michael@tachyonfuture.com
@@ -106,14 +108,28 @@ ssh michael@tachyonfuture.com
 # Navigate to app directory
 cd /home/michael/meteo-app
 
-# Stash any local changes
-git stash
+# Run deployment script
+./scripts/deploy-beta.sh
+```
+
+**Manual deployment (if needed):**
+
+```bash
+# SSH into server
+ssh michael@tachyonfuture.com
+
+# Navigate to app directory
+cd /home/michael/meteo-app
 
 # Pull latest code
-git pull origin main
+git fetch origin
+git reset --hard origin/main
 
-# Rebuild frontend with correct API URL
-docker compose -f docker-compose.prod.yml build --no-cache frontend
+# IMPORTANT: Export environment variables before building
+export $(cat .env.production | grep -v "^#" | xargs)
+
+# Rebuild frontend with environment variables
+OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY docker compose -f docker-compose.prod.yml build --no-cache frontend
 
 # Restart all services
 docker compose -f docker-compose.prod.yml --env-file .env.production up -d
