@@ -16,7 +16,7 @@ function AirQualityCard({ latitude, longitude }) {
       setError(null);
 
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/air-quality?lat=${latitude}&lon=${longitude}&days=1`
+        `${process.env.REACT_APP_API_URL || 'http://localhost:5001/api'}/air-quality?lat=${latitude}&lon=${longitude}&days=1`
       );
 
       const result = await response.json();
