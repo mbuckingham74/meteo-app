@@ -10,11 +10,14 @@
   gap: 12px;
 }
 
-.auth-header-controls {
+.auth-header-spacer {
+  flex: 1;
+}
+
+.auth-header-buttons {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex: 1;
 }
 
 .auth-user-info {

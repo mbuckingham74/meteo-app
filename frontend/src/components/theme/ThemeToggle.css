@@ -1,4 +1,4 @@
-/* Theme Toggle Styles */
+/* Theme Toggle Styles - Matches header button styling */
 
 .theme-toggle-container {
   display: inline-flex;
@@ -9,21 +9,22 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  background: var(--bg-tertiary);
+  padding: 8px 16px;
   border: 2px solid var(--border-light);
   border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 20px;
+  transition: all var(--transition-normal);
+  background: var(--bg-primary);
   color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .theme-toggle-button:hover {
   border-color: var(--accent-primary);
-  background: var(--bg-elevated);
-  transform: translateY(-1px);
+  color: var(--accent-primary);
+  background: var(--bg-tertiary);
 }
 
 .theme-toggle-button:active {
@@ -34,12 +35,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  font-size: 16px;
 }
 
 .theme-label {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-secondary);
 }

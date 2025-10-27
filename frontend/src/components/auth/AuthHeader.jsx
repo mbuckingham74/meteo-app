@@ -42,9 +42,7 @@ function AuthHeader() {
   return (
     <>
       <div className="auth-header">
-        <div className="auth-header-controls">
-          <ThemeToggle />
-        </div>
+        <div className="auth-header-spacer"></div>
         {isAuthenticated ? (
           <div className="auth-user-info">
             <span className="auth-user-name">{user?.name}</span>
@@ -57,7 +55,7 @@ function AuthHeader() {
             </button>
           </div>
         ) : (
-          <>
+          <div className="auth-header-buttons">
             <button
               className="auth-header-button"
               onClick={handleLoginClick}
@@ -70,8 +68,10 @@ function AuthHeader() {
             >
               <span>Sign Up</span>
             </button>
-          </>
+            <ThemeToggle />
+          </div>
         )}
+        {isAuthenticated && <ThemeToggle />}
       </div>
 
       <AuthModal
