@@ -14,8 +14,8 @@ This guide covers deploying the Meteo App to production with Docker Compose and 
 - `meteo-frontend-prod` - React app served by Nginx (NPM network)
 
 **Domains:**
-- `meteo-app.tachyonfuture.com` → Frontend
-- `api.meteo-app.tachyonfuture.com` → Backend API
+- `meteo-beta.tachyonfuture.com` → Frontend
+- `api.meteo-beta.tachyonfuture.com` → Backend API
 
 ---
 
@@ -27,12 +27,12 @@ This guide covers deploying the Meteo App to production with Docker Compose and 
    - Ports 80 and 443 available for NPM
 
 2. **DNS Configuration (Cloudflare):**
-   - Create A record: `meteo-app.tachyonfuture.com` → Your server IP
-   - Create A record: `api.meteo-app.tachyonfuture.com` → Your server IP
+   - Create A record: `meteo-beta.tachyonfuture.com` → Your server IP
+   - Create A record: `api.meteo-beta.tachyonfuture.com` → Your server IP
 
 3. **API Keys:**
-   - Visual Crossing Weather API key
-   - OpenWeather API key
+   - Visual Crossing Weather API key: `BTU88L6G4NBB69QRDGJ7UJEVQ`
+   - OpenWeather API key: `8ad36fbd98b10ec9b5b42b9c32d11b62`
 
 ---
 
@@ -57,17 +57,17 @@ DB_USER=meteo_user
 DB_PASSWORD=your_secure_db_password_here
 
 # Weather API Keys
-OPENWEATHER_API_KEY=your_openweather_api_key
-VISUAL_CROSSING_API_KEY=your_visual_crossing_api_key
+OPENWEATHER_API_KEY=8ad36fbd98b10ec9b5b42b9c32d11b62
+VISUAL_CROSSING_API_KEY=BTU88L6G4NBB69QRDGJ7UJEVQ
 
 # Backend Configuration
 JWT_SECRET=your_secure_jwt_secret_minimum_32_characters
 
 # CORS Configuration
-CORS_ORIGIN=https://meteo-app.tachyonfuture.com
+CORS_ORIGIN=https://meteo-beta.tachyonfuture.com
 
 # Frontend API URL
-REACT_APP_API_URL=https://api.meteo-app.tachyonfuture.com
+REACT_APP_API_URL=https://api.meteo-beta.tachyonfuture.com/api
 ```
 
 **Security Note:** Generate secure passwords and JWT secret:
@@ -176,7 +176,7 @@ The script will:
 2. **Create Frontend Proxy Host:**
    - Click "Proxy Hosts" → "Add Proxy Host"
    - **Details tab:**
-     - Domain Names: `meteo-app.tachyonfuture.com`
+     - Domain Names: `meteo-beta.tachyonfuture.com`
      - Scheme: `http`
      - Forward Hostname/IP: `meteo-frontend-prod`
      - Forward Port: `80`
@@ -191,7 +191,7 @@ The script will:
 3. **Create Backend API Proxy Host:**
    - Click "Add Proxy Host"
    - **Details tab:**
-     - Domain Names: `api.meteo-app.tachyonfuture.com`
+     - Domain Names: `api.meteo-beta.tachyonfuture.com`
      - Scheme: `http`
      - Forward Hostname/IP: `meteo-backend-prod`
      - Forward Port: `5001`
@@ -212,10 +212,10 @@ After NPM configuration completes (SSL certificates can take 2-5 minutes):
 
 ```bash
 # Test Frontend
-curl -I https://meteo-app.tachyonfuture.com
+curl -I https://meteo-beta.tachyonfuture.com
 
 # Test Backend API
-curl https://api.meteo-app.tachyonfuture.com/api/health
+curl https://api.meteo-beta.tachyonfuture.com/api/health
 
 # Expected response:
 # {
@@ -228,8 +228,8 @@ curl https://api.meteo-app.tachyonfuture.com/api/health
 ```
 
 Open your browser and navigate to:
-- **Frontend:** https://meteo-app.tachyonfuture.com
-- **API Health:** https://api.meteo-app.tachyonfuture.com/api/health
+- **Frontend:** https://meteo-beta.tachyonfuture.com
+- **API Health:** https://api.meteo-beta.tachyonfuture.com/api/health
 
 ---
 
@@ -446,7 +446,7 @@ The backend implements intelligent API caching in MySQL:
 
 Check cache statistics:
 ```bash
-curl https://api.meteo-app.tachyonfuture.com/api/cache/stats
+curl https://api.meteo-beta.tachyonfuture.com/api/cache/stats
 ```
 
 ### Frontend Optimization
@@ -513,5 +513,5 @@ git pull && docker-compose -f docker-compose.prod.yml up -d --build
 docker exec meteo-mysql-prod mysqldump -u root -p${DB_ROOT_PASSWORD} ${DB_NAME} > backup.sql
 
 # Check health
-curl https://api.meteo-app.tachyonfuture.com/api/health
+curl https://api.meteo-beta.tachyonfuture.com/api/health
 ```
