@@ -30,3 +30,4 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+DEPLOYMENT_GUIDE_PRIVATE.md
