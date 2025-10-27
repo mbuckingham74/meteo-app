@@ -674,7 +674,8 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .radar-map-container {
-    height: 200px;
+    min-height: 350px;
+    height: 350px;
   }
 
   .radar-legend {

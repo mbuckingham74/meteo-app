@@ -3,6 +3,8 @@
   background: var(--bg-primary);
   color: var(--text-primary);
   transition: background var(--transition-normal), color var(--transition-normal);
+  overflow-x: hidden;
+  width: 100%;
 }
 
 * {
@@ -14,6 +16,8 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Mobile-specific improvements */

@@ -93,6 +93,22 @@
   }
 
   .auth-header-button {
-    padding: 8px 12px;
+    padding: 8px 10px;
+  }
+
+  .auth-header-buttons {
+    gap: 8px;
+  }
+}
+
+/* Extra small screens - ensure buttons fit */
+@media (max-width: 380px) {
+  .auth-header-button {
+    padding: 8px;
+    min-width: 44px;
+  }
+
+  .auth-header-buttons {
+    gap: 6px;
   }
 }
