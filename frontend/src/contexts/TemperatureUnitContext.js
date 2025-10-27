@@ -19,7 +19,7 @@ export function useTemperatureUnit() {
 
 export function TemperatureUnitProvider({ children }) {
   const { isAuthenticated, accessToken } = useAuth();
-  const [unit, setUnitState] = useState('C'); // 'C' or 'F'
+  const [unit, setUnitState] = useState('F'); // 'C' or 'F' - Default: Fahrenheit
   const [loading, setLoading] = useState(true);
 
   // Load temperature unit preference
