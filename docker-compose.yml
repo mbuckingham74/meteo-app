@@ -30,7 +30,7 @@ services:
       - DB_NAME=${DB_NAME:-meteo_app}
       - VISUAL_CROSSING_API_KEY=${VISUAL_CROSSING_API_KEY}
       - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - METEO_ANTHROPIC_API_KEY=${METEO_ANTHROPIC_API_KEY}
     volumes:
       - ./backend:/app
       - ./database:/database

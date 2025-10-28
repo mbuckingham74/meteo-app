@@ -264,7 +264,7 @@ Create `backend/.env`:
 VISUAL_CROSSING_API_KEY=your_api_key_here
 
 # AI-Powered Location Finder (optional)
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
+METEO_ANTHROPIC_API_KEY=your_anthropic_api_key_here
 
 # Database
 DB_HOST=db

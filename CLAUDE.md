@@ -85,7 +85,7 @@ Backend requires `.env` file (see `.env.example`):
 - Server: `PORT`, `NODE_ENV`
 - Database: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
 - Weather APIs: `OPENWEATHER_API_KEY`, `VISUAL_CROSSING_API_KEY`
-- AI: `ANTHROPIC_API_KEY` - Claude API for natural language processing
+- AI: `METEO_ANTHROPIC_API_KEY` - Claude API for natural language processing
 
 ## Development Commands
 
@@ -275,7 +275,7 @@ The application uses **Anthropic's Claude Sonnet 4.5** for AI-powered location f
 
 **Model:** `claude-sonnet-4-20250514`
 **Purpose:** Parse natural language climate queries into structured search criteria
-**Key ENV Variable:** `ANTHROPIC_API_KEY`
+**Key ENV Variable:** `METEO_ANTHROPIC_API_KEY`
 
 **Two-Step Validation System:**
 

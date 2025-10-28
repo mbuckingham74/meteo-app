@@ -2,7 +2,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+  apiKey: process.env.METEO_ANTHROPIC_API_KEY,
 });
 
 const MODEL = 'claude-sonnet-4-20250514';

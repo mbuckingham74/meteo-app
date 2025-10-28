@@ -46,10 +46,10 @@ router.post('/validate-query', async (req, res) => {
     }
 
     // Check if API key is configured
-    if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === 'your_anthropic_api_key_here') {
+    if (!process.env.METEO_ANTHROPIC_API_KEY || process.env.METEO_ANTHROPIC_API_KEY === 'your_anthropic_api_key_here') {
       return res.status(503).json({
         success: false,
-        error: 'AI service is not configured. Please add ANTHROPIC_API_KEY to environment variables.'
+        error: 'AI service is not configured. Please add METEO_ANTHROPIC_API_KEY to environment variables.'
       });
     }
 
@@ -138,10 +138,10 @@ router.post('/parse-query', async (req, res) => {
     }
 
     // Check if API key is configured
-    if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === 'your_anthropic_api_key_here') {
+    if (!process.env.METEO_ANTHROPIC_API_KEY || process.env.METEO_ANTHROPIC_API_KEY === 'your_anthropic_api_key_here') {
       return res.status(503).json({
         success: false,
-        error: 'AI service is not configured. Please add ANTHROPIC_API_KEY to environment variables.'
+        error: 'AI service is not configured. Please add METEO_ANTHROPIC_API_KEY to environment variables.'
       });
     }
 
