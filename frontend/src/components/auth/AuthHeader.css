@@ -14,6 +14,25 @@
   flex: 1;
 }
 
+.auth-header-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.auth-header-privacy-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-tertiary, #6b7280);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  padding: 4px 8px;
+}
+
+.auth-header-privacy-link:hover {
+  color: var(--accent-primary, #667eea);
+}
+
 .auth-header-buttons {
   display: flex;
   align-items: center;

@@ -6,6 +6,7 @@ import { TemperatureUnitProvider } from './contexts/TemperatureUnitContext';
 import AuthHeader from './components/auth/AuthHeader';
 import WeatherDashboard from './components/weather/WeatherDashboard';
 import LocationComparisonView from './components/location/LocationComparisonView';
+import PrivacyPolicy from './components/legal/PrivacyPolicy';
 import './styles/themes.css';
 import './App.css';
 
@@ -18,6 +19,8 @@ function AppContent() {
       const path = window.location.pathname;
       if (path === '/compare') {
         setCurrentView('compare');
+      } else if (path === '/privacy') {
+        setCurrentView('privacy');
       } else {
         setCurrentView('dashboard');
       }
@@ -39,6 +42,8 @@ function AppContent() {
 
         if (url.pathname === '/compare') {
           setCurrentView('compare');
+        } else if (url.pathname === '/privacy') {
+          setCurrentView('privacy');
         } else {
           setCurrentView('dashboard');
         }
@@ -52,7 +57,9 @@ function AppContent() {
   return (
     <div className="App">
       <AuthHeader />
-      {currentView === 'compare' ? (
+      {currentView === 'privacy' ? (
+        <PrivacyPolicy />
+      ) : currentView === 'compare' ? (
         <>
           <div style={{ padding: '20px 20px 0 20px', maxWidth: '1400px', margin: '0 auto' }}>
             <a

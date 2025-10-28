@@ -42,7 +42,11 @@ function AuthHeader() {
   return (
     <>
       <div className="auth-header">
-        <div className="auth-header-spacer"></div>
+        <div className="auth-header-left">
+          <a href="/privacy" className="auth-header-privacy-link">
+            Privacy
+          </a>
+        </div>
         {isAuthenticated ? (
           <div className="auth-user-info">
             <span className="auth-user-name">{user?.name}</span>
