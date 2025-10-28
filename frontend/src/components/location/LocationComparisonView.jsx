@@ -11,6 +11,7 @@ import WindChart from '../charts/WindChart';
 import HistoricalComparisonChart from '../charts/HistoricalComparisonChart';
 import { validateQuery, parseLocationQuery } from '../../services/locationFinderService';
 import { getCurrentLocation } from '../../services/geolocationService';
+import { validateClimatInput, sanitizeInput } from '../../utils/inputSanitizer';
 import './LocationComparisonView.css';
 
 /**
@@ -321,14 +322,23 @@ function LocationComparisonView() {
       return;
     }
 
+    // Step 0: Client-side pre-validation (FREE - no API cost)
+    const sanitized = sanitizeInput(aiQuery);
+    const clientValidation = validateClimatInput(sanitized);
+
+    if (!clientValidation.isValid) {
+      setAiError(clientValidation.reason);
+      return;
+    }
+
     setAiLoading(true);
     setAiError(null);
     setAiResult(null);
 
     try {
-      // Step 1: Validate the query
-      console.log('Validating query...');
-      const validationResult = await validateQuery(aiQuery);
+      // Step 1: Server-side AI validation (~$0.001)
+      console.log('Validating query with AI...');
+      const validationResult = await validateQuery(sanitized);
 
       if (!validationResult.isValid) {
         setAiError(`Invalid query: ${validationResult.reason}`);
@@ -336,9 +346,9 @@ function LocationComparisonView() {
         return;
       }
 
-      // Step 2: Parse the query
-      console.log('Parsing query...');
-      const parseResult = await parseLocationQuery(aiQuery, currentLocationData);
+      // Step 2: Full AI parsing (~$0.005)
+      console.log('Parsing query with AI...');
+      const parseResult = await parseLocationQuery(sanitized, currentLocationData);
 
       setAiResult(parseResult);
       console.log('AI Result:', parseResult);
