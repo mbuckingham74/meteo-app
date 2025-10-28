@@ -1,6 +1,8 @@
 # Meteo Weather App
 
-A comprehensive weather dashboard inspired by Weather Spark, providing detailed weather forecasts, historical climate data analysis, air quality monitoring, and location comparison tools.
+A comprehensive weather dashboard inspired by Weather Spark, providing detailed weather forecasts, historical climate data analysis, air quality monitoring, and AI-powered location comparison tools.
+
+**🌐 Live Demo:** [https://meteo-beta.tachyonfuture.com/compare](https://meteo-beta.tachyonfuture.com/compare)
 
 **Built by:** [Michael Buckingham](https://github.com/mbuckingham74) | **Repository:** [meteo-app](https://github.com/mbuckingham74/meteo-app)
 
@@ -11,6 +13,7 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 
 ## 🌟 Key Highlights
 
+- **🤖 AI-Powered Location Finder** - Natural language search using Claude AI to find ideal climates
 - **📊 Rich Data Visualization** - 15+ interactive charts for weather analysis
 - **🌧️ Interactive Radar Map** - Real historical precipitation data with animation, alerts overlay, and storm tracking
 - **⚠️ Weather Alerts** - Real-time severe weather warnings with map markers
@@ -18,7 +21,7 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **📈 10-Year Climate Analysis** - Historical trends and statistical insights
 - **🔐 User Accounts** - Cloud-synced favorites and preferences
 - **🎨 Theme System** - Light, dark, and auto modes
-- **🌍 Location Comparison** - Compare weather across multiple cities
+- **🌍 Location Comparison** - Compare weather across multiple cities with AI assistance
 - **📱 Mobile Responsive** - Fully optimized for all device sizes
 
 ---
@@ -123,13 +126,32 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
   - Compare 2-4 locations simultaneously
   - **Time Range Selector** - Choose 7 days, 1/3/6 months, or 1/3/5 years
   - **Pre-populated Examples** - Loads Seattle vs New Smyrna Beach comparison by default
-  - **Interactive Guide** - Clickable example questions to explore comparisons:
-    - "Which city gets more rain annually?"
-    - "Where is winter milder?"
-    - "Which location has a milder summer?"
   - **Weather Comparison Charts** - Temperature, precipitation, and wind visualizations
   - **Historical Climate Data** - 10-year averages for long-term comparisons
   - **Comparison Insights** - Automatic analysis showing warmest, coldest, wettest locations and temperature differences
+
+### 🤖 AI-Powered Location Finder
+
+- **Natural Language Climate Search** - Describe your ideal climate in plain English
+  - Example: "I want somewhere 15 degrees cooler from June-October, less humid, not rainy"
+  - Powered by **Claude Sonnet 4.5** for intelligent parsing
+- **Smart Query Validation** - Three-layer validation system:
+  - **Client-Side Sanitization (FREE)** - Instant validation blocks spam before API calls
+  - **AI Quick Validation (~$0.001)** - Verifies query is climate-related
+  - **AI Full Parsing (~$0.005)** - Extracts structured criteria
+- **Structured Criteria Extraction** - AI automatically identifies:
+  - Current location and time periods
+  - Temperature preferences (delta or ranges)
+  - Humidity and precipitation requirements
+  - Lifestyle factors and deal-breakers
+- **Cost Transparency** - Shows token usage and estimated cost per query
+- **Spam Protection** - Client-side filtering blocks 20-30% of junk queries for FREE
+  - Minimum/maximum length validation
+  - Climate keyword detection (65+ terms)
+  - Spam pattern blocking (repeated characters, "test", "lol", etc.)
+  - Instant feedback with helpful error messages
+- **Auto-Location Detection** - Automatically detects your current city on page load
+- **Compact UI** - Clean prompt card with friendly "Can I just tell you what I want to compare..." button
 
 ### 💨 Air Quality Index (AQI)
 
@@ -208,8 +230,10 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **jsonwebtoken (JWT)** - Token-based authentication
 - **Docker** - Containerized development environment
 - **Intelligent API Caching** - MySQL-based cache layer reducing API calls by 99%
+- **@anthropic-ai/sdk** - Claude AI integration for natural language processing
 
 ### External APIs
+- **Anthropic Claude API** - Natural language processing for climate preference parsing (Claude Sonnet 4.5)
 - **RainViewer API** - Real-time precipitation radar data (past 2 hours + 30 min forecast)
 - **Visual Crossing Weather API** - Weather data, forecasts, historical climate data, and weather alerts
 - **OpenWeather API** - Cloud cover and temperature overlay tiles
@@ -236,17 +260,29 @@ cd meteo-app
 
 Create `backend/.env`:
 ```env
+# Weather API
 VISUAL_CROSSING_API_KEY=your_api_key_here
+
+# AI-Powered Location Finder (optional)
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# Database
 DB_HOST=db
 DB_USER=weather_user
 DB_PASSWORD=secure_password
 DB_NAME=weather_db
+
+# Server
 PORT=5001
+
+# Authentication
 JWT_SECRET=your_secret_key_here_change_in_production
 JWT_REFRESH_SECRET=your_refresh_secret_key_here_change_in_production
 JWT_EXPIRES_IN=24h
 JWT_REFRESH_EXPIRES_IN=7d
 ```
+
+**Note:** AI-powered location finder requires an [Anthropic API key](https://console.anthropic.com/). The feature is optional and the app works without it.
 
 #### 3. Start the application
 ```bash
@@ -432,6 +468,60 @@ POST /api/user/favorites/import
 
 ---
 
+### AI-Powered Location Finder
+
+#### Validate Query
+```
+POST /api/ai-location-finder/validate-query
+```
+- **Body**: `{ userInput: "I want somewhere warmer" }`
+- **Returns**: `{ success: true, isValid: true, reason: "...", tokensUsed: 275 }`
+- **Cost**: ~$0.001 per query (~200-300 tokens)
+- **Purpose**: Quick validation to prevent spam before expensive parsing
+
+#### Parse Location Query
+```
+POST /api/ai-location-finder/parse-query
+```
+- **Body**:
+  ```json
+  {
+    "userInput": "I want somewhere 15 degrees cooler from June-October, less humid",
+    "currentLocation": {
+      "lat": 29.0258,
+      "lng": -80.9270,
+      "city": "New Smyrna Beach, FL"
+    }
+  }
+  ```
+- **Returns**:
+  ```json
+  {
+    "success": true,
+    "criteria": {
+      "current_location": "New Smyrna Beach, FL",
+      "time_period": { "start": "June", "end": "October" },
+      "temperature_delta": -15,
+      "humidity": "lower",
+      "precipitation": "less",
+      "lifestyle_factors": [],
+      "deal_breakers": []
+    },
+    "tokensUsed": 572,
+    "cost": "$0.0051"
+  }
+  ```
+- **Cost**: ~$0.005 per query (~500-1000 tokens)
+- **Purpose**: Extract structured climate preferences from natural language
+
+**Client-Side Validation** (FREE):
+- Runs in browser before API calls
+- Blocks spam, short text, non-climate queries
+- Saves 20-30% of API costs
+- Implemented in `frontend/src/utils/inputSanitizer.js`
+
+---
+
 ### Air Quality
 
 #### Get Air Quality Data
@@ -510,23 +600,28 @@ meteo-app/
 │   │   ├── services/                # API and local services
 │   │   │   ├── weatherApi.js
 │   │   │   ├── radarService.js              # NEW: RainViewer API integration
+│   │   │   ├── locationFinderService.js     # NEW: AI location finder API client
 │   │   │   ├── authApi.js
 │   │   │   ├── favoritesService.js
 │   │   │   └── geolocationService.js
 │   │   └── utils/                   # Helper functions
-│   │       └── weatherHelpers.js
+│   │       ├── weatherHelpers.js
+│   │       ├── inputSanitizer.js            # NEW: Client-side query validation
+│   │       └── inputSanitizer.test.js       # NEW: Validation tests
 │   └── public/
 │
 ├── backend/
 │   ├── routes/
 │   │   ├── weather.js               # Weather API endpoints
 │   │   ├── airQuality.js            # NEW: Air quality API endpoints
+│   │   ├── aiLocationFinder.js      # NEW: AI-powered location finder endpoints
 │   │   ├── locations.js             # Location API endpoints
 │   │   ├── auth.js                  # Authentication endpoints
 │   │   └── user.js                  # User preferences & favorites
 │   ├── services/
 │   │   ├── weatherService.js        # Weather data fetching (includes alerts)
 │   │   ├── airQualityService.js     # NEW: Air quality data from Open-Meteo
+│   │   ├── aiLocationFinderService.js # NEW: Claude AI integration for NLP
 │   │   ├── climateService.js        # Historical climate analysis
 │   │   ├── geocodingService.js      # Location search
 │   │   ├── authService.js           # Authentication logic
