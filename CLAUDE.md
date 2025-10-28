@@ -13,6 +13,7 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 - **Advanced radar features**: time selector, storm tracking, screenshot export, weather alerts overlay
 - Current weather conditions display with real-time data
 - City comparison functionality
+- **AI-powered location finder** - Natural language climate search with Claude AI
 - Monthly, daily, and hourly weather views
 - 10-year historical data analysis
 - User accounts with cloud-synced favorite locations
@@ -28,6 +29,7 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 - **Frontend**: React-based web application (Create React App)
 - **Backend**: Node.js/Express REST API server
 - **Database**: MySQL 8.0
+- **AI**: Claude Sonnet 4.5 (Anthropic API) for natural language processing
 - **Data Sources**: RainViewer (radar), Visual Crossing (historical), OpenWeather (overlays)
 
 The application is containerized using Docker Compose for consistent development and deployment.
@@ -63,6 +65,7 @@ Standard Create React App structure with React 19.2.0. Key architectural compone
 **Service Layer:**
 - **src/services/radarService.js** - RainViewer API integration with intelligent caching
 - **src/services/geolocationService.js** - Multi-tier location detection with IP fallback
+- **src/services/locationFinderService.js** - AI-powered location finder API client
 
 **Main Components:**
 - **src/App.js** - Root application component with nested context providers
@@ -82,6 +85,7 @@ Backend requires `.env` file (see `.env.example`):
 - Server: `PORT`, `NODE_ENV`
 - Database: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
 - Weather APIs: `OPENWEATHER_API_KEY`, `VISUAL_CROSSING_API_KEY`
+- AI: `ANTHROPIC_API_KEY` - Claude API for natural language processing
 
 ## Development Commands
 
@@ -263,6 +267,63 @@ Implemented in `backend/services/weatherService.js`:
 - Geolocation: Uses raw coordinates if reverse geocoding fails
 - Weather data: Serves cached data when fresh requests are blocked
 - User experience maintained even during API issues
+
+## AI Integration
+
+### Claude API for Natural Language Processing
+The application uses **Anthropic's Claude Sonnet 4.5** for AI-powered location finding and climate preference extraction.
+
+**Model:** `claude-sonnet-4-20250514`
+**Purpose:** Parse natural language climate queries into structured search criteria
+**Key ENV Variable:** `ANTHROPIC_API_KEY`
+
+**Two-Step Validation System:**
+
+1. **Quick Validation** (`POST /api/ai-location-finder/validate-query`):
+   - Token usage: ~200-300 tokens
+   - Cost: ~$0.001-$0.002 per query
+   - Purpose: Prevent spam/abuse before expensive parsing
+   - Response time: ~2 seconds
+   - Validates query is legitimate climate/location search
+
+2. **Full Parsing** (`POST /api/ai-location-finder/parse-query`):
+   - Token usage: ~500-1000 tokens
+   - Cost: ~$0.005-$0.010 per query
+   - Response time: ~3-5 seconds
+   - Extracts structured criteria from natural language
+
+**Extracted Criteria:**
+```json
+{
+  "current_location": "New Smyrna Beach, FL",
+  "time_period": { "start": "June", "end": "October" },
+  "temperature_delta": -15,
+  "temperature_range": { "min": null, "max": null },
+  "humidity": "lower",
+  "precipitation": "less",
+  "lifestyle_factors": ["good community feel"],
+  "deal_breakers": [],
+  "additional_notes": "Contextual insights from AI"
+}
+```
+
+**Implementation:**
+- **Backend Service:** `backend/services/aiLocationFinderService.js`
+- **API Routes:** `backend/routes/aiLocationFinder.js`
+- **Frontend Client:** `frontend/src/services/locationFinderService.js`
+- **UI Component:** Integrated into `LocationComparisonView.jsx`
+
+**Cost Management:**
+- Budget: $99 = ~10,000-20,000 full queries
+- Token usage logged for monitoring
+- Cost displayed to user for transparency
+- Validation step prevents abuse
+
+**Error Handling:**
+- Markdown code block stripping from AI responses
+- Graceful degradation if API unavailable
+- User-friendly error messages
+- Fallback allows manual location search
 
 ## UI/UX Architecture
 
@@ -485,13 +546,16 @@ Enhanced side-by-side weather comparison for multiple cities (accessible via das
     - Aggregation indicator badge shows when data is averaged
     - Tooltips display number of days aggregated
     - Prevents chart overcrowding and improves readability for climate trends
-  - **Interactive "How to Use" Guide**:
-    - Collapsible guide explaining the comparison tool
-    - Quick Start steps for new users
-    - Clickable example questions that pre-populate locations and time ranges:
-      - "Which city gets more rain annually?" (Seattle vs Miami, 1 year)
-      - "Where is winter milder?" (Chicago vs Phoenix, 6 months)
-      - "Which location has a milder summer?" (New Smyrna Beach vs Seattle, 3 months)
+  - **AI-Powered Location Finder**:
+    - Natural language climate search using Claude Sonnet 4.5
+    - Compact prompt card with auto-detected user location
+    - Friendly button: "Can I just tell you what I want to compare and you show me some data and pretty charts and graphs?"
+    - Expands to full AI search interface with smooth scroll animation
+    - Two-step validation system (quick check + full parse)
+    - Extracts structured criteria: location, time period, temperature delta, humidity, precipitation, lifestyle factors
+    - Cost-transparent: Shows token usage and estimated cost per query (~$0.005)
+    - Example queries: "I want somewhere 15 degrees cooler from June-October, less humid, not rainy"
+    - Future: Auto-populate comparison cards with AI-recommended locations
   - **Weather Comparison Charts** - Visual comparisons for:
     - Temperature bands (high/low) with color-coded ranges
     - Precipitation patterns with enhanced probability line (orange, dashed, 0-100% scale)
