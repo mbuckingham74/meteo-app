@@ -1,17 +1,17 @@
 name: Docker Build & Publish
 
-  on:
-    push:
-      branches: [ main ]
-    release:
-      types: [published]
-    workflow_dispatch:
+on:
+  push:
+    branches: [ main ]
+  release:
+    types: [published]
+  workflow_dispatch:
 
-  env:
-    REGISTRY: ghcr.io
-    IMAGE_NAME: ${{ github.repository }}
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
-  jobs:
+jobs:
     build-and-push:
       runs-on: ubuntu-latest
       permissions:

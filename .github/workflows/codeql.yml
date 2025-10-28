@@ -1,14 +1,14 @@
 name: "CodeQL Security Scan"
 
-  on:
-    push:
-      branches: [ main ]
-    pull_request:
-      branches: [ main ]
-    schedule:
-      - cron: '0 0 * * 1'
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 1'
 
-  jobs:
+jobs:
     analyze:
       name: Analyze
       runs-on: ubuntu-latest
