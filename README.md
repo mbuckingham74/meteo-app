@@ -39,6 +39,7 @@ This application is lightweight and can run on minimal hardware. Perfect for per
 
 ### Performance Notes
 - **Development:** Runs smoothly on modern laptops with Docker Desktop
+  - **macOS Users:** [OrbStack](https://orbstack.dev/) is highly recommended over Docker Desktop - faster, lighter, and more efficient
 - **Production:** Successfully tested on DigitalOcean $6/month droplet (1 vCPU, 1 GB RAM)
 - **Database Growth:** MySQL database grows slowly (~100-500 MB with aggressive caching)
 - **Concurrent Users:** Handles 10-50 concurrent users comfortably on minimal specs
