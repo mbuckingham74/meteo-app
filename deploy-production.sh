@@ -77,8 +77,8 @@ echo -e "\n${YELLOW}[6/6] Configuring Nginx Proxy Manager...${NC}"
 echo -e "${YELLOW}You can run NPM configuration in two ways:${NC}\n"
 
 echo "Option A - Automated (recommended):"
-echo "  NPM_EMAIL=\"michael.buckingham74@gmail.com\" \\"
-echo "  NPM_PASSWORD=\"Qaa6EhpCUrumcfGTuhgwLF4v.\" \\"
+echo "  NPM_EMAIL=\"your_npm_email@example.com\" \\"
+echo "  NPM_PASSWORD=\"your_npm_password_here\" \\"
 echo "  NPM_API_URL=\"http://localhost:81/api\" \\"
 echo "  ./scripts/configure-npm.sh"
 echo ""
@@ -90,8 +90,11 @@ read -p "Do you want to run NPM configuration now? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo -e "${YELLOW}Running NPM configuration...${NC}"
-    NPM_EMAIL="michael.buckingham74@gmail.com" \
-    NPM_PASSWORD="Qaa6EhpCUrumcfGTuhgwLF4v." \
+    if [ -z "$NPM_EMAIL" ] || [ -z "$NPM_PASSWORD" ]; then
+        echo -e "${RED}✗ NPM_EMAIL and NPM_PASSWORD environment variables must be set${NC}"
+        echo "Example: NPM_EMAIL=\"your@email.com\" NPM_PASSWORD=\"your_password\" ./deploy-production.sh"
+        exit 1
+    fi
     NPM_API_URL="http://localhost:81/api" \
     ./scripts/configure-npm.sh
 fi
