@@ -130,18 +130,50 @@ This application requires API keys from the following services to function. Some
 
 ## 📋 Table of Contents
 
-- [Minimum Server Requirements](#minimum-server-requirements)
-- [Required External APIs](#required-external-apis)
-- [Features](#features)
-- [Development & Automation](#development--automation)
-- [Tech Stack](#tech-stack)
-- [Setup Instructions](#setup-instructions)
-- [API Endpoints](#api-endpoints)
-- [Project Structure](#project-structure)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Author](#author)
+**Quick Links:**
+- [🚀 Setup Instructions](#-setup-instructions) | [🌐 Live Demo](https://meteo-beta.tachyonfuture.com) | [🤝 Contributing](#-contributing)
+
+**Getting Started:**
+- [💻 Minimum Server Requirements](#-minimum-server-requirements)
+- [🔑 Required External APIs](#-required-external-apis)
+  - [Visual Crossing Weather API](#1-visual-crossing-weather-api-required)
+  - [RainViewer API](#2-rainviewer-api-required-for-radar)
+  - [OpenWeather API](#3-openweather-api-required-for-map-overlays)
+  - [Anthropic Claude API (Optional)](#4-anthropic-claude-api-optional---ai-features)
+  - [Cost Summary](#cost-summary)
+
+**Features:**
+- [✨ Features Overview](#-features)
+  - [Weather Forecasts](#️-weather-forecasts)
+  - [Interactive Radar Map](#️-interactive-radar-map)
+  - [Interactive Charts](#-interactive-charts)
+  - [Location Management](#-location-management)
+  - [AI-Powered Location Finder](#-ai-powered-location-finder)
+  - [Air Quality Monitoring](#-air-quality-index-aqi)
+  - [User Authentication](#-user-authentication--profiles)
+  - [Theme System](#-theme-system)
+
+**Development:**
+- [🤖 Development & Automation](#-development--automation)
+  - [GitHub Actions CI/CD](#github-actions-cicd)
+  - [Community Health Files](#community-health-files)
+  - [Issue & PR Templates](#issue--pr-templates)
+  - [Roadmap Ideas](#roadmap-ideas)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [🚀 Setup Instructions](#-setup-instructions)
+- [🌐 API Endpoints](#-api-endpoints)
+- [📁 Project Structure](#-project-structure)
+
+**Additional Information:**
+- [📖 Usage](#-usage)
+- [🔍 Features in Detail](#-features-in-detail)
+- [🚀 Performance & Caching](#-performance--caching)
+- [⚠️ API Rate Limiting](#️-api-rate-limiting)
+- [🗺️ Project Status & Roadmap](#️-project-status--roadmap)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [🙏 Data Attribution](#-data-attribution)
+- [👨‍💻 Author](#-author)
 
 ---
 
