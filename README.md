@@ -11,8 +11,11 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 ![React](https://img.shields.io/badge/react-18.2.0-blue.svg)
 [![GitHub](https://img.shields.io/badge/GitHub-mbuckingham74-181717?logo=github)](https://github.com/mbuckingham74)
 
-## 🌟 Key Highlights
+## 🌟 Key Features
 
+- **🚀 Self-Hostable & Meteorological Nerd Approved** - Run your own weather station with professional-grade data
+- **⚡ Plug and Play** - Get started with a few free API keys in minutes
+- **💾 Small Server Config Requirements** - Runs on minimal hardware ($6/month VPS)
 - **🤖 AI-Powered Location Finder** - Natural language search using Claude AI to find ideal climates
 - **📊 Rich Data Visualization** - 15+ interactive charts for weather analysis
 - **🌧️ Interactive Radar Map** - Real historical precipitation data with animation, alerts overlay, and storm tracking
