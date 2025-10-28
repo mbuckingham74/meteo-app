@@ -2,6 +2,8 @@
 
 This guide covers deploying the Meteo App to production with Docker Compose and Nginx Proxy Manager.
 
+**Live Example:** This app is deployed at https://meteo-beta.tachyonfuture.com/compare
+
 ## Architecture Overview
 
 **Network Architecture:**
@@ -13,9 +15,9 @@ This guide covers deploying the Meteo App to production with Docker Compose and 
 - `meteo-backend-prod` - Node.js Express API (dual network)
 - `meteo-frontend-prod` - React app served by Nginx (NPM network)
 
-**Domains:**
-- `meteo-beta.tachyonfuture.com` → Frontend
-- `api.meteo-beta.tachyonfuture.com` → Backend API
+**Domains (example):**
+- `meteo-app.example.com` → Frontend
+- `api.meteo-app.example.com` → Backend API
 
 ---
 
@@ -26,9 +28,10 @@ This guide covers deploying the Meteo App to production with Docker Compose and 
    - Nginx Proxy Manager (NPM) running
    - Ports 80 and 443 available for NPM
 
-2. **DNS Configuration (Cloudflare):**
-   - Create A record: `meteo-beta.tachyonfuture.com` → Your server IP
-   - Create A record: `api.meteo-beta.tachyonfuture.com` → Your server IP
+2. **DNS Configuration:**
+   - Create A record: `meteo-app.example.com` → Your server IP
+   - Create A record: `api.meteo-app.example.com` → Your server IP
+   - (Replace example.com with your actual domain)
 
 3. **API Keys:**
    - Visual Crossing Weather API key (get at: https://www.visualcrossing.com/weather-api)
@@ -64,11 +67,11 @@ VISUAL_CROSSING_API_KEY=your_visual_crossing_api_key_here
 # Backend Configuration
 JWT_SECRET=your_secure_jwt_secret_minimum_32_characters
 
-# CORS Configuration
-CORS_ORIGIN=https://meteo-beta.tachyonfuture.com
+# CORS Configuration (use your actual frontend domain)
+CORS_ORIGIN=https://meteo-app.example.com
 
-# Frontend API URL
-REACT_APP_API_URL=https://api.meteo-beta.tachyonfuture.com/api
+# Frontend API URL (use your actual API domain)
+REACT_APP_API_URL=https://api.meteo-app.example.com/api
 ```
 
 **Security Note:** Generate secure passwords and JWT secret:
@@ -158,8 +161,8 @@ export NPM_API_URL="http://localhost:81/api"  # Adjust if NPM runs on different 
 
 The script will:
 - Authenticate with NPM API
-- Create proxy host for frontend (`meteo-app.tachyonfuture.com`)
-- Create proxy host for API (`api.meteo-app.tachyonfuture.com`)
+- Create proxy host for frontend (`meteo-app.example.com`)
+- Create proxy host for API (`api.meteo-app.example.com`)
 - Request Let's Encrypt SSL certificates
 - Enable HTTPS with forced SSL redirect
 
@@ -177,7 +180,7 @@ The script will:
 2. **Create Frontend Proxy Host:**
    - Click "Proxy Hosts" → "Add Proxy Host"
    - **Details tab:**
-     - Domain Names: `meteo-beta.tachyonfuture.com`
+     - Domain Names: `meteo-app.example.com`
      - Scheme: `http`
      - Forward Hostname/IP: `meteo-frontend-prod`
      - Forward Port: `80`
@@ -192,7 +195,7 @@ The script will:
 3. **Create Backend API Proxy Host:**
    - Click "Add Proxy Host"
    - **Details tab:**
-     - Domain Names: `api.meteo-beta.tachyonfuture.com`
+     - Domain Names: `api.meteo-app.example.com`
      - Scheme: `http`
      - Forward Hostname/IP: `meteo-backend-prod`
      - Forward Port: `5001`
@@ -213,10 +216,10 @@ After NPM configuration completes (SSL certificates can take 2-5 minutes):
 
 ```bash
 # Test Frontend
-curl -I https://meteo-beta.tachyonfuture.com
+curl -I https://meteo-app.example.com
 
 # Test Backend API
-curl https://api.meteo-beta.tachyonfuture.com/api/health
+curl https://api.meteo-app.example.com/api/health
 
 # Expected response:
 # {
@@ -229,8 +232,8 @@ curl https://api.meteo-beta.tachyonfuture.com/api/health
 ```
 
 Open your browser and navigate to:
-- **Frontend:** https://meteo-beta.tachyonfuture.com
-- **API Health:** https://api.meteo-beta.tachyonfuture.com/api/health
+- **Frontend:** https://meteo-app.example.com
+- **API Health:** https://api.meteo-app.example.com/api/health
 
 ---
 
@@ -358,7 +361,7 @@ docker system df
    ```
 
 3. Verify NPM proxy host is configured correctly
-4. Check DNS propagation: `dig meteo-app.tachyonfuture.com`
+4. Check DNS propagation: `dig meteo-app.example.com`
 
 ### Backend API Errors
 
@@ -447,7 +450,7 @@ The backend implements intelligent API caching in MySQL:
 
 Check cache statistics:
 ```bash
-curl https://api.meteo-beta.tachyonfuture.com/api/cache/stats
+curl https://api.meteo-app.example.com/api/cache/stats
 ```
 
 ### Frontend Optimization
@@ -514,5 +517,5 @@ git pull && docker-compose -f docker-compose.prod.yml up -d --build
 docker exec meteo-mysql-prod mysqldump -u root -p${DB_ROOT_PASSWORD} ${DB_NAME} > backup.sql
 
 # Check health
-curl https://api.meteo-beta.tachyonfuture.com/api/health
+curl https://api.meteo-app.example.com/api/health
 ```

@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 // CORS Configuration - allow all origins in development, specific origin in production
 const corsOptions = process.env.NODE_ENV === 'production'
-  ? { origin: process.env.CORS_ORIGIN || 'https://meteo-app.tachyonfuture.com' }
+  ? { origin: process.env.CORS_ORIGIN || 'https://meteo-app.example.com' }
   : {}; // Allow all origins in development
 
 app.use(cors(corsOptions));
