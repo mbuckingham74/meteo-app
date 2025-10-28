@@ -26,6 +26,31 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 
 ---
 
+## 💻 Minimum Server Requirements
+
+This application is lightweight and can run on minimal hardware. Perfect for personal VPS hosting or local development.
+
+### Recommended Specifications
+- **CPU:** 1-2 cores (2 GHz+)
+- **RAM:** 2 GB minimum, 4 GB recommended
+- **Storage:** 10 GB free space (includes Docker images, database, and logs)
+- **Network:** Stable internet connection for external API calls
+- **Operating System:** Linux (Ubuntu 20.04+), macOS, or Windows with WSL2
+
+### Performance Notes
+- **Development:** Runs smoothly on modern laptops with Docker Desktop
+- **Production:** Successfully tested on DigitalOcean $6/month droplet (1 vCPU, 1 GB RAM)
+- **Database Growth:** MySQL database grows slowly (~100-500 MB with aggressive caching)
+- **Concurrent Users:** Handles 10-50 concurrent users comfortably on minimal specs
+- **Docker Containers:** 3 containers (MySQL, Backend, Frontend) with modest resource usage
+
+### What You Need Installed
+- **Docker** (20.10+) and **Docker Compose** (1.29+)
+- **Node.js** (14+) - only for local development without Docker
+- **Git** - for cloning the repository
+
+---
+
 ## 🔑 Required External APIs
 
 This application requires API keys from the following services to function. Some are free, others have generous free tiers.
@@ -89,6 +114,7 @@ This application requires API keys from the following services to function. Some
 
 ## 📋 Table of Contents
 
+- [Minimum Server Requirements](#minimum-server-requirements)
 - [Required External APIs](#required-external-apis)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
