@@ -87,6 +87,8 @@ Backend requires `.env` file (see `.env.example`):
 - Weather APIs: `OPENWEATHER_API_KEY`, `VISUAL_CROSSING_API_KEY`
 - AI: `METEO_ANTHROPIC_API_KEY` - Claude API for natural language processing
 
+**Note:** The `METEO_` prefix is used to avoid conflicts with Claude Code CLI's `ANTHROPIC_API_KEY` during development.
+
 ## Development Commands
 
 ### Docker-based Development (Recommended)
@@ -276,6 +278,8 @@ The application uses **Anthropic's Claude Sonnet 4.5** for AI-powered location f
 **Model:** `claude-sonnet-4-20250514`
 **Purpose:** Parse natural language climate queries into structured search criteria
 **Key ENV Variable:** `METEO_ANTHROPIC_API_KEY`
+
+> **Why METEO_ANTHROPIC_API_KEY?** This project uses a prefixed environment variable name to prevent conflicts with Claude Code CLI (the development tool used to build this app). Claude Code CLI uses the standard `ANTHROPIC_API_KEY` variable for its own operations. Using `METEO_ANTHROPIC_API_KEY` allows both tools to coexist without interference during development.
 
 **Two-Step Validation System:**
 

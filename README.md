@@ -282,7 +282,7 @@ JWT_EXPIRES_IN=24h
 JWT_REFRESH_EXPIRES_IN=7d
 ```
 
-**Note:** AI-powered location finder requires an [Anthropic API key](https://console.anthropic.com/). The feature is optional and the app works without it.
+**Note:** AI-powered location finder requires an [Anthropic API key](https://console.anthropic.com/). The feature is optional and the app works without it. We use `METEO_ANTHROPIC_API_KEY` (not the standard `ANTHROPIC_API_KEY`) to avoid conflicts with Claude Code CLI when developing this application.
 
 #### 3. Start the application
 ```bash
