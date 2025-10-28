@@ -133,6 +133,7 @@ This application requires API keys from the following services to function. Some
 - [Minimum Server Requirements](#minimum-server-requirements)
 - [Required External APIs](#required-external-apis)
 - [Features](#features)
+- [Development & Automation](#development--automation)
 - [Tech Stack](#tech-stack)
 - [Setup Instructions](#setup-instructions)
 - [API Endpoints](#api-endpoints)
@@ -308,6 +309,135 @@ This application requires API keys from the following services to function. Some
 - **Quick Toggle** - Show all or hide all charts with one click
 - **User Preferences** - Persistent settings for logged-in users
 - **Responsive Design** - Mobile-friendly interface
+
+---
+
+## 🤖 Development & Automation
+
+Professional development workflow with automated testing, security scanning, and community management tools.
+
+### GitHub Actions CI/CD
+
+**Automated Testing** (`ci.yml`):
+- ✅ Multi-version testing (Node 14, 16, 18)
+- ✅ Backend linting and unit tests
+- ✅ Frontend testing with React Testing Library
+- ✅ Production build validation
+- ✅ Docker image build verification
+- ✅ Docker Compose configuration validation
+- ⚡ Runs on every push and pull request
+
+**Security Scanning** (`codeql.yml`):
+- 🔒 Automated CodeQL analysis
+- 🔍 JavaScript vulnerability detection
+- 📅 Weekly scheduled scans
+- 🚨 Security alerts for dependencies
+- 📊 GitHub Security tab integration
+
+**Container Publishing** (`docker-publish.yml`):
+- 📦 Automated Docker image building
+- 🏷️ Semantic versioning tags
+- 📤 GitHub Container Registry publishing
+- 🔄 Build caching for faster deployments
+- 🎯 Triggered on releases and manual dispatch
+
+### Community Health Files
+
+**Contributing Guidelines** (`CONTRIBUTING.md`):
+- 📖 Comprehensive contribution guide
+- 💻 Development setup instructions
+- 🎨 Code style guidelines
+- 🔄 Pull request process
+- 🎯 High-priority contribution areas
+- 🏆 Contributor recognition
+
+**Code of Conduct** (`CODE_OF_CONDUCT.md`):
+- 🤝 Contributor Covenant v2.0
+- 🛡️ Community standards
+- 📋 Enforcement guidelines
+- 📧 Reporting process
+
+**Security Policy** (`SECURITY.md`):
+- 🔐 Vulnerability reporting process
+- 🛡️ Security best practices
+- ✅ Production deployment checklist
+- 🔒 API key management guidelines
+- 🐳 Docker security recommendations
+
+### Issue & PR Templates
+
+**Structured Issue Templates**:
+- 🐛 Bug Report (detailed form with component selection)
+- ✨ Feature Request (with priority levels)
+- ❓ Question Template (for support)
+- ⚙️ Configuration (helpful links to docs, discussions, demo)
+
+**Pull Request Template**:
+- ✅ Comprehensive checklist (code quality, testing, docs)
+- 🏷️ Type classification (bug fix, feature, refactor, etc.)
+- 🧪 Testing requirements
+- 📚 Documentation requirements
+- 🔒 Security considerations
+
+### Repository Features
+
+**Topics & Discoverability**:
+- 🏷️ 20 curated topics for maximum visibility
+- 🔍 SEO-optimized description
+- 🌐 Live demo link
+- 📊 Comprehensive badges (tech stack, GitHub stats)
+
+**Documentation**:
+- 📝 Detailed README with setup instructions
+- 🎯 GITHUB_TOPICS.md (discovery strategy)
+- 📣 PROMOTION.md (launch content for multiple platforms)
+- 🗺️ CLAUDE.md (AI-assisted development guidelines)
+
+### Roadmap Ideas
+
+**Testing Enhancements**:
+- [ ] Increase test coverage to 80%+
+- [ ] Add E2E testing with Playwright/Cypress
+- [ ] Implement visual regression testing
+- [ ] Add performance testing benchmarks
+- [ ] API integration tests
+
+**Automation Improvements**:
+- [ ] Automated dependency updates (Dependabot/Renovate)
+- [ ] Automated changelog generation
+- [ ] Release automation with semantic-release
+- [ ] Automated Docker image scanning (Trivy)
+- [ ] PR size labeling and auto-assignment
+- [ ] Stale issue/PR management
+- [ ] Auto-labeling based on file changes
+- [ ] Automated code quality reports (SonarCloud)
+
+**Developer Experience**:
+- [ ] Dev container configuration (VSCode)
+- [ ] GitHub Codespaces support
+- [ ] Hot reload for backend development
+- [ ] Pre-commit hooks (Husky)
+- [ ] Commit message linting (Commitlint)
+- [ ] API documentation generation (Swagger/OpenAPI)
+- [ ] Database migration system
+- [ ] Seed data for development
+
+**Monitoring & Observability**:
+- [ ] Application performance monitoring (APM)
+- [ ] Error tracking (Sentry)
+- [ ] Uptime monitoring
+- [ ] Database query performance tracking
+- [ ] API rate limit monitoring
+- [ ] User analytics (privacy-focused)
+
+**Deployment Enhancements**:
+- [ ] Multi-stage Docker builds optimization
+- [ ] Kubernetes deployment manifests
+- [ ] Terraform infrastructure as code
+- [ ] Blue-green deployment strategy
+- [ ] Automatic rollback on failures
+- [ ] Environment-specific configurations
+- [ ] Secrets management (Vault/Sealed Secrets)
 
 ---
 
