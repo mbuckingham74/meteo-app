@@ -31,8 +31,9 @@ This guide covers deploying the Meteo App to production with Docker Compose and 
    - Create A record: `api.meteo-beta.tachyonfuture.com` → Your server IP
 
 3. **API Keys:**
-   - Visual Crossing Weather API key: `BTU88L6G4NBB69QRDGJ7UJEVQ`
-   - OpenWeather API key: `8ad36fbd98b10ec9b5b42b9c32d11b62`
+   - Visual Crossing Weather API key (get at: https://www.visualcrossing.com/weather-api)
+   - OpenWeather API key (get at: https://openweathermap.org/api)
+   - **Note:** Actual keys stored in `.env.secrets` (not committed to Git)
 
 ---
 
@@ -57,8 +58,8 @@ DB_USER=meteo_user
 DB_PASSWORD=your_secure_db_password_here
 
 # Weather API Keys
-OPENWEATHER_API_KEY=8ad36fbd98b10ec9b5b42b9c32d11b62
-VISUAL_CROSSING_API_KEY=BTU88L6G4NBB69QRDGJ7UJEVQ
+OPENWEATHER_API_KEY=your_openweather_api_key_here
+VISUAL_CROSSING_API_KEY=your_visual_crossing_api_key_here
 
 # Backend Configuration
 JWT_SECRET=your_secure_jwt_secret_minimum_32_characters

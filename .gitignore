@@ -9,6 +9,8 @@ backend/.env
 frontend/.env
 .env.local
 .env.*.local
+.env.secrets
+.env.production
 
 # Build outputs
 frontend/build/

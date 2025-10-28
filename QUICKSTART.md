@@ -18,13 +18,15 @@ For a new environment, create a `.env` file in the project root:
 cat > .env << 'EOF'
 # Database
 DB_USER=root
-DB_PASSWORD=jag97Dorp@091509!
+DB_PASSWORD=your_secure_db_password_here
 DB_NAME=meteo_app
 
 # Visual Crossing API
-VISUAL_CROSSING_API_KEY=BTU88L6G4NBB69QRDGJ7UJEVQ
+VISUAL_CROSSING_API_KEY=your_visual_crossing_api_key_here
 EOF
 ```
+
+**📝 Note:** For actual credentials, see `.env.secrets` file (not committed to Git)
 
 **⚠️ Security Note:** The `.env` file is in `.gitignore` and will NOT be pushed to GitHub.
 

@@ -12,7 +12,7 @@
 - **User:** `michael`
 - **Email:** `michael.buckingham74@gmail.com`
 - **SSH Command:** `ssh michael@tachyonfuture.com`
-- **Sudo Password:** `jag97Dorp`
+- **Sudo Password:** `<stored_in_.env.secrets>`
 - **App Location:** `/home/michael/meteo-app`
 
 ### Nginx Proxy Manager (NPM)
@@ -60,8 +60,8 @@ DB_ROOT_PASSWORD=<root_password>
 DB_NAME=meteo_app
 
 # Weather API Keys
-VISUAL_CROSSING_API_KEY=BTU88L6G4NBB69QRDGJ7UJEVQ
-OPENWEATHER_API_KEY=8ad36fbd98b10ec9b5b42b9c32d11b62
+VISUAL_CROSSING_API_KEY=<see_.env.secrets>
+OPENWEATHER_API_KEY=<see_.env.secrets>
 
 # JWT Authentication
 JWT_SECRET=<secure_jwt_secret>
