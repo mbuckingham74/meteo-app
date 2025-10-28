@@ -26,8 +26,70 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 
 ---
 
+## 🔑 Required External APIs
+
+This application requires API keys from the following services to function. Some are free, others have generous free tiers.
+
+### 1. Visual Crossing Weather API (Required)
+- **Purpose:** Primary weather data source - historical data (10+ years), current conditions, and forecasts
+- **Sign Up:** [https://www.visualcrossing.com/weather-api](https://www.visualcrossing.com/weather-api)
+- **Pricing:***
+  - **Free Tier:** 1,000 records/day (sufficient for personal use)
+  - **Paid Plans:** Starting at $0.0001 per record, monthly plans from $9/month
+  - Timeline Weather API provides historical, current, and forecast data in a single endpoint
+- **Environment Variable:** `VISUAL_CROSSING_API_KEY`
+
+### 2. RainViewer API (Required for Radar)
+- **Purpose:** Real-time precipitation radar data and historical radar frames (past 2 hours)
+- **Sign Up:** Not required - **100% FREE**
+- **Pricing:***
+  - **Completely Free:** 1,000 requests/IP/minute
+  - No API key needed, public API
+  - Generous rate limits suitable for most applications
+- **Limitations:** Free tier limited to zoom level 10
+- **API Endpoint:** `https://api.rainviewer.com/public/weather-maps.json`
+
+### 3. OpenWeather API (Required for Map Overlays)
+- **Purpose:** Cloud cover and temperature tile overlays for the interactive map
+- **Sign Up:** [https://openweathermap.org/api](https://openweathermap.org/api)
+- **Pricing:***
+  - **Free Tier:** 1,000 API calls/day, 60 calls/minute
+  - **Paid Plans:** Starting at $0.0015 per call above free tier
+  - Map tiles used: `clouds_new`, `temp_new`
+- **Environment Variable:** `OPENWEATHER_API_KEY`
+
+### 4. Anthropic Claude API (Optional - AI Features)
+- **Purpose:** AI-powered location finder - natural language processing for climate search queries
+- **Sign Up:** [https://console.anthropic.com/](https://console.anthropic.com/)
+- **Pricing:***
+  - **No Free Tier** - Pay-as-you-go pricing
+  - **Claude Sonnet 4.5:** $3 per million input tokens, $15 per million output tokens
+  - Typical query cost: ~$0.005-$0.010 per search (500-1000 tokens)
+  - Budget: $99 = approximately 10,000-20,000 AI searches
+- **Environment Variable:** `METEO_ANTHROPIC_API_KEY`
+- **Note:** The app works fully without this API key - AI location finder will be disabled
+
+**Important:** We use `METEO_ANTHROPIC_API_KEY` (not the standard `ANTHROPIC_API_KEY`) to avoid conflicts with Claude Code CLI during development.
+
+### Cost Summary*
+
+**Minimum to run the app (with free tiers):**
+- Visual Crossing: **FREE** (up to 1,000 records/day)
+- RainViewer: **FREE** (unlimited with rate limits)
+- OpenWeather: **FREE** (up to 1,000 calls/day)
+- **Total: $0/month** for personal/development use
+
+**With AI features:**
+- Add Anthropic Claude API: ~$5-20/month depending on usage
+- The app implements aggressive caching (99% reduction in API calls) to minimize costs
+
+***Pricing information accurate as of 10/31/2025**
+
+---
+
 ## 📋 Table of Contents
 
+- [Required External APIs](#required-external-apis)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Setup Instructions](#setup-instructions)
