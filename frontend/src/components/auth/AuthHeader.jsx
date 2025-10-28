@@ -43,8 +43,8 @@ function AuthHeader() {
     <>
       <div className="auth-header">
         <div className="auth-header-left">
-          <a href="/privacy" className="auth-header-privacy-link">
-            Privacy
+          <a href="/privacy" className="auth-header-button auth-header-privacy-button">
+            Meteo Privacy Policy
           </a>
         </div>
         {isAuthenticated ? (

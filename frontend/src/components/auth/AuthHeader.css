@@ -20,17 +20,16 @@
   align-items: center;
 }
 
-.auth-header-privacy-link {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-tertiary, #6b7280);
+.auth-header-privacy-button {
   text-decoration: none;
-  transition: color 0.2s ease;
-  padding: 4px 8px;
+  display: inline-flex;
+  align-items: center;
 }
 
-.auth-header-privacy-link:hover {
-  color: var(--accent-primary, #667eea);
+.auth-header-privacy-button:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--bg-tertiary);
 }
 
 .auth-header-buttons {
