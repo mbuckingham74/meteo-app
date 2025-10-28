@@ -81,7 +81,7 @@ function CloudCoverChart({ data, days, height = 350 }) {
 
   return (
     <div>
-      <h3 style={{ marginBottom: '16px', color: '#111827', fontSize: '18px', fontWeight: '600' }}>
+      <h3 style={{ marginBottom: '8px', marginTop: '0', color: '#111827', fontSize: '16px', fontWeight: '600' }}>
         Cloud Cover & Visibility - {getTimeLabel()}
       </h3>
 

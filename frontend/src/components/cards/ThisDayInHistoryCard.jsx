@@ -9,9 +9,9 @@ function ThisDayInHistoryCard({ historyData, unit = 'C' }) {
   if (!historyData || !historyData.records) {
     return (
       <div style={{
-        padding: '20px',
+        padding: '12px',
         background: 'white',
-        borderRadius: '12px',
+        borderRadius: '8px',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         textAlign: 'center',
         color: '#6b7280'
@@ -32,30 +32,30 @@ function ThisDayInHistoryCard({ historyData, unit = 'C' }) {
 
   return (
     <div style={{
-      padding: '24px',
+      padding: '12px',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      borderRadius: '12px',
+      borderRadius: '8px',
       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
       color: 'white'
     }}>
       {/* Header */}
-      <div style={{ marginBottom: '20px', textAlign: 'center' }}>
-        <h3 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: '700' }}>
+      <div style={{ marginBottom: '12px', textAlign: 'center' }}>
+        <h3 style={{ margin: '0 0 6px 0', fontSize: '18px', fontWeight: '600' }}>
           📅 This Day in History
         </h3>
-        <p style={{ margin: 0, fontSize: '16px', opacity: 0.9 }}>
+        <p style={{ margin: 0, fontSize: '14px', opacity: 0.9 }}>
           {formatDate(date)} • {location?.address || 'Loading...'}
         </p>
-        <p style={{ margin: '4px 0 0 0', fontSize: '12px', opacity: 0.75 }}>
+        <p style={{ margin: '2px 0 0 0', fontSize: '11px', opacity: 0.75 }}>
           Based on {yearsAnalyzed?.length || 0} years of data
         </p>
       </div>
 
       {/* Record temperatures */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', marginBottom: '12px' }}>
         {/* Record High */}
         <div style={{
-          padding: '16px',
+          padding: '10px',
           background: 'rgba(255, 255, 255, 0.15)',
           borderRadius: '10px',
           backdropFilter: 'blur(10px)'
@@ -76,7 +76,7 @@ function ThisDayInHistoryCard({ historyData, unit = 'C' }) {
 
         {/* Record Low */}
         <div style={{
-          padding: '16px',
+          padding: '10px',
           background: 'rgba(255, 255, 255, 0.15)',
           borderRadius: '10px',
           backdropFilter: 'blur(10px)'
@@ -98,15 +98,15 @@ function ThisDayInHistoryCard({ historyData, unit = 'C' }) {
 
       {/* Average temperatures */}
       <div style={{
-        padding: '16px',
+        padding: '10px',
         background: 'rgba(255, 255, 255, 0.15)',
         borderRadius: '10px',
         backdropFilter: 'blur(10px)'
       }}>
-        <p style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', opacity: 0.9 }}>
+        <p style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: '600', opacity: 0.9 }}>
           📊 Historical Averages
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
           <div>
             <p style={{ margin: '0 0 4px 0', fontSize: '11px', opacity: 0.75, textTransform: 'uppercase' }}>
               High

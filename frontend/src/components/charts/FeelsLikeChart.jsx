@@ -15,7 +15,7 @@ import {
  * FeelsLikeChart Component
  * Compares actual temperature with feels-like temperature
  */
-function FeelsLikeChart({ data, days, unit = 'C' }) {
+function FeelsLikeChart({ data, days, unit = 'C', height = 300 }) {
   const getTimeLabel = () => {
     const numDays = days || data.length;
     if (numDays === 7) return 'Next Week';
@@ -81,17 +81,17 @@ function FeelsLikeChart({ data, days, unit = 'C' }) {
   const maxTemp = Math.ceil(Math.max(...allTemps)) + 2;
 
   return (
-    <div style={{ width: '100%', height: 450 }}>
+    <div style={{ width: '100%' }}>
       <h3 style={{
-        margin: '0 0 24px 0',
-        fontSize: '22px',
-        fontWeight: '700',
+        margin: '0 0 8px 0',
+        fontSize: '16px',
+        fontWeight: '600',
         color: '#111827'
       }}>
         🌡️ Feels Like Temperature - {getTimeLabel()}
       </h3>
 
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%" height={height}>
         <ComposedChart data={chartData} margin={{ top: 5, right: 30, left: 25, bottom: 5 }}>
           <defs>
             <linearGradient id="colorFeelsLike" x1="0" y1="0" x2="0" y2="1">

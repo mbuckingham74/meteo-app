@@ -3,14 +3,14 @@
 .aqi-card {
   background: var(--bg-elevated);
   border-radius: 12px;
-  padding: 24px;
+  padding: 16px;
   box-shadow: var(--shadow-md);
   color: var(--text-primary);
 }
 
 .aqi-card-title {
-  margin: 0 0 20px 0;
-  font-size: 20px;
+  margin: 0 0 14px 0;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
   display: flex;
@@ -19,33 +19,33 @@
 }
 
 .aqi-card-title span {
-  font-size: 24px;
+  font-size: 22px;
 }
 
 /* Main AQI Display */
 .aqi-main {
   background: var(--bg-tertiary);
   border-radius: 12px;
-  padding: 24px;
+  padding: 16px;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   border-left: 4px solid;
   transition: all var(--transition-normal);
 }
 
 .aqi-value-container {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .aqi-value {
-  font-size: 64px;
+  font-size: 48px;
   font-weight: 700;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .aqi-label {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
   text-transform: uppercase;
@@ -61,12 +61,12 @@
 
 /* Pollutants Section */
 .aqi-pollutants {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .pollutants-title {
-  margin: 0 0 12px 0;
-  font-size: 16px;
+  margin: 0 0 10px 0;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -74,16 +74,16 @@
 .pollutants-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .pollutant-item {
   background: var(--bg-tertiary);
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   transition: all var(--transition-fast);
 }
 
@@ -101,7 +101,7 @@
 }
 
 .pollutant-value {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -110,8 +110,8 @@
 .aqi-recommendations {
   background: var(--bg-tertiary);
   border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: 12px;
+  margin-bottom: 12px;
 }
 
 .recommendations-title {

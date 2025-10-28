@@ -14,7 +14,7 @@ import {
  * HumidityDewpointChart Component
  * Displays humidity percentage and dewpoint temperature over time
  */
-function HumidityDewpointChart({ data, days, unit = 'C' }) {
+function HumidityDewpointChart({ data, days, unit = 'C', height = 300 }) {
   const getTimeLabel = () => {
     const numDays = days || data.length;
     if (numDays === 7) return 'Next Week';
@@ -63,17 +63,17 @@ function HumidityDewpointChart({ data, days, unit = 'C' }) {
   };
 
   return (
-    <div style={{ width: '100%', height: 450 }}>
+    <div style={{ width: '100%' }}>
       <h3 style={{
-        margin: '0 0 24px 0',
-        fontSize: '22px',
-        fontWeight: '700',
+        margin: '0 0 8px 0',
+        fontSize: '16px',
+        fontWeight: '600',
         color: '#111827'
       }}>
         💧 Humidity & Dewpoint - {getTimeLabel()}
       </h3>
 
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%" height={height}>
         <LineChart data={chartData} margin={{ top: 5, right: 40, left: 25, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
           <XAxis

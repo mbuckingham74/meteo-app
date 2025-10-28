@@ -14,7 +14,7 @@ import {
  * SunChart Component
  * Visualizes sunrise and sunset times with daylight hours
  */
-function SunChart({ data, days }) {
+function SunChart({ data, days, height = 300 }) {
   const getTimeLabel = () => {
     const numDays = days || data.length;
     if (numDays === 7) return 'Next Week';
@@ -93,17 +93,17 @@ function SunChart({ data, days }) {
   };
 
   return (
-    <div style={{ width: '100%', height: 450 }}>
+    <div style={{ width: '100%' }}>
       <h3 style={{
-        margin: '0 0 24px 0',
-        fontSize: '22px',
-        fontWeight: '700',
+        margin: '0 0 8px 0',
+        fontSize: '16px',
+        fontWeight: '600',
         color: '#111827'
       }}>
         🌅 Sunrise & Sunset - {getTimeLabel()}
       </h3>
 
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%" height={height}>
         <BarChart data={chartData} margin={{ top: 5, right: 30, left: 30, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
           <XAxis

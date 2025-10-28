@@ -81,7 +81,7 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days, aggregatio
 
   return (
     <div>
-      <h3 style={{ marginBottom: '16px', color: '#111827', fontSize: '18px', fontWeight: '600' }}>
+      <h3 style={{ marginBottom: '8px', marginTop: '0', color: '#111827', fontSize: '16px', fontWeight: '600' }}>
         Temperature Range - {getTimeLabel()}
       </h3>
       <ResponsiveContainer width="100%" height={height}>
@@ -151,11 +151,11 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days, aggregatio
       </ResponsiveContainer>
 
       {/* Temperature Band Legend */}
-      <div style={{ marginTop: '20px', padding: '12px', background: '#f9fafb', borderRadius: '8px' }}>
-        <p style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '600', color: '#374151' }}>
+      <div style={{ marginTop: '12px', padding: '8px', background: '#f9fafb', borderRadius: '8px' }}>
+        <p style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '600', color: '#374151' }}>
           Temperature Comfort Zones:
         </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {TEMPERATURE_BANDS.map(band => (
             <div key={band.name} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{

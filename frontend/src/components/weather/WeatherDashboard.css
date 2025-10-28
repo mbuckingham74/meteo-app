@@ -52,8 +52,8 @@
 .dashboard-controls {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 20px;
+  gap: 16px;
+  padding: 16px;
   background: var(--bg-elevated);
   border-radius: 12px;
   box-shadow: var(--shadow-md);
@@ -297,6 +297,39 @@
   border-bottom: 2px solid var(--border-light);
 }
 
+/* Tab Navigation */
+.chart-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border-light);
+  padding-bottom: 0;
+}
+
+.chart-tab {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  bottom: -2px;
+}
+
+.chart-tab:hover {
+  color: var(--accent-primary);
+  background: var(--bg-tertiary);
+}
+
+.chart-tab.active {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+}
+
 .section-header.forecast-header {
   margin-top: 30px;
   margin-bottom: 24px;
@@ -318,9 +351,9 @@
 
 /* Location Info */
 .location-info {
-  padding: 24px;
+  padding: 6px;
   background: var(--bg-elevated);
-  border-radius: 16px;
+  border-radius: 8px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-light);
   display: flex;
@@ -332,21 +365,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
   border-bottom: 1px solid var(--border-light);
 }
 
 .location-name {
   margin: 0;
-  font-size: 28px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-primary) !important;
 }
 
 .location-coords {
   margin: 0;
-  font-size: 13px;
+  font-size: 10px;
   color: var(--text-tertiary) !important;
   text-align: right;
 }
@@ -354,8 +387,8 @@
 /* Current Conditions */
 .current-conditions {
   background: var(--bg-tertiary);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 8px;
+  padding: 6px;
   border: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
@@ -366,14 +399,14 @@
 .current-main {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
   border-bottom: 1px solid var(--border-light);
 }
 
 .current-temp {
-  font-size: 76px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--text-primary) !important;
   line-height: 1;
@@ -382,57 +415,57 @@
 .current-details {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .current-condition {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-secondary) !important;
 }
 
 .current-feels-like {
-  font-size: 14px;
+  font-size: 10px;
   color: var(--text-tertiary) !important;
 }
 
 .current-stats {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 3px;
+  margin-bottom: 4px;
 }
 
 .current-stat {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 6px 4px;
+  gap: 1px;
+  padding: 4px 3px;
   background: var(--bg-primary);
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .stat-icon {
-  font-size: 18px;
+  font-size: 12px;
 }
 
 .stat-value {
-  font-size: 12px;
+  font-size: 9px;
   font-weight: 600;
   color: var(--text-secondary) !important;
 }
 
 .stat-label {
-  font-size: 10px;
+  font-size: 8px;
   color: var(--text-tertiary) !important;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 2px;
+  letter-spacing: 0.3px;
+  margin-top: 0;
 }
 
 .current-footer {
-  padding-top: 12px;
+  padding-top: 4px;
   border-top: 1px solid var(--border-light);
   flex: 1;
   display: flex;
@@ -546,13 +579,13 @@
 .charts-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 20px;
   margin-bottom: 30px;
 }
 
 .chart-card {
   background: white;
-  padding: 24px;
+  padding: 16px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow-x: hidden;

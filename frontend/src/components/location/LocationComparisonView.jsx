@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useForecast, useHistoricalWeather } from '../../hooks/useWeatherData';
 import { useForecastComparison, useThisDayInHistory } from '../../hooks/useClimateData';
 import { formatTemperature, aggregateWeatherData } from '../../utils/weatherHelpers';
@@ -9,6 +9,8 @@ import TemperatureBandChart from '../charts/TemperatureBandChart';
 import PrecipitationChart from '../charts/PrecipitationChart';
 import WindChart from '../charts/WindChart';
 import HistoricalComparisonChart from '../charts/HistoricalComparisonChart';
+import { validateQuery, parseLocationQuery } from '../../services/locationFinderService';
+import { getCurrentLocation } from '../../services/geolocationService';
 import './LocationComparisonView.css';
 
 /**
@@ -23,9 +25,39 @@ function LocationComparisonView() {
   ]);
 
   const [timeRange, setTimeRange] = useState('3months'); // Default to 3 months to show summer comparison
-  const [showGuide, setShowGuide] = useState(true); // Show guide by default
+
+  // AI Location Finder state
+  const [aiQuery, setAiQuery] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+  const [aiResult, setAiResult] = useState(null);
+  const [showAiSection, setShowAiSection] = useState(false); // Start collapsed
+  const [currentLocationData, setCurrentLocationData] = useState(null);
+  const [gettingLocation, setGettingLocation] = useState(false);
 
   const { unit } = useTemperatureUnit();
+
+  // Ref for AI finder section
+  const aiFinderRef = useRef(null);
+
+  // Auto-detect user's location on mount
+  useEffect(() => {
+    const detectLocation = async () => {
+      try {
+        const location = await getCurrentLocation();
+        setCurrentLocationData({
+          lat: location.latitude,
+          lng: location.longitude,
+          city: location.address
+        });
+      } catch (error) {
+        console.log('Location detection skipped:', error.message);
+        // Don't show error - it's optional
+      }
+    };
+
+    detectLocation();
+  }, []);
 
   // Calculate date range based on selected time range
   const getDateRange = () => {
@@ -260,6 +292,76 @@ function LocationComparisonView() {
   const coldestLocation = metrics.length > 0 ? metrics.reduce((min, m) => m.avgTemp < min.avgTemp ? m : min) : null;
   const wettestLocation = metrics.length > 0 ? metrics.reduce((max, m) => m.totalPrecip > max.totalPrecip ? m : max) : null;
 
+  // AI Location Finder handlers
+  const handleGetMyLocation = async () => {
+    setGettingLocation(true);
+    setAiError(null);
+
+    try {
+      const location = await getCurrentLocation();
+      setCurrentLocationData({
+        lat: location.latitude,
+        lng: location.longitude,
+        city: location.address
+      });
+      setAiError(null);
+    } catch (error) {
+      console.error('Failed to get location:', error);
+      setAiError('Failed to get your location. Please try again or enter it manually in your query.');
+    } finally {
+      setGettingLocation(false);
+    }
+  };
+
+  const handleAiSearch = async (e) => {
+    e.preventDefault();
+
+    if (!aiQuery.trim()) {
+      setAiError('Please enter your climate preferences');
+      return;
+    }
+
+    setAiLoading(true);
+    setAiError(null);
+    setAiResult(null);
+
+    try {
+      // Step 1: Validate the query
+      console.log('Validating query...');
+      const validationResult = await validateQuery(aiQuery);
+
+      if (!validationResult.isValid) {
+        setAiError(`Invalid query: ${validationResult.reason}`);
+        setAiLoading(false);
+        return;
+      }
+
+      // Step 2: Parse the query
+      console.log('Parsing query...');
+      const parseResult = await parseLocationQuery(aiQuery, currentLocationData);
+
+      setAiResult(parseResult);
+      console.log('AI Result:', parseResult);
+
+      // TODO: Use the parsed criteria to find matching locations
+      // For now, just show the parsed criteria
+
+    } catch (error) {
+      console.error('AI search error:', error);
+      setAiError(error.message || 'Failed to process your query. Please try again.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleOpenAiFinder = () => {
+    setShowAiSection(true);
+    // Scroll to AI finder section after a brief delay to allow rendering
+    setTimeout(() => {
+      aiFinderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
   return (
     <div className="location-comparison-view">
       <div className="comparison-header">
@@ -291,89 +393,122 @@ function LocationComparisonView() {
         </div>
       </div>
 
-      {/* How to Use Guide */}
-      {showGuide && (
-        <div className="comparison-guide">
-          <div className="guide-header">
-            <h3>💡 How to Use This Comparison Tool</h3>
-            <button className="guide-close" onClick={() => setShowGuide(false)} title="Dismiss">
+      {/* Quick AI Prompt Card */}
+      <div className="ai-quick-prompt-card">
+        <div className="quick-prompt-location">
+          <span className="location-icon">📍</span>
+          <div className="location-info">
+            <span className="location-label">Your Location</span>
+            <span className="location-value">
+              {currentLocationData ? currentLocationData.city : 'Detecting...'}
+            </span>
+          </div>
+        </div>
+        <button className="ai-prompt-button" onClick={handleOpenAiFinder}>
+          Can I just tell you what I want to compare and you show me some data and pretty charts and graphs?
+        </button>
+      </div>
+
+      {/* AI-Powered Location Finder */}
+      {showAiSection && (
+        <div className="ai-location-finder" ref={aiFinderRef}>
+          <div className="ai-header">
+            <h3>🤖 AI-Powered Location Finder</h3>
+            <button className="ai-close" onClick={() => setShowAiSection(false)} title="Dismiss">
               ✕
             </button>
           </div>
-          <div className="guide-content">
-            <div className="guide-steps">
-              <h4>Quick Start:</h4>
-              <ol>
-                <li><strong>Search for cities</strong> using the search boxes in each card</li>
-                <li><strong>Select a time range</strong> to change what data you're comparing</li>
-                <li><strong>Scroll down</strong> to see detailed charts and statistics for each location</li>
-              </ol>
-            </div>
-            <div className="guide-examples">
-              <h4>Try These Examples (Click to Load):</h4>
-              <ul>
-                <li>
-                  <button
-                    className="example-button"
-                    onClick={() => {
-                      setLocations(['Paris,France', 'London,UK']);
-                      setTimeRange('7days');
-                      setShowGuide(false);
-                    }}
-                  >
-                    ❓ <strong>Which city is warmer for vacation?</strong> Paris vs. London (7-day forecast)
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="example-button"
-                    onClick={() => {
-                      setLocations(['Seattle,WA', 'Miami,FL']);
-                      setTimeRange('1year');
-                      setShowGuide(false);
-                    }}
-                  >
-                    🌧️ <strong>Does Seattle get more rain than Miami annually?</strong> Seattle vs. Miami (1 year)
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="example-button"
-                    onClick={() => {
-                      setLocations(['San Diego,CA', 'Honolulu,HI']);
-                      setTimeRange('5years');
-                      setShowGuide(false);
-                    }}
-                  >
-                    🏡 <strong>Which city has better year-round weather?</strong> San Diego vs. Honolulu (5-year avg)
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="example-button"
-                    onClick={() => {
-                      setLocations(['Phoenix,AZ', 'Las Vegas,NV']);
-                      setTimeRange('3months');
-                      setShowGuide(false);
-                    }}
-                  >
-                    ☀️ <strong>Compare summer heat:</strong> Phoenix vs. Las Vegas (3 months)
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="example-button"
-                    onClick={() => {
-                      setLocations(['New Smyrna Beach,FL', 'Seattle,WA']);
-                      setTimeRange('3months');
-                      setShowGuide(false);
-                    }}
-                  >
-                    🏖️ <strong>Which city has a milder summer?</strong> New Smyrna Beach vs. Seattle (3 months)
-                  </button>
-                </li>
-              </ul>
-            </div>
+          <div className="ai-content">
+            <p className="ai-description">
+              Describe your ideal climate in natural language, and our AI will help you find matching locations!
+            </p>
+
+            <form onSubmit={handleAiSearch} className="ai-search-form">
+              <div className="ai-input-group">
+                <textarea
+                  className="ai-input"
+                  placeholder='Example: "I currently live in New Smyrna Beach, FL. I want somewhere 15 degrees cooler from June-October, less humid, not rainy, with a good community feel."'
+                  value={aiQuery}
+                  onChange={(e) => setAiQuery(e.target.value)}
+                  rows={4}
+                  disabled={aiLoading}
+                  spellCheck={true}
+                />
+              </div>
+
+              <div className="ai-actions">
+                <button
+                  type="button"
+                  className="ai-location-button"
+                  onClick={handleGetMyLocation}
+                  disabled={aiLoading || gettingLocation}
+                >
+                  {gettingLocation ? '📍 Getting location...' : '📍 Get my location'}
+                </button>
+                {currentLocationData && (
+                  <span className="location-detected">
+                    ✓ Location: {currentLocationData.city}
+                  </span>
+                )}
+                <button
+                  type="submit"
+                  className="ai-submit-button"
+                  disabled={aiLoading || !aiQuery.trim()}
+                >
+                  {aiLoading ? '🔍 Analyzing...' : '🔍 Find locations'}
+                </button>
+              </div>
+
+              {aiError && (
+                <div className="ai-error">
+                  <p>⚠️ {aiError}</p>
+                </div>
+              )}
+
+              {aiResult && (
+                <div className="ai-result">
+                  <h4>📊 Parsed Criteria:</h4>
+                  <div className="criteria-grid">
+                    {aiResult.criteria.current_location && (
+                      <div className="criteria-item">
+                        <strong>Current Location:</strong> {aiResult.criteria.current_location}
+                      </div>
+                    )}
+                    {aiResult.criteria.time_period && (
+                      <div className="criteria-item">
+                        <strong>Time Period:</strong> {aiResult.criteria.time_period.start} - {aiResult.criteria.time_period.end}
+                      </div>
+                    )}
+                    {aiResult.criteria.temperature_delta !== null && (
+                      <div className="criteria-item">
+                        <strong>Temperature:</strong> {aiResult.criteria.temperature_delta > 0 ? '+' : ''}{aiResult.criteria.temperature_delta}°F
+                      </div>
+                    )}
+                    {aiResult.criteria.humidity && (
+                      <div className="criteria-item">
+                        <strong>Humidity:</strong> {aiResult.criteria.humidity}
+                      </div>
+                    )}
+                    {aiResult.criteria.precipitation && (
+                      <div className="criteria-item">
+                        <strong>Precipitation:</strong> {aiResult.criteria.precipitation}
+                      </div>
+                    )}
+                    {aiResult.criteria.lifestyle_factors && aiResult.criteria.lifestyle_factors.length > 0 && (
+                      <div className="criteria-item">
+                        <strong>Lifestyle:</strong> {aiResult.criteria.lifestyle_factors.join(', ')}
+                      </div>
+                    )}
+                  </div>
+                  <div className="ai-cost-info">
+                    💰 Cost: {aiResult.cost} | 🔢 Tokens: {aiResult.tokensUsed}
+                  </div>
+                  <div className="ai-next-steps">
+                    <p><em>🚧 Location matching coming soon! For now, manually search for locations in the cards below.</em></p>
+                  </div>
+                </div>
+              )}
+            </form>
           </div>
         </div>
       )}

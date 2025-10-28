@@ -43,6 +43,7 @@ function WeatherDashboard() {
   const days = 7; // Default forecast days for charts
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [locationError, setLocationError] = useState(null);
+  const [activeTab, setActiveTab] = useState('forecast'); // Tab state: forecast, details, historical, air-quality
 
   // Chart visibility state
   const [visibleCharts, setVisibleCharts] = useState({
@@ -434,112 +435,144 @@ function WeatherDashboard() {
             </h3>
           </div>
 
+          {/* Tab Navigation */}
+          <div className="chart-tabs">
+            <button
+              className={`chart-tab ${activeTab === 'forecast' ? 'active' : ''}`}
+              onClick={() => setActiveTab('forecast')}
+            >
+              📈 Forecast
+            </button>
+            <button
+              className={`chart-tab ${activeTab === 'details' ? 'active' : ''}`}
+              onClick={() => setActiveTab('details')}
+            >
+              🔍 Details
+            </button>
+            <button
+              className={`chart-tab ${activeTab === 'historical' ? 'active' : ''}`}
+              onClick={() => setActiveTab('historical')}
+            >
+              📅 Historical
+            </button>
+            <button
+              className={`chart-tab ${activeTab === 'air-quality' ? 'active' : ''}`}
+              onClick={() => setActiveTab('air-quality')}
+            >
+              💨 Air Quality
+            </button>
+          </div>
+
           {/* Charts */}
           <div className="charts-grid">
-            {/* Hourly Forecast - Full Width */}
-            {visibleCharts.hourly && (
+            {/* FORECAST TAB */}
+            {activeTab === 'forecast' && visibleCharts.hourly && (
               <div id="chart-hourly" className="chart-card chart-card-wide">
                 <HourlyForecastChart
                   hourlyData={hourlyData.data?.hourly || []}
                   unit={unit}
-                  height={400}
+                  height={300}
                 />
               </div>
             )}
 
-            {visibleCharts.temperature && (
+            {activeTab === 'forecast' && visibleCharts.temperature && (
               <div id="chart-temperature" className="chart-card">
                 <TemperatureBandChart
                   data={data.forecast || []}
                   unit={unit}
-                  height={400}
+                  height={300}
                   days={days}
                 />
               </div>
             )}
 
-            {visibleCharts.precipitation && (
+            {activeTab === 'forecast' && visibleCharts.precipitation && (
               <div id="chart-precipitation" className="chart-card">
                 <PrecipitationChart
                   data={data.forecast || []}
-                  height={350}
+                  height={300}
                   days={days}
                 />
               </div>
             )}
 
-            {visibleCharts.wind && (
+            {activeTab === 'forecast' && visibleCharts.wind && (
               <div id="chart-wind" className="chart-card">
                 <WindChart
                   data={data.forecast || []}
-                  height={350}
+                  height={300}
                   days={days}
                 />
               </div>
             )}
 
-            {visibleCharts.cloudCover && (
+            {/* DETAILS TAB */}
+            {activeTab === 'details' && visibleCharts.cloudCover && (
               <div id="chart-cloudCover" className="chart-card">
                 <CloudCoverChart
                   data={data.forecast || []}
-                  height={350}
+                  height={300}
                   days={days}
                 />
               </div>
             )}
 
-            {visibleCharts.uvIndex && (
+            {activeTab === 'details' && visibleCharts.uvIndex && (
               <div id="chart-uvIndex" className="chart-card">
                 <UVIndexChart
                   data={data.forecast || []}
-                  height={350}
+                  height={300}
                   days={days}
                 />
               </div>
             )}
 
-            {visibleCharts.overview && (
+            {activeTab === 'forecast' && visibleCharts.overview && (
               <div id="chart-overview" className="chart-card chart-card-wide">
                 <WeatherOverviewChart
                   data={data.forecast || []}
                   unit={unit}
-                  height={450}
+                  height={320}
                   days={days}
                 />
               </div>
             )}
 
             {/* Enhanced Weather Charts */}
-            {visibleCharts.humidityDew && (
+            {activeTab === 'details' && visibleCharts.humidityDew && (
               <div id="chart-humidityDew" className="chart-card">
                 <HumidityDewpointChart
                   data={data.forecast || []}
                   unit={unit}
                   days={days}
+                  height={300}
                 />
               </div>
             )}
 
-            {visibleCharts.sunriseSunset && (
+            {activeTab === 'details' && visibleCharts.sunriseSunset && (
               <div id="chart-sunriseSunset" className="chart-card">
                 <SunChart
                   data={data.forecast || []}
                   days={days}
+                  height={300}
                 />
               </div>
             )}
 
-            {visibleCharts.feelsLike && (
+            {activeTab === 'details' && visibleCharts.feelsLike && (
               <div id="chart-feelsLike" className="chart-card">
                 <FeelsLikeChart
                   data={data.forecast || []}
                   unit={unit}
                   days={days}
+                  height={300}
                 />
               </div>
             )}
 
-            {visibleCharts.airQuality && data.location && (
+            {activeTab === 'air-quality' && visibleCharts.airQuality && data.location && (
               <div id="chart-airQuality" className="chart-card">
                 <AirQualityCard
                   latitude={data.location.latitude}
@@ -549,7 +582,7 @@ function WeatherDashboard() {
             )}
 
             {/* Historical/Climate Charts */}
-            {visibleCharts.thisDayHistory && (
+            {activeTab === 'historical' && visibleCharts.thisDayHistory && (
               <div id="chart-thisDayHistory" className="chart-card chart-card-wide">
                 <ThisDayInHistoryCard
                   historyData={thisDayHistory.data}
@@ -558,33 +591,33 @@ function WeatherDashboard() {
               </div>
             )}
 
-            {visibleCharts.historicalComparison && (
+            {activeTab === 'historical' && visibleCharts.historicalComparison && (
               <div id="chart-historicalComparison" className="chart-card chart-card-wide">
                 <HistoricalComparisonChart
                   forecastData={data.forecast || []}
                   historicalData={forecastComparison.data || []}
                   unit={unit}
-                  height={400}
+                  height={300}
                 />
               </div>
             )}
 
-            {visibleCharts.recordTemps && (
+            {activeTab === 'historical' && visibleCharts.recordTemps && (
               <div id="chart-recordTemps" className="chart-card chart-card-wide">
                 <RecordTemperaturesChart
                   records={recordTemps.data?.records || []}
                   unit={unit}
-                  height={400}
+                  height={300}
                 />
               </div>
             )}
 
-            {visibleCharts.tempProbability && (
+            {activeTab === 'historical' && visibleCharts.tempProbability && (
               <div id="chart-tempProbability" className="chart-card chart-card-wide">
                 <TemperatureProbabilityChart
                   probabilityData={tempProbability.data}
                   unit={unit}
-                  height={400}
+                  height={300}
                 />
               </div>
             )}
