@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/mbuckingham74/meteo-app#readme
+    about: Read the README and project documentation
+  - name: 💬 GitHub Discussions
+    url: https://github.com/mbuckingham74/meteo-app/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 🔒 Security Issue
+    url: https://github.com/mbuckingham74/meteo-app/security/policy
+    about: Report security vulnerabilities privately
+  - name: 🌐 Live Demo
+    url: https://meteo-beta.tachyonfuture.com
+    about: Try the live demo before reporting issues

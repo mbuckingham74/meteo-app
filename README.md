@@ -6,10 +6,22 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 
 **Built by:** [Michael Buckingham](https://github.com/mbuckingham74) | **Repository:** [meteo-app](https://github.com/mbuckingham74/meteo-app)
 
+<div align="center">
+
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)
-![React](https://img.shields.io/badge/react-18.2.0-blue.svg)
-[![GitHub](https://img.shields.io/badge/GitHub-mbuckingham74-181717?logo=github)](https://github.com/mbuckingham74)
+![React](https://img.shields.io/badge/react-19.2.0-blue.svg)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-8.0-%2300758f.svg?style=flat&logo=mysql&logoColor=white)
+![Express](https://img.shields.io/badge/express-4.18-%23404d59.svg?style=flat&logo=express)
+
+![GitHub stars](https://img.shields.io/github/stars/mbuckingham74/meteo-app?style=social)
+![GitHub forks](https://img.shields.io/github/forks/mbuckingham74/meteo-app?style=social)
+![GitHub issues](https://img.shields.io/github/issues/mbuckingham74/meteo-app)
+![GitHub last commit](https://img.shields.io/github/last-commit/mbuckingham74/meteo-app)
+![GitHub repo size](https://img.shields.io/github/repo-size/mbuckingham74/meteo-app)
+
+</div>
 
 ## 🌟 Key Features
 
