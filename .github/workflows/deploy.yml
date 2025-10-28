@@ -1,0 +1,67 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  # Deploy only after CI passes
+  deploy:
+    name: Deploy to tachyonfuture.com
+    runs-on: ubuntu-latest
+    needs: []  # Add needs: [backend, frontend, docker] if you want to wait for ci.yml to pass
+
+    # Only deploy if CI workflow passed (when triggered by push)
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H tachyonfuture.com >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          ssh michael@tachyonfuture.com << 'ENDSSH'
+            cd /home/michael/meteo-app
+
+            # Show current commit
+            echo "Current commit: $(git log -1 --oneline)"
+
+            # Run deployment script
+            ./scripts/deploy-beta.sh
+
+            # Show deployment result
+            echo ""
+            echo "Deployment completed successfully!"
+          ENDSSH
+
+      - name: Verify deployment
+        run: |
+          echo "Waiting 10 seconds for services to stabilize..."
+          sleep 10
+
+          # Test frontend
+          echo "Testing frontend..."
+          curl -f -s -o /dev/null -w "Frontend: %{http_code}\n" https://meteo-beta.tachyonfuture.com || echo "Frontend check failed"
+
+          # Test backend API
+          echo "Testing backend API..."
+          curl -f -s -o /dev/null -w "Backend API: %{http_code}\n" https://api.meteo-beta.tachyonfuture.com/api/health || echo "Backend API check failed"
+
+      - name: Deployment summary
+        run: |
+          echo "🚀 Deployment to production completed!"
+          echo "📦 Commit: ${{ github.sha }}"
+          echo "👤 Author: ${{ github.actor }}"
+          echo "🌐 Frontend: https://meteo-beta.tachyonfuture.com"
+          echo "🔌 API: https://api.meteo-beta.tachyonfuture.com"
