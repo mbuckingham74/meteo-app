@@ -110,4 +110,4 @@ jobs:
 
       - name: Verify Docker Compose configuration
         run: |
-          docker-compose config
+          docker compose config
