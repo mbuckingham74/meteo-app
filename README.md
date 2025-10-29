@@ -389,7 +389,7 @@ Professional development workflow with automated testing, security scanning, and
 
 **Setup Guide:**
 - See `.github/SECRETS_SETUP.md` for configuring GitHub Secrets
-- See `.github/README.md` for complete workflow documentation
+- See `.github/WORKFLOWS.md` for complete workflow documentation
 
 ### Community Health Files
 
