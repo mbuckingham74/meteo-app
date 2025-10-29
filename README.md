@@ -10,8 +10,8 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 
 ![CI/CD](https://img.shields.io/github/actions/workflow/status/mbuckingham74/meteo-weather/deploy.yml?branch=main&label=deployment&logo=github-actions&logoColor=white)
 ![Tests](https://img.shields.io/github/actions/workflow/status/mbuckingham74/meteo-weather/ci.yml?branch=main&label=tests&logo=jest&logoColor=white)
-![Test Coverage](https://img.shields.io/badge/coverage-28%25-yellow?logo=jest&logoColor=white)
-![Tests Passing](https://img.shields.io/badge/tests-311%2F311%20passing-brightgreen?logo=jest&logoColor=white)
+![Test Coverage](https://img.shields.io/badge/coverage-33%25-yellow?logo=jest&logoColor=white)
+![Tests Passing](https://img.shields.io/badge/tests-370%2F370%20passing-brightgreen?logo=jest&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)
 ![React](https://img.shields.io/badge/react-19.2.0-blue.svg)
