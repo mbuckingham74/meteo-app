@@ -718,9 +718,35 @@
     height: 350px;
   }
 
+  /* Touch-optimized controls */
+  .radar-controls {
+    top: 8px;
+    right: 8px;
+    gap: 8px;
+  }
+
+  .layer-toggle {
+    min-width: 44px;  /* iOS recommended minimum touch target */
+    min-height: 44px;
+    font-size: 20px;
+    padding: 10px;
+  }
+
+  .layer-toggle.zoom-button {
+    font-size: 24px;
+    min-width: 44px;
+  }
+
+  .radar-controls-divider {
+    height: 2px;
+    width: 100%;  /* Full width divider on mobile for visual clarity */
+    margin: 4px 0;
+  }
+
   .radar-legend {
     font-size: 11px;
     padding: 6px 10px;
+    bottom: 60px;  /* Move up to avoid animation controls */
   }
 
   .legend-gradient {
@@ -729,26 +755,77 @@
   }
 
   .radar-animation-controls {
-    padding: 6px 8px;
-    gap: 6px;
+    padding: 8px;
+    gap: 8px;
   }
 
   .animation-button {
-    padding: 4px 8px;
-    font-size: 14px;
-    min-width: 32px;
+    padding: 6px 12px;
+    font-size: 16px;
+    min-width: 44px;  /* Touch-friendly */
+    min-height: 44px;
   }
 
   .speed-button {
-    font-size: 11px;
+    font-size: 12px;
+    padding: 6px 10px;
+    min-height: 44px;
   }
 
   .animation-timestamp {
-    font-size: 11px;
-    padding: 0 4px;
+    font-size: 12px;
+    padding: 6px 10px;
+    min-height: 44px;
+    cursor: pointer;
   }
 
   .animation-progress {
-    height: 4px;
+    height: 6px;  /* Thicker for easier touch interaction */
+    cursor: pointer;
+  }
+
+  /* Storm tracking panel */
+  .storm-tracking-panel {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .storm-tracking-content {
+    gap: 8px;
+  }
+
+  .storm-metric {
+    font-size: 12px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .radar-map-container {
+    min-height: 300px;
+    height: 300px;
+  }
+
+  .radar-controls {
+    flex-wrap: wrap;
+    max-width: calc(100% - 16px);
+  }
+
+  .layer-toggle {
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 18px;
+    padding: 8px;
+  }
+
+  .radar-animation-controls {
+    flex-wrap: wrap;
+    padding: 6px;
+  }
+
+  .animation-button {
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 14px;
   }
 }

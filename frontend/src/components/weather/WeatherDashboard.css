@@ -862,6 +862,44 @@
   .charts-grid {
     gap: 16px;
   }
+
+  /* Mobile optimization for highlights */
+  .highlights-section,
+  .wind-air-section {
+    padding: 12px;
+  }
+
+  .highlights-grid {
+    gap: 8px;
+  }
+
+  .highlight-card {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .highlight-icon {
+    font-size: 28px;
+  }
+
+  .highlight-label {
+    font-size: 11px;
+  }
+
+  .highlight-value {
+    font-size: 16px;
+  }
+
+  .conditions-summary {
+    padding: 12px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .conditions-icon-section {
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
 }
 
 @media (max-width: 480px) {
