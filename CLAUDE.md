@@ -34,25 +34,9 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 
 The application is containerized using Docker Compose for consistent development and deployment.
 
-## 🚨 CRITICAL: Production Server Access Rules
+## 🚨 Production Server Access Rules
 
-**⛔️ NEVER AUTOMATICALLY SSH TO tachyonfuture.com ⛔️**
-
-The production server has aggressive security software (Fail2ban) that will:
-- **Instantly ban any automated SSH attempts**
-- **Lock out the user completely** (even with IP whitelisting)
-- **Require Hostinger support intervention** to regain access
-
-**If server diagnostics are needed:**
-1. **ASK THE USER FIRST** - Never run `ssh` commands automatically
-2. User must manually SSH from their terminal
-3. User runs commands and reports results back
-4. See `DEPLOYMENT_GUIDE_PRIVATE.md` for detailed server access procedures
-
-**SSH Authentication Requirements:**
-- **SSH KEY ONLY** - Never attempt password-based or programmatic authentication
-- User will provide biometric authentication (1Password Touch ID) when needed
-- Multiple SSH key attempts trigger MaxAuthTries exhaustion and catastrophic server lockout
+**Ask before attempting to connect to server. Private key is provided via biometric authorization.**
 
 **Production Server Details:**
 - **Host:** tachyonfuture.com (Hostinger VPS)
