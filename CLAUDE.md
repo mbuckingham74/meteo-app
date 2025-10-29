@@ -537,6 +537,7 @@ Enhanced location detection with multiple fallback mechanisms:
 - **Press Enter:** Automatically selects first search result
 - **Dark Mode:** Fully styled dropdown with readable text on dark backgrounds
 - **Persistence:** Current location saved to localStorage, survives page refresh
+- **Default Location:** Seattle, WA (neutral starting point for first-time users)
 
 **Geolocation System (3-Tier Fallback):**
 1. **Browser Geolocation (Low Accuracy):**
@@ -551,10 +552,12 @@ Enhanced location detection with multiple fallback mechanisms:
    - Accuracy: 10-50m
 3. **IP-Based Geolocation (Fallback):**
    - Multi-service approach with automatic failover
-   - Services: ip-api.com (primary), geojs.io (backup), ipapi.co (backup)
+   - Services: ipapi.co (primary), geojs.io (backup)
+   - **Both services use HTTPS** to avoid Mixed Content errors on secure sites
    - Works even when CoreLocation is unavailable
    - City-level accuracy (~5km)
    - **Critical for macOS users** where browser geolocation often fails
+   - Accurately detects VPN endpoint locations
 
 **Why This Matters:**
 macOS often returns `kCLErrorLocationUnknown` (POSITION_UNAVAILABLE) due to:
