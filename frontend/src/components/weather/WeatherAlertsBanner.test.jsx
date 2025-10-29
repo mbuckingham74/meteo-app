@@ -49,8 +49,11 @@ describe('WeatherAlertsBanner', () => {
     expect(screen.getByText('Heat Advisory')).toBeInTheDocument();
   });
 
-  it('displays alert headlines when present', () => {
+  it('displays alert headlines when present and expanded', () => {
     render(<WeatherAlertsBanner alerts={mockAlerts} />);
+
+    const alertHeader = screen.getByText('Severe Thunderstorm Warning').closest('.alert-header');
+    fireEvent.click(alertHeader);
 
     expect(screen.getByText('Severe thunderstorm warning in effect')).toBeInTheDocument();
   });

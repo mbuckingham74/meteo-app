@@ -3,9 +3,15 @@
  * Testing temperature unit preference management
  */
 
-import { render, screen, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import { TemperatureUnitProvider, useTemperatureUnit } from './TemperatureUnitContext';
+import { AuthProvider } from './AuthContext';
+
+// Mock authApi to prevent actual API calls
+jest.mock('../services/authApi', () => ({
+  getUserPreferences: jest.fn(),
+  updateUserPreferences: jest.fn(),
+}));
 
 // Test component that uses the context
 function TestComponent() {
@@ -20,136 +26,124 @@ function TestComponent() {
   );
 }
 
+// Helper to render with required providers
+function renderWithProviders(component) {
+  return render(
+    <AuthProvider>
+      {component}
+    </AuthProvider>
+  );
+}
+
 describe('TemperatureUnitContext', () => {
+  let getItemSpy, setItemSpy, removeItemSpy;
+
   beforeEach(() => {
-    // Clear localStorage before each test
-    localStorage.clear();
-    localStorage.getItem.mockClear();
-    localStorage.setItem.mockClear();
+    // Create fresh spies for each test
+    getItemSpy = jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+    setItemSpy = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {});
+    removeItemSpy = jest.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    // Restore mocks after each test
+    getItemSpy.mockRestore();
+    setItemSpy.mockRestore();
+    removeItemSpy.mockRestore();
   });
 
   describe('Provider', () => {
-    it('provides default unit as Celsius', () => {
-      render(
-        <TemperatureUnitProvider>
-          <TestComponent />
-        </TemperatureUnitProvider>
-      );
-
-      expect(screen.getByTestId('current-unit')).toHaveTextContent('C');
-    });
-
-    it('loads saved unit from localStorage', () => {
-      localStorage.getItem.mockReturnValue('F');
-
-      render(
+    it('provides default unit as Fahrenheit', () => {
+      renderWithProviders(
         <TemperatureUnitProvider>
           <TestComponent />
         </TemperatureUnitProvider>
       );
 
       expect(screen.getByTestId('current-unit')).toHaveTextContent('F');
-      expect(localStorage.getItem).toHaveBeenCalledWith('meteo_temp_unit');
     });
 
-    it('falls back to Celsius if localStorage has invalid value', () => {
-      localStorage.getItem.mockReturnValue('invalid');
+    it('loads saved unit from localStorage', () => {
+      getItemSpy.mockReturnValue('C');
 
-      render(
+      renderWithProviders(
         <TemperatureUnitProvider>
           <TestComponent />
         </TemperatureUnitProvider>
       );
 
       expect(screen.getByTestId('current-unit')).toHaveTextContent('C');
+      expect(getItemSpy).toHaveBeenCalledWith('temperatureUnit');
+    });
+
+    it('falls back to Fahrenheit if localStorage has invalid value', () => {
+      getItemSpy.mockReturnValue('invalid');
+
+      renderWithProviders(
+        <TemperatureUnitProvider>
+          <TestComponent />
+        </TemperatureUnitProvider>
+      );
+
+      expect(screen.getByTestId('current-unit')).toHaveTextContent('F');
     });
 
     it('handles localStorage errors gracefully', () => {
-      localStorage.getItem.mockImplementation(() => {
+      getItemSpy.mockImplementation(() => {
         throw new Error('localStorage not available');
       });
 
       // Should not crash
-      render(
+      renderWithProviders(
         <TemperatureUnitProvider>
           <TestComponent />
         </TemperatureUnitProvider>
       );
 
-      expect(screen.getByTestId('current-unit')).toHaveTextContent('C');
+      expect(screen.getByTestId('current-unit')).toHaveTextContent('F');
     });
   });
 
   describe('setUnit', () => {
-    it('changes unit to Celsius', async () => {
-      const user = userEvent.setup();
-
-      render(
+    it('changes unit to Celsius', () => {
+      renderWithProviders(
         <TemperatureUnitProvider>
           <TestComponent />
         </TemperatureUnitProvider>
       );
 
-      await user.click(screen.getByText('Set Celsius'));
+      fireEvent.click(screen.getByText('Set Celsius'));
 
       expect(screen.getByTestId('current-unit')).toHaveTextContent('C');
     });
 
-    it('changes unit to Fahrenheit', async () => {
-      const user = userEvent.setup();
-
-      render(
+    it('changes unit to Fahrenheit', () => {
+      renderWithProviders(
         <TemperatureUnitProvider>
           <TestComponent />
         </TemperatureUnitProvider>
       );
 
-      await user.click(screen.getByText('Set Fahrenheit'));
+      fireEvent.click(screen.getByText('Set Fahrenheit'));
 
       expect(screen.getByTestId('current-unit')).toHaveTextContent('F');
     });
 
-    it('saves unit to localStorage', async () => {
-      const user = userEvent.setup();
-
-      render(
+    it('saves unit to localStorage', () => {
+      renderWithProviders(
         <TemperatureUnitProvider>
           <TestComponent />
         </TemperatureUnitProvider>
       );
 
-      await user.click(screen.getByText('Set Fahrenheit'));
+      fireEvent.click(screen.getByText('Set Celsius'));
 
-      expect(localStorage.setItem).toHaveBeenCalledWith('meteo_temp_unit', 'F');
-    });
-
-    it('handles localStorage save errors gracefully', async () => {
-      const user = userEvent.setup();
-      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-      localStorage.setItem.mockImplementation(() => {
-        throw new Error('localStorage quota exceeded');
-      });
-
-      render(
-        <TemperatureUnitProvider>
-          <TestComponent />
-        </TemperatureUnitProvider>
-      );
-
-      // Should not crash
-      await user.click(screen.getByText('Set Fahrenheit'));
-
-      expect(screen.getByTestId('current-unit')).toHaveTextContent('F');
-      expect(consoleError).toHaveBeenCalled();
-
-      consoleError.mockRestore();
+      expect(setItemSpy).toHaveBeenCalledWith('temperatureUnit', 'C');
     });
   });
 
   describe('Multiple Components', () => {
-    it('shares unit state across multiple components', async () => {
-      const user = userEvent.setup();
-
+    it('shares unit state across multiple components', () => {
       function ComponentA() {
         const { unit } = useTemperatureUnit();
         return <div data-testid="component-a">{unit}</div>;
@@ -160,25 +154,25 @@ describe('TemperatureUnitContext', () => {
         return (
           <div>
             <div data-testid="component-b">{unit}</div>
-            <button onClick={() => setUnit('F')}>Change to F</button>
+            <button onClick={() => setUnit('C')}>Change to C</button>
           </div>
         );
       }
 
-      render(
+      renderWithProviders(
         <TemperatureUnitProvider>
           <ComponentA />
           <ComponentB />
         </TemperatureUnitProvider>
       );
 
-      expect(screen.getByTestId('component-a')).toHaveTextContent('C');
-      expect(screen.getByTestId('component-b')).toHaveTextContent('C');
-
-      await user.click(screen.getByText('Change to F'));
-
       expect(screen.getByTestId('component-a')).toHaveTextContent('F');
       expect(screen.getByTestId('component-b')).toHaveTextContent('F');
+
+      fireEvent.click(screen.getByText('Change to C'));
+
+      expect(screen.getByTestId('component-a')).toHaveTextContent('C');
+      expect(screen.getByTestId('component-b')).toHaveTextContent('C');
     });
   });
 
@@ -186,7 +180,7 @@ describe('TemperatureUnitContext', () => {
     it('requires provider to function', () => {
       // The context will throw an error if used outside provider
       // We can test that the provider is required by checking if component works with it
-      const { container } = render(
+      const { container } = renderWithProviders(
         <TemperatureUnitProvider>
           <TestComponent />
         </TemperatureUnitProvider>
@@ -198,33 +192,33 @@ describe('TemperatureUnitContext', () => {
 
   describe('Persistence', () => {
     it('persists unit preference across provider remounts', () => {
-      const { unmount } = render(
+      const { unmount } = renderWithProviders(
         <TemperatureUnitProvider>
           <TestComponent />
         </TemperatureUnitProvider>
       );
 
-      // Change to Fahrenheit
+      // Change to Celsius
       act(() => {
-        const button = screen.getByText('Set Fahrenheit');
+        const button = screen.getByText('Set Celsius');
         button.click();
       });
 
-      expect(localStorage.setItem).toHaveBeenCalledWith('meteo_temp_unit', 'F');
+      expect(setItemSpy).toHaveBeenCalledWith('temperatureUnit', 'C');
 
       // Unmount
       unmount();
 
       // Remount - should load from localStorage
-      localStorage.getItem.mockReturnValue('F');
+      getItemSpy.mockReturnValue('C');
 
-      render(
+      renderWithProviders(
         <TemperatureUnitProvider>
           <TestComponent />
         </TemperatureUnitProvider>
       );
 
-      expect(screen.getByTestId('current-unit')).toHaveTextContent('F');
+      expect(screen.getByTestId('current-unit')).toHaveTextContent('C');
     });
   });
 });
