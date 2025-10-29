@@ -358,7 +358,7 @@ The application uses **Anthropic's Claude Sonnet 4.5** for AI-powered location f
 ## UI/UX Architecture
 
 ### Dashboard Layout
-The main weather dashboard uses a responsive 60/40 split layout with compact spacing and clear section delineation:
+The main weather dashboard uses a responsive 65/35 split layout with compact spacing, dark theme support, and efficient use of screen space:
 
 **Section Headers:**
 - **"Current Conditions"** header appears above city name and weather data
@@ -367,17 +367,35 @@ The main weather dashboard uses a responsive 60/40 split layout with compact spa
 - Reduced vertical spacing throughout for compact, efficient layout
 
 **Layout Structure:**
-- **60% - Current Conditions Box:**
-  - Section header: "🌡️ Current Conditions"
-  - City name (left) and coordinates/timezone (right)
-  - Current weather: temperature, feels-like, conditions
-  - **5 compact stat boxes**: Wind, Humidity, Visibility, Clouds, 24h Precipitation
-  - **Interactive radar map** (350px height, zoom level 7.5)
+- **65% - Current Conditions & Highlights Panel:**
+  - **Current Conditions Header:**
+    - Section header: "🌡️ Current Conditions"
+    - City name (left) and coordinates/timezone (right)
+    - Current weather: temperature, feels-like, conditions
+    - **5 compact stat boxes**: Wind, Humidity, Visibility, Clouds, 24h Precipitation
+  - **Interactive Radar Map** (350px height, zoom level 7.5)
     - Fixed height provides consistent sizing
     - User-controllable zoom with + and − buttons
     - Animation controls and toggleable layers
     - Dark mode support for all controls
-- **40% - Unified Controls Panel:**
+  - **Today's Highlights Section:**
+    - 2x2 grid of info cards
+    - 🌅 Sunrise/Sunset times (12-hour format with AM/PM)
+    - ☀️ UV Index with severity level (Low/Moderate/High/Very High/Extreme)
+    - 🌡️ Atmospheric Pressure with High/Low indicator
+    - 👁️ Visibility with quality rating (Excellent/Good/Moderate/Poor)
+  - **Wind & Air Section:**
+    - 2x2 grid of info cards
+    - 💨 Wind speed (mph) with compass direction (N, NE, E, etc.)
+    - ☁️ Cloud cover percentage with description (Clear/Partly Cloudy/Mostly Cloudy/Overcast)
+    - 💧 Dew point temperature with comfort level (Dry/Comfortable/Sticky/Humid/Oppressive)
+    - 🌧️ Precipitation type (Rain/Snow/None) with expected amount
+  - **Conditions Summary:**
+    - Full-width card with weather icon and description
+    - Current conditions title (e.g., "Rain, Partially cloudy")
+    - Detailed text description from API
+    - Precipitation probability and amount (when applicable)
+- **35% - Unified Controls Panel:**
   - **Location Section:**
     - Location search bar with autocomplete and recent history
     - "Use My Location" button with robust geolocation
@@ -392,7 +410,7 @@ The main weather dashboard uses a responsive 60/40 split layout with compact spa
     - Show All / Hide All buttons control chart visibility
     - Click any chart button → Smoothly scrolls to that chart
     - Panel scrolls vertically if needed to access all options
-- **Below:** "Forecast & Charts" section with interactive visualizations
+- **Below:** "Forecast & Charts" section with interactive visualizations (dark theme enabled)
 
 **Chart Navigation:**
 - Large "View [CityName] Forecast & Charts" button provides quick access

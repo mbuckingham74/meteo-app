@@ -267,6 +267,247 @@ function WeatherDashboard() {
                       />
                     )}
                   </div>
+
+                  {/* Today's Highlights */}
+                  {currentWeather.data && !currentWeather.loading && data.forecast && data.forecast.length > 0 && (
+                    <div className="todays-highlights">
+                      <h4 className="highlights-title">Today's Highlights</h4>
+                      <div className="highlights-grid">
+                        {/* Sunrise/Sunset */}
+                        <div className="highlight-card">
+                          <div className="highlight-icon">🌅</div>
+                          <div className="highlight-content">
+                            <div className="highlight-label">Sunrise</div>
+                            <div className="highlight-value">
+                              {data.forecast[0]?.sunrise
+                                ? (() => {
+                                    const date = data.forecast[0].date;
+                                    const time = data.forecast[0].sunrise;
+                                    const dateTime = new Date(`${date}T${time}`);
+                                    return dateTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                                  })()
+                                : '--'}
+                            </div>
+                          </div>
+                          <div className="highlight-content">
+                            <div className="highlight-label">Sunset</div>
+                            <div className="highlight-value">
+                              {data.forecast[0]?.sunset
+                                ? (() => {
+                                    const date = data.forecast[0].date;
+                                    const time = data.forecast[0].sunset;
+                                    const dateTime = new Date(`${date}T${time}`);
+                                    return dateTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                                  })()
+                                : '--'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* UV Index */}
+                        <div className="highlight-card">
+                          <div className="highlight-icon">☀️</div>
+                          <div className="highlight-content">
+                            <div className="highlight-label">UV Index</div>
+                            <div className="highlight-value">
+                              {data.forecast[0]?.uvIndex ?? currentWeather.data.current.uvIndex ?? '--'}
+                            </div>
+                            <div className="highlight-subtext">
+                              {(() => {
+                                const uv = data.forecast[0]?.uvIndex ?? currentWeather.data.current.uvIndex ?? 0;
+                                if (uv <= 2) return 'Low';
+                                if (uv <= 5) return 'Moderate';
+                                if (uv <= 7) return 'High';
+                                if (uv <= 10) return 'Very High';
+                                return 'Extreme';
+                              })()}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Pressure */}
+                        <div className="highlight-card">
+                          <div className="highlight-icon">🌡️</div>
+                          <div className="highlight-content">
+                            <div className="highlight-label">Pressure</div>
+                            <div className="highlight-value">
+                              {currentWeather.data.current.pressure
+                                ? `${Math.round(currentWeather.data.current.pressure)} mb`
+                                : '--'}
+                            </div>
+                            <div className="highlight-subtext">
+                              {currentWeather.data.current.pressure
+                                ? currentWeather.data.current.pressure > 1013 ? 'High' : 'Low'
+                                : ''}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Visibility */}
+                        <div className="highlight-card">
+                          <div className="highlight-icon">👁️</div>
+                          <div className="highlight-content">
+                            <div className="highlight-label">Visibility</div>
+                            <div className="highlight-value">
+                              {data.forecast[0]?.visibility
+                                ? `${data.forecast[0].visibility.toFixed(1)} km`
+                                : currentWeather.data.current.visibility
+                                ? `${currentWeather.data.current.visibility} mi`
+                                : '--'}
+                            </div>
+                            <div className="highlight-subtext">
+                              {(() => {
+                                const vis = data.forecast[0]?.visibility ?? 0;
+                                if (vis >= 10) return 'Excellent';
+                                if (vis >= 5) return 'Good';
+                                if (vis >= 2) return 'Moderate';
+                                return 'Poor';
+                              })()}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Wind Details Section */}
+                      <h4 className="highlights-title" style={{ marginTop: '12px' }}>Wind & Air</h4>
+                      <div className="highlights-grid">
+                        {/* Wind Speed & Direction */}
+                        <div className="highlight-card">
+                          <div className="highlight-icon">💨</div>
+                          <div className="highlight-content">
+                            <div className="highlight-label">Wind</div>
+                            <div className="highlight-value">
+                              {Math.round(currentWeather.data.current.windSpeed)} mph
+                            </div>
+                            <div className="highlight-subtext">
+                              {(() => {
+                                const deg = data.forecast[0]?.windDirection ?? 0;
+                                const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+                                const index = Math.round(deg / 22.5) % 16;
+                                return `From ${directions[index]}`;
+                              })()}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Cloud Cover */}
+                        <div className="highlight-card">
+                          <div className="highlight-icon">☁️</div>
+                          <div className="highlight-content">
+                            <div className="highlight-label">Cloud Cover</div>
+                            <div className="highlight-value">
+                              {currentWeather.data.current.cloudCover}%
+                            </div>
+                            <div className="highlight-subtext">
+                              {(() => {
+                                const cc = currentWeather.data.current.cloudCover;
+                                if (cc < 20) return 'Clear';
+                                if (cc < 50) return 'Partly Cloudy';
+                                if (cc < 80) return 'Mostly Cloudy';
+                                return 'Overcast';
+                              })()}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Dew Point */}
+                        <div className="highlight-card">
+                          <div className="highlight-icon">💧</div>
+                          <div className="highlight-content">
+                            <div className="highlight-label">Dew Point</div>
+                            <div className="highlight-value">
+                              {(() => {
+                                // Calculate dew point using Magnus formula
+                                const temp = currentWeather.data.current.temperature;
+                                const humidity = currentWeather.data.current.humidity;
+                                const a = 17.27;
+                                const b = 237.7;
+                                const alpha = ((a * temp) / (b + temp)) + Math.log(humidity / 100);
+                                const dewPoint = (b * alpha) / (a - alpha);
+                                return unit === 'F'
+                                  ? `${Math.round(celsiusToFahrenheit(dewPoint))}°F`
+                                  : `${Math.round(dewPoint)}°C`;
+                              })()}
+                            </div>
+                            <div className="highlight-subtext">
+                              {(() => {
+                                const temp = currentWeather.data.current.temperature;
+                                const humidity = currentWeather.data.current.humidity;
+                                const a = 17.27;
+                                const b = 237.7;
+                                const alpha = ((a * temp) / (b + temp)) + Math.log(humidity / 100);
+                                const dewPoint = (b * alpha) / (a - alpha);
+                                const dewPointF = celsiusToFahrenheit(dewPoint);
+                                if (dewPointF < 50) return 'Dry';
+                                if (dewPointF < 60) return 'Comfortable';
+                                if (dewPointF < 65) return 'Sticky';
+                                if (dewPointF < 70) return 'Humid';
+                                return 'Oppressive';
+                              })()}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Precipitation Type */}
+                        <div className="highlight-card">
+                          <div className="highlight-icon">
+                            {data.forecast[0]?.snow > 0 ? '❄️' :
+                             data.forecast[0]?.precipitation > 0 ? '🌧️' : '☀️'}
+                          </div>
+                          <div className="highlight-content">
+                            <div className="highlight-label">Precip Type</div>
+                            <div className="highlight-value">
+                              {(() => {
+                                if (data.forecast[0]?.snow > 0) return 'Snow';
+                                if (data.forecast[0]?.precipitation > 0) return 'Rain';
+                                return 'None';
+                              })()}
+                            </div>
+                            <div className="highlight-subtext">
+                              {(() => {
+                                const precip = data.forecast[0]?.precipitation ?? 0;
+                                const snow = data.forecast[0]?.snow ?? 0;
+                                if (snow > 0) return `${snow.toFixed(1)} mm expected`;
+                                if (precip > 0) return `${precip.toFixed(1)} mm expected`;
+                                return 'Dry conditions';
+                              })()}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Weather Summary Section */}
+                      <h4 className="highlights-title" style={{ marginTop: '12px' }}>Conditions</h4>
+                      <div className="weather-summary-card">
+                        <div className="summary-main">
+                          <span className="summary-icon">{
+                            data.forecast[0]?.icon === 'rain' ? '🌧️' :
+                            data.forecast[0]?.icon === 'snow' ? '❄️' :
+                            data.forecast[0]?.icon === 'cloudy' ? '☁️' :
+                            data.forecast[0]?.icon === 'partly-cloudy-day' ? '⛅' :
+                            data.forecast[0]?.icon === 'clear-day' ? '☀️' : '🌤️'
+                          }</span>
+                          <div className="summary-text">
+                            <div className="summary-conditions">
+                              {data.forecast[0]?.conditions || 'Loading...'}
+                            </div>
+                            <div className="summary-description">
+                              {data.forecast[0]?.description || 'Fetching weather details...'}
+                            </div>
+                          </div>
+                        </div>
+                        {data.forecast[0]?.precipProbability > 0 && (
+                          <div className="summary-precipitation">
+                            <span className="precip-icon">💧</span>
+                            <span className="precip-text">
+                              {data.forecast[0].precipProbability}% chance of precipitation
+                              {data.forecast[0].precipitation > 0 && ` (${data.forecast[0].precipitation.toFixed(1)} mm expected)`}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
