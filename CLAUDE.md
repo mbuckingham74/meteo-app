@@ -757,6 +757,27 @@ Following Weather Spark's approach:
 - **Comparative Analysis**: Side-by-side city comparisons
 - **Climate Categories**: Comfortable days, precipitation probability, cloud cover percentages
 
+## Analytics
+
+The application uses two complementary analytics platforms for traffic analysis and user behavior tracking:
+
+### Matomo Analytics (Self-Hosted)
+- **Platform**: Self-hosted Matomo instance at `matomo.tachyonfuture.com`
+- **Site ID**: 4
+- **Implementation**: Inline JavaScript in `frontend/public/index.html`
+- **Tracking**: Page views, link clicks, custom events
+- **Privacy**: Self-hosted for complete data ownership
+
+### Plausible Analytics (Beta Site)
+- **Platform**: Self-hosted Plausible instance at `plausible.tachyonfuture.com`
+- **Domain Tracking**: `meteo-beta.tachyonfuture.com` only
+- **Implementation**: Deferred script tag in `frontend/public/index.html`
+- **Features**: Lightweight, privacy-focused, GDPR compliant
+- **Script**: `<script defer data-domain="meteo-beta.tachyonfuture.com" src="https://plausible.tachyonfuture.com/js/script.js"></script>`
+- **Note**: Beta site only - does not track local development or other domains
+
+Both analytics platforms are configured in the HTML template and load automatically when the application is accessed.
+
 ## Testing
 
 Frontend uses Jest and React Testing Library (configured via react-scripts).
