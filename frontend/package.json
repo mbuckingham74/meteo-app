@@ -44,6 +44,11 @@
       "!src/**/*.test.{js,jsx}",
       "!src/__tests__/**",
       "!src/**/__mocks__/**"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "json-summary"
     ]
   },
   "eslintConfig": {
