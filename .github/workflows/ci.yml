@@ -72,12 +72,97 @@ jobs:
           cd frontend
           npm run lint || echo "Linting not configured yet"
 
-      - name: Run frontend tests
+      - name: Run frontend tests with coverage
         run: |
           cd frontend
-          npm test -- --passWithNoTests --watchAll=false
+          npm test -- --coverage --watchAll=false --collectCoverageFrom='src/**/*.{js,jsx}' --collectCoverageFrom='!src/**/*.test.{js,jsx}' --collectCoverageFrom='!src/index.js' --collectCoverageFrom='!src/reportWebVitals.js' --collectCoverageFrom='!src/setupTests.js'
         env:
           CI: true
+
+      - name: Check coverage thresholds
+        run: |
+          cd frontend
+          # Extract coverage percentage from output
+          COVERAGE=$(npm test -- --coverage --watchAll=false --silent --collectCoverageFrom='src/**/*.{js,jsx}' --collectCoverageFrom='!src/**/*.test.{js,jsx}' 2>&1 | grep "All files" | awk '{print $2}' | sed 's/%//')
+          echo "Current coverage: $COVERAGE%"
+
+          # Minimum threshold: 25%
+          THRESHOLD=25
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "❌ Coverage $COVERAGE% is below threshold $THRESHOLD%"
+            exit 1
+          else
+            echo "✅ Coverage $COVERAGE% meets threshold $THRESHOLD%"
+          fi
+        continue-on-error: false
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage-report
+          path: frontend/coverage/
+          retention-days: 30
+
+      - name: Generate coverage summary
+        if: always()
+        run: |
+          cd frontend
+          if [ -f coverage/coverage-summary.json ]; then
+            echo "## Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Coverage |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|----------|" >> $GITHUB_STEP_SUMMARY
+
+            STATEMENTS=$(cat coverage/coverage-summary.json | grep -o '"statements":{"total":[0-9]*,"covered":[0-9]*,"skipped":[0-9]*,"pct":[0-9.]*' | grep -o 'pct":[0-9.]*' | cut -d: -f2)
+            BRANCHES=$(cat coverage/coverage-summary.json | grep -o '"branches":{"total":[0-9]*,"covered":[0-9]*,"skipped":[0-9]*,"pct":[0-9.]*' | grep -o 'pct":[0-9.]*' | cut -d: -f2)
+            FUNCTIONS=$(cat coverage/coverage-summary.json | grep -o '"functions":{"total":[0-9]*,"covered":[0-9]*,"skipped":[0-9]*,"pct":[0-9.]*' | grep -o 'pct":[0-9.]*' | cut -d: -f2)
+            LINES=$(cat coverage/coverage-summary.json | grep -o '"lines":{"total":[0-9]*,"covered":[0-9]*,"skipped":[0-9]*,"pct":[0-9.]*' | grep -o 'pct":[0-9.]*' | cut -d: -f2)
+
+            echo "| Statements | $STATEMENTS% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Branches | $BRANCHES% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Functions | $FUNCTIONS% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Lines | $LINES% |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Comment PR with test results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const coveragePath = 'frontend/coverage/coverage-summary.json';
+
+            let coverageComment = '## 🧪 Test Results\n\n';
+
+            if (fs.existsSync(coveragePath)) {
+              const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+              const total = coverage.total;
+
+              coverageComment += '### Coverage Summary\n\n';
+              coverageComment += '| Metric | Coverage |\n';
+              coverageComment += '|--------|----------|\n';
+              coverageComment += `| Statements | ${total.statements.pct}% |\n`;
+              coverageComment += `| Branches | ${total.branches.pct}% |\n`;
+              coverageComment += `| Functions | ${total.functions.pct}% |\n`;
+              coverageComment += `| Lines | ${total.lines.pct}% |\n\n`;
+
+              const threshold = 25;
+              if (total.statements.pct >= threshold) {
+                coverageComment += `✅ Coverage meets minimum threshold (${threshold}%)\n`;
+              } else {
+                coverageComment += `❌ Coverage below minimum threshold (${threshold}%)\n`;
+              }
+            } else {
+              coverageComment += '⚠️ Coverage report not found\n';
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: coverageComment
+            });
 
       - name: Build frontend
         run: |

@@ -1,0 +1,53 @@
+name: Coverage Badge
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  coverage-badge:
+    name: Update Coverage Badge
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Run tests with coverage
+        run: |
+          cd frontend
+          npm test -- --coverage --watchAll=false --collectCoverageFrom='src/**/*.{js,jsx}' --collectCoverageFrom='!src/**/*.test.{js,jsx}' --collectCoverageFrom='!src/index.js' --collectCoverageFrom='!src/reportWebVitals.js' --collectCoverageFrom='!src/setupTests.js'
+        env:
+          CI: true
+
+      - name: Extract coverage percentage
+        id: coverage
+        run: |
+          cd frontend
+          STATEMENTS=$(cat coverage/coverage-summary.json | grep -o '"statements":{"total":[0-9]*,"covered":[0-9]*,"skipped":[0-9]*,"pct":[0-9.]*' | grep -o 'pct":[0-9.]*' | cut -d: -f2 | head -1)
+          echo "statements=$STATEMENTS" >> $GITHUB_OUTPUT
+          echo "Coverage: $STATEMENTS%"
+
+      - name: Create coverage badge
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: ${{ secrets.GIST_ID }}
+          filename: meteo-coverage-badge.json
+          label: coverage
+          message: ${{ steps.coverage.outputs.statements }}%
+          color: ${{ steps.coverage.outputs.statements >= 25 && 'green' || 'yellow' }}
+          namedLogo: jest
+          logoColor: white
