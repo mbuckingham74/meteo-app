@@ -82,17 +82,58 @@ jobs:
       - name: Check coverage thresholds
         run: |
           cd frontend
-          # Extract coverage percentage from output
-          COVERAGE=$(npm test -- --coverage --watchAll=false --silent --collectCoverageFrom='src/**/*.{js,jsx}' --collectCoverageFrom='!src/**/*.test.{js,jsx}' 2>&1 | grep "All files" | awk '{print $2}' | sed 's/%//')
-          echo "Current coverage: $COVERAGE%"
+          # Extract coverage from coverage-summary.json (already generated from previous step)
+          if [ -f coverage/coverage-summary.json ]; then
+            STATEMENTS=$(cat coverage/coverage-summary.json | grep -o '"statements":{"total":[0-9]*,"covered":[0-9]*,"skipped":[0-9]*,"pct":[0-9.]*' | grep -o 'pct":[0-9.]*' | cut -d: -f2 | head -1)
+            BRANCHES=$(cat coverage/coverage-summary.json | grep -o '"branches":{"total":[0-9]*,"covered":[0-9]*,"skipped":[0-9]*,"pct":[0-9.]*' | grep -o 'pct":[0-9.]*' | cut -d: -f2 | head -1)
+            FUNCTIONS=$(cat coverage/coverage-summary.json | grep -o '"functions":{"total":[0-9]*,"covered":[0-9]*,"skipped":[0-9]*,"pct":[0-9.]*' | grep -o 'pct":[0-9.]*' | cut -d: -f2 | head -1)
+            LINES=$(cat coverage/coverage-summary.json | grep -o '"lines":{"total":[0-9]*,"covered":[0-9]*,"skipped":[0-9]*,"pct":[0-9.]*' | grep -o 'pct":[0-9.]*' | cut -d: -f2 | head -1)
 
-          # Minimum threshold: 25%
-          THRESHOLD=25
-          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
-            echo "❌ Coverage $COVERAGE% is below threshold $THRESHOLD%"
-            exit 1
+            echo "📊 Current Coverage:"
+            echo "  Statements: $STATEMENTS%"
+            echo "  Branches:   $BRANCHES%"
+            echo "  Functions:  $FUNCTIONS%"
+            echo "  Lines:      $LINES%"
+            echo ""
+
+            # Check thresholds
+            THRESHOLD_STATEMENTS=25
+            THRESHOLD_BRANCHES=15
+            THRESHOLD_FUNCTIONS=20
+            THRESHOLD_LINES=25
+
+            FAILED=0
+
+            if (( $(echo "$STATEMENTS < $THRESHOLD_STATEMENTS" | bc -l) )); then
+              echo "❌ Statements coverage $STATEMENTS% is below threshold $THRESHOLD_STATEMENTS%"
+              FAILED=1
+            fi
+
+            if (( $(echo "$BRANCHES < $THRESHOLD_BRANCHES" | bc -l) )); then
+              echo "❌ Branches coverage $BRANCHES% is below threshold $THRESHOLD_BRANCHES%"
+              FAILED=1
+            fi
+
+            if (( $(echo "$FUNCTIONS < $THRESHOLD_FUNCTIONS" | bc -l) )); then
+              echo "❌ Functions coverage $FUNCTIONS% is below threshold $THRESHOLD_FUNCTIONS%"
+              FAILED=1
+            fi
+
+            if (( $(echo "$LINES < $THRESHOLD_LINES" | bc -l) )); then
+              echo "❌ Lines coverage $LINES% is below threshold $THRESHOLD_LINES%"
+              FAILED=1
+            fi
+
+            if [ $FAILED -eq 1 ]; then
+              echo ""
+              echo "❌ Coverage check failed!"
+              exit 1
+            else
+              echo "✅ All coverage thresholds met!"
+            fi
           else
-            echo "✅ Coverage $COVERAGE% meets threshold $THRESHOLD%"
+            echo "⚠️ Coverage summary file not found"
+            exit 1
           fi
         continue-on-error: false
 
