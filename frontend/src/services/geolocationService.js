@@ -16,19 +16,18 @@ async function getLocationFromIP() {
   // Try multiple IP geolocation services in order
   const services = [
     {
-      name: 'ip-api.com',
-      url: 'http://ip-api.com/json/',
+      name: 'ipapi.co',
+      url: 'https://ipapi.co/json/',
       parser: (data) => {
-        // Use city name if available, otherwise fall back to "Your Location"
         const hasValidCity = data.city && data.city !== 'Unknown' && data.city.trim() !== '';
         const address = hasValidCity
-          ? `${data.city}, ${data.regionName}, ${data.country}`
+          ? `${data.city}, ${data.region_code || data.region}, ${data.country_name}`
           : 'Your Location';
 
         return {
           address,
-          latitude: data.lat,
-          longitude: data.lon,
+          latitude: data.latitude,
+          longitude: data.longitude,
           timezone: data.timezone,
           accuracy: 5000,
           method: 'ip'
@@ -49,26 +48,6 @@ async function getLocationFromIP() {
           address,
           latitude: parseFloat(data.latitude),
           longitude: parseFloat(data.longitude),
-          timezone: data.timezone,
-          accuracy: 5000,
-          method: 'ip'
-        };
-      }
-    },
-    {
-      name: 'ipapi.co',
-      url: 'https://ipapi.co/json/',
-      parser: (data) => {
-        // Use city name if available, otherwise fall back to "Your Location"
-        const hasValidCity = data.city && data.city !== 'Unknown' && data.city.trim() !== '';
-        const address = hasValidCity
-          ? `${data.city}, ${data.region_code || data.region}, ${data.country_name}`
-          : 'Your Location';
-
-        return {
-          address,
-          latitude: data.latitude,
-          longitude: data.longitude,
           timezone: data.timezone,
           accuracy: 5000,
           method: 'ip'

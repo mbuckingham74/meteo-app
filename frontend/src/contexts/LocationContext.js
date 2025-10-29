@@ -8,7 +8,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const LocationContext = createContext();
 const CURRENT_LOCATION_KEY = 'meteo_current_location';
-const DEFAULT_LOCATION = 'New Smyrna Beach,FL';
+const DEFAULT_LOCATION = 'Seattle, WA'; // More neutral default location
 
 export function useLocation() {
   const context = useContext(LocationContext);
