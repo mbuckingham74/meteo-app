@@ -96,3 +96,18 @@ testCases.forEach((testCase, index) => {
 console.log(`\n📊 Test Results: ${passed} passed, ${failed} failed out of ${testCases.length} tests`);
 
 export default testCases;
+
+// Jest test to make CI pass
+describe('Input Sanitizer', () => {
+  test('validates climate input correctly', () => {
+    const validInput = 'I want somewhere warmer with less rain';
+    const result = validateClimatInput(validInput);
+    expect(result.isValid).toBe(true);
+  });
+
+  test('rejects invalid input', () => {
+    const invalidInput = 'test';
+    const result = validateClimatInput(invalidInput);
+    expect(result.isValid).toBe(false);
+  });
+});
