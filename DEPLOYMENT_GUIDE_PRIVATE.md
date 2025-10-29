@@ -5,13 +5,45 @@
 
 ---
 
+## 🚨 CRITICAL WARNING - SSH LOCKOUT PROTECTION 🚨
+
+**⛔️ NEVER AUTOMATICALLY SSH INTO tachyonfuture.com FROM CLAUDE CODE ⛔️**
+
+**THE SERVER HAS FAIL2BAN/SECURITY SOFTWARE THAT WILL IMMEDIATELY BAN THE IP AND LOCK OUT THE USER - EVEN IF THE IP IS WHITELISTED**
+
+**IF YOU NEED TO CHECK SERVER STATUS:**
+1. **ASK THE USER FIRST** before running any SSH commands
+2. User must manually SSH from their terminal
+3. User must manually run commands and report results back
+4. DO NOT use ssh in Bash tool calls - it causes instant lockout
+
+**SSH AUTHENTICATION REQUIREMENTS:**
+- **SSH KEY AUTHENTICATION ONLY** - Never attempt programmatic password entry
+- **DO NOT provide passwords via command line or expect/automation scripts**
+- **User will provide biometric authentication** (1Password Touch ID) when required
+- SSH attempts with password prompts or multiple key attempts will trigger server lockout
+- The server's SSH agent tries ALL keys in 1Password, which can exhaust MaxAuthTries instantly
+
+**Past Incidents:**
+- October 28, 2025: Automated SSH attempt with multiple key attempts crashed entire VPS
+- Single SSH command triggered 10+ authentication attempts via 1Password SSH agent
+- Server became completely unresponsive - SSH, console, and hypervisor connection lost
+- Control panel reboot button grayed out - required Hostinger infrastructure team escalation
+- Even with IP whitelisting, automated attempts trigger catastrophic lockout
+- User loses SSH AND console access when this happens
+- Recovery required Hostinger support ticket with 24hr SLA
+
+---
+
 ## 🔐 Server & Access Credentials
 
 ### SSH Access
 - **Server:** `tachyonfuture.com`
 - **User:** `michael`
 - **Email:** `michael.buckingham74@gmail.com`
-- **SSH Command:** `ssh michael@tachyonfuture.com`
+- **SSH Command:** `ssh michael@tachyonfuture.com` **(MANUAL ONLY - NEVER AUTOMATED)**
+- **Authentication:** **SSH KEY ONLY** - User provides biometric auth (1Password Touch ID) when prompted
+- **⚠️ NEVER use password-based or programmatic authentication**
 - **Sudo Password:** `<stored_in_.env.secrets>`
 - **App Location:** `/home/michael/meteo-app`
 
@@ -232,6 +264,29 @@ meteo-frontend-prod:   # React app (served by Nginx)
 ---
 
 ## 🔥 Common Issues & Solutions
+
+### Issue 0: CAA Record Blocking Cloudflare SSL (CRITICAL)
+**Cause:** CAA DNS record restricting certificate issuance to only Let's Encrypt
+
+**Symptoms:**
+- Let's Encrypt error shown in Cloudflare dashboard next to root domain
+- SSL certificate provisioning fails when Cloudflare proxy is enabled
+- 404 errors or SSL errors when accessing site through Cloudflare
+
+**Solution:**
+```bash
+# In Cloudflare Dashboard → DNS:
+# Delete CAA record: "0 issue letsencrypt.org"
+```
+
+**Why this happens:**
+- CAA record says "only Let's Encrypt can issue certificates"
+- Cloudflare uses DigiCert/Google/Sectigo (NOT Let's Encrypt) for proxied domains
+- NPM on origin uses Let's Encrypt (that's fine)
+- But Cloudflare needs to issue its own edge certificates
+
+**Past Incidents:**
+- October 28, 2025: CAA record blocked Cloudflare SSL, causing cascading failures
 
 ### Issue 1: "Network Error" in Frontend
 **Cause:** API domain not configured in NPM or SSL certificate not issued

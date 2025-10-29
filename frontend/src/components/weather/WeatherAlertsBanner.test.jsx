@@ -1,0 +1,192 @@
+/**
+ * Tests for WeatherAlertsBanner component
+ * Testing alert display and severity-based styling
+ */
+
+import { render, screen, fireEvent } from '@testing-library/react';
+import WeatherAlertsBanner from './WeatherAlertsBanner';
+
+describe('WeatherAlertsBanner', () => {
+  const mockAlerts = [
+    {
+      event: 'Severe Thunderstorm Warning',
+      headline: 'Severe thunderstorm warning in effect',
+      description: 'A severe thunderstorm warning has been issued for the area.',
+      onset: '2025-10-28T14:00:00Z',
+      ends: '2025-10-28T18:00:00Z',
+    },
+    {
+      event: 'Flood Watch',
+      headline: 'Flood watch in effect',
+      description: 'Flooding is possible in low-lying areas.',
+      onset: '2025-10-28T12:00:00Z',
+      ends: '2025-10-29T06:00:00Z',
+    },
+    {
+      event: 'Heat Advisory',
+      headline: 'Heat advisory in effect',
+      description: 'Temperatures will be dangerously high.',
+      onset: '2025-10-28T10:00:00Z',
+      ends: '2025-10-28T20:00:00Z',
+    },
+  ];
+
+  it('renders nothing when no alerts', () => {
+    const { container } = render(<WeatherAlertsBanner alerts={[]} />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('renders nothing when alerts is null', () => {
+    const { container } = render(<WeatherAlertsBanner alerts={null} />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('renders all alerts', () => {
+    render(<WeatherAlertsBanner alerts={mockAlerts} />);
+
+    expect(screen.getByText('Severe Thunderstorm Warning')).toBeInTheDocument();
+    expect(screen.getByText('Flood Watch')).toBeInTheDocument();
+    expect(screen.getByText('Heat Advisory')).toBeInTheDocument();
+  });
+
+  it('displays alert headlines when present', () => {
+    render(<WeatherAlertsBanner alerts={mockAlerts} />);
+
+    expect(screen.getByText('Severe thunderstorm warning in effect')).toBeInTheDocument();
+  });
+
+  it('expands alert when clicked', () => {
+    render(<WeatherAlertsBanner alerts={mockAlerts} />);
+
+    const alertHeader = screen.getByText('Severe Thunderstorm Warning').closest('.alert-header');
+
+    // Description should not be visible initially
+    expect(screen.queryByText(/A severe thunderstorm warning has been issued/)).not.toBeInTheDocument();
+
+    // Click to expand
+    fireEvent.click(alertHeader);
+
+    // Description should now be visible
+    expect(screen.getByText(/A severe thunderstorm warning has been issued/)).toBeInTheDocument();
+  });
+
+  it('collapses alert when clicked twice', () => {
+    render(<WeatherAlertsBanner alerts={mockAlerts} />);
+
+    const alertHeader = screen.getByText('Severe Thunderstorm Warning').closest('.alert-header');
+
+    // Expand
+    fireEvent.click(alertHeader);
+    expect(screen.getByText(/A severe thunderstorm warning has been issued/)).toBeInTheDocument();
+
+    // Collapse
+    fireEvent.click(alertHeader);
+    expect(screen.queryByText(/A severe thunderstorm warning has been issued/)).not.toBeInTheDocument();
+  });
+
+  it('shows warning severity for warnings', () => {
+    render(<WeatherAlertsBanner alerts={[mockAlerts[0]]} />);
+
+    const alertElement = screen.getByText('Severe Thunderstorm Warning').closest('.weather-alert');
+    expect(alertElement).toHaveClass('weather-alert-warning');
+  });
+
+  it('shows watch severity for watches', () => {
+    render(<WeatherAlertsBanner alerts={[mockAlerts[1]]} />);
+
+    const alertElement = screen.getByText('Flood Watch').closest('.weather-alert');
+    expect(alertElement).toHaveClass('weather-alert-watch');
+  });
+
+  it('shows advisory severity for advisories', () => {
+    render(<WeatherAlertsBanner alerts={[mockAlerts[2]]} />);
+
+    const alertElement = screen.getByText('Heat Advisory').closest('.weather-alert');
+    expect(alertElement).toHaveClass('weather-alert-advisory');
+  });
+
+  it('displays appropriate icon for warnings', () => {
+    render(<WeatherAlertsBanner alerts={[mockAlerts[0]]} />);
+
+    expect(screen.getByText('⚠️')).toBeInTheDocument();
+  });
+
+  it('displays appropriate icon for watches', () => {
+    render(<WeatherAlertsBanner alerts={[mockAlerts[1]]} />);
+
+    expect(screen.getByText('👁️')).toBeInTheDocument();
+  });
+
+  it('displays appropriate icon for advisories', () => {
+    render(<WeatherAlertsBanner alerts={[mockAlerts[2]]} />);
+
+    expect(screen.getByText('ℹ️')).toBeInTheDocument();
+  });
+
+  it('displays onset time when available', () => {
+    render(<WeatherAlertsBanner alerts={[mockAlerts[0]]} />);
+
+    // Check that some time is displayed (exact format depends on locale)
+    const timeElements = screen.getAllByText(/202[0-9]|[AP]M|:[0-9]{2}/i);
+    expect(timeElements.length).toBeGreaterThan(0);
+  });
+
+  it('displays end time when expanded', () => {
+    render(<WeatherAlertsBanner alerts={[mockAlerts[0]]} />);
+
+    const alertHeader = screen.getByText('Severe Thunderstorm Warning').closest('.alert-header');
+    fireEvent.click(alertHeader);
+
+    expect(screen.getByText(/Ends:/)).toBeInTheDocument();
+  });
+
+  it('handles alerts without descriptions gracefully', () => {
+    const minimalAlert = [{
+      event: 'Test Alert',
+      onset: '2025-10-28T12:00:00Z',
+    }];
+
+    render(<WeatherAlertsBanner alerts={minimalAlert} />);
+
+    expect(screen.getByText('Test Alert')).toBeInTheDocument();
+
+    const alertHeader = screen.getByText('Test Alert').closest('.alert-header');
+    fireEvent.click(alertHeader);
+
+    // Should not crash when description is missing
+    expect(screen.queryByText(/undefined/)).not.toBeInTheDocument();
+  });
+
+  it('allows only one alert expanded at a time', () => {
+    render(<WeatherAlertsBanner alerts={mockAlerts} />);
+
+    const alert1Header = screen.getByText('Severe Thunderstorm Warning').closest('.alert-header');
+    const alert2Header = screen.getByText('Flood Watch').closest('.alert-header');
+
+    // Expand first alert
+    fireEvent.click(alert1Header);
+    expect(screen.getByText(/A severe thunderstorm warning has been issued/)).toBeInTheDocument();
+
+    // Expand second alert
+    fireEvent.click(alert2Header);
+
+    // First alert should now be collapsed
+    expect(screen.queryByText(/A severe thunderstorm warning has been issued/)).not.toBeInTheDocument();
+
+    // Second alert should be expanded
+    expect(screen.getByText(/Flooding is possible/)).toBeInTheDocument();
+  });
+
+  it('uses info severity for unknown alert types', () => {
+    const unknownAlert = [{
+      event: 'Special Weather Statement',
+      description: 'Something is happening',
+    }];
+
+    render(<WeatherAlertsBanner alerts={unknownAlert} />);
+
+    const alertElement = screen.getByText('Special Weather Statement').closest('.weather-alert');
+    expect(alertElement).toHaveClass('weather-alert-info');
+    expect(screen.getByText('📢')).toBeInTheDocument();
+  });
+});
