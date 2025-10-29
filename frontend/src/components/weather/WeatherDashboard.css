@@ -3,7 +3,7 @@
 .weather-dashboard {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 12px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -12,8 +12,8 @@
 /* Header */
 .dashboard-header {
   text-align: center;
-  margin-bottom: 30px;
-  padding: 12px 20px;
+  margin-bottom: 16px;
+  padding: 8px 16px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-radius: 12px;
@@ -42,9 +42,9 @@
 /* Main Row - City Box and Lookup Controls Side by Side */
 .dashboard-main-row {
   display: grid;
-  grid-template-columns: 75% 25%;
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: 60% 40%;
+  gap: 16px;
+  margin-bottom: 20px;
   align-items: stretch;
 }
 
@@ -52,8 +52,8 @@
 .dashboard-controls {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px;
+  gap: 12px;
+  padding: 12px;
   background: var(--bg-elevated);
   border-radius: 12px;
   box-shadow: var(--shadow-md);
@@ -113,7 +113,7 @@
 /* View Forecast Button */
 .view-forecast-button {
   width: 100%;
-  padding: 12px 16px;
+  padding: 10px 12px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   border-radius: 12px;
@@ -123,7 +123,7 @@
   align-items: center;
   gap: 10px;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .view-forecast-button:hover {
@@ -292,8 +292,8 @@
 
 /* Section Headers */
 .section-header {
-  margin: 0 0 16px 0;
-  padding-bottom: 12px;
+  margin: 0 0 10px 0;
+  padding-bottom: 8px;
   border-bottom: 2px solid var(--border-light);
 }
 
@@ -301,13 +301,13 @@
 .chart-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   border-bottom: 2px solid var(--border-light);
   padding-bottom: 0;
 }
 
 .chart-tab {
-  padding: 12px 24px;
+  padding: 10px 20px;
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
@@ -331,8 +331,8 @@
 }
 
 .section-header.forecast-header {
-  margin-top: 30px;
-  margin-bottom: 24px;
+  margin-top: 16px;
+  margin-bottom: 12px;
 }
 
 .section-title {
@@ -372,14 +372,14 @@
 
 .location-name {
   margin: 0;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-primary) !important;
 }
 
 .location-coords {
   margin: 0;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-tertiary) !important;
   text-align: right;
 }
@@ -406,7 +406,7 @@
 }
 
 .current-temp {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--text-primary) !important;
   line-height: 1;
@@ -415,17 +415,17 @@
 .current-details {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .current-condition {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-secondary) !important;
 }
 
 .current-feels-like {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-tertiary) !important;
 }
 
@@ -447,17 +447,17 @@
 }
 
 .stat-icon {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .stat-value {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--text-secondary) !important;
 }
 
 .stat-label {
-  font-size: 8px;
+  font-size: 9px;
   color: var(--text-tertiary) !important;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -467,10 +467,8 @@
 .current-footer {
   padding-top: 4px;
   border-top: 1px solid var(--border-light);
-  flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0;
 }
 
 .radar-placeholder {
@@ -485,19 +483,19 @@
 .chart-controls-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-top: 16px;
+  gap: 8px;
+  padding-top: 12px;
   border-top: 2px solid var(--border-light);
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .chart-controls-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
 }
 
 .chart-controls-header h3 {
@@ -579,13 +577,13 @@
 .charts-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .chart-card {
   background: white;
-  padding: 16px;
+  padding: 12px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow-x: hidden;
@@ -613,11 +611,11 @@
 /* Footer */
 .dashboard-footer {
   text-align: center;
-  padding: 20px;
+  padding: 16px;
   color: #9ca3af;
   font-size: 14px;
   border-top: 1px solid #e5e7eb;
-  margin-top: 40px;
+  margin-top: 24px;
 }
 
 .dashboard-footer p {

@@ -261,8 +261,8 @@ function WeatherDashboard() {
                       <RadarMap
                         latitude={data.location.latitude}
                         longitude={data.location.longitude}
-                        zoom={8}
-                        height="100%"
+                        zoom={7.5}
+                        height="350px"
                         alerts={data.alerts}
                       />
                     )}

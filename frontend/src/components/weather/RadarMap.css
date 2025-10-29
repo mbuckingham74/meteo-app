@@ -130,6 +130,46 @@
   cursor: not-allowed;
 }
 
+/* Zoom buttons need better contrast */
+.layer-toggle.zoom-button {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1;
+  padding: 6px 12px;
+  min-width: 38px;
+}
+
+.layer-toggle.zoom-button:hover {
+  color: #667eea;
+}
+
+/* Dark mode support for zoom buttons */
+[data-theme="dark"] .layer-toggle.zoom-button {
+  color: #f3f4f6;
+  background: rgba(31, 41, 55, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .layer-toggle.zoom-button:hover {
+  color: #a5b4fc;
+  background: rgba(55, 65, 81, 0.95);
+}
+
+/* System dark mode support */
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] .layer-toggle.zoom-button {
+    color: #f3f4f6;
+    background: rgba(31, 41, 55, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  [data-theme="auto"] .layer-toggle.zoom-button:hover {
+    color: #a5b4fc;
+    background: rgba(55, 65, 81, 0.95);
+  }
+}
+
 .radar-controls-divider {
   width: 2px;
   height: 30px;

@@ -63,6 +63,9 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250, alerts = [] }) 
   const [radarFrames, setRadarFrames] = useState([]);
   const [radarError, setRadarError] = useState(null);
 
+  // Zoom state
+  const [currentZoom, setCurrentZoom] = useState(zoom);
+
   // Animation state
   const [isPlaying, setIsPlaying] = useState(false);
   const [animationSpeed, setAnimationSpeed] = useState(1); // 1x, 2x, 0.5x
@@ -227,6 +230,15 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250, alerts = [] }) 
     }));
   };
 
+  // Zoom control handlers
+  const handleZoomIn = () => {
+    setCurrentZoom(prev => Math.min(prev + 1, 18)); // Max zoom 18
+  };
+
+  const handleZoomOut = () => {
+    setCurrentZoom(prev => Math.max(prev - 1, 1)); // Min zoom 1
+  };
+
   // Animation control handlers
   const togglePlayPause = () => {
     setIsPlaying(prev => !prev);
@@ -364,10 +376,10 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250, alerts = [] }) 
 
       <MapContainer
         center={center}
-        zoom={zoom}
+        zoom={currentZoom}
         style={{ height: '100%', width: '100%' }}
         scrollWheelZoom={false}
-        zoomControl={true}
+        zoomControl={false}
       >
         {/* Base map layer - OpenStreetMap */}
         <TileLayer
@@ -452,7 +464,7 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250, alerts = [] }) 
         })}
 
         {/* Update map view when location changes */}
-        <ChangeMapView center={center} zoom={zoom} />
+        <ChangeMapView center={center} zoom={currentZoom} />
 
         {/* Handle map ready event */}
         <MapReadyHandler onReady={handleMapReady} />
@@ -480,6 +492,23 @@ function RadarMap({ latitude, longitude, zoom = 8, height = 250, alerts = [] }) 
           title="Temperature"
         >
           🌡️
+        </button>
+        <div className="radar-controls-divider"></div>
+        <button
+          className="layer-toggle zoom-button"
+          onClick={handleZoomIn}
+          title="Zoom In"
+          disabled={currentZoom >= 18}
+        >
+          +
+        </button>
+        <button
+          className="layer-toggle zoom-button"
+          onClick={handleZoomOut}
+          title="Zoom Out"
+          disabled={currentZoom <= 1}
+        >
+          −
         </button>
         <div className="radar-controls-divider"></div>
         {alerts && alerts.length > 0 && (

@@ -34,6 +34,32 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 
 The application is containerized using Docker Compose for consistent development and deployment.
 
+## 🚨 CRITICAL: Production Server Access Rules
+
+**⛔️ NEVER AUTOMATICALLY SSH TO tachyonfuture.com ⛔️**
+
+The production server has aggressive security software (Fail2ban) that will:
+- **Instantly ban any automated SSH attempts**
+- **Lock out the user completely** (even with IP whitelisting)
+- **Require Hostinger support intervention** to regain access
+
+**If server diagnostics are needed:**
+1. **ASK THE USER FIRST** - Never run `ssh` commands automatically
+2. User must manually SSH from their terminal
+3. User runs commands and reports results back
+4. See `DEPLOYMENT_GUIDE_PRIVATE.md` for detailed server access procedures
+
+**SSH Authentication Requirements:**
+- **SSH KEY ONLY** - Never attempt password-based or programmatic authentication
+- User will provide biometric authentication (1Password Touch ID) when needed
+- Multiple SSH key attempts trigger MaxAuthTries exhaustion and catastrophic server lockout
+
+**Production Server Details:**
+- **Host:** tachyonfuture.com (Hostinger VPS)
+- **Domains:** meteo-beta.tachyonfuture.com, api.meteo-beta.tachyonfuture.com
+- **Proxy:** Nginx Proxy Manager (port 81)
+- **Deployment:** See `scripts/deploy-beta.sh` or `DEPLOYMENT_GUIDE_PRIVATE.md`
+
 ## Architecture
 
 ### Monorepo Structure
@@ -332,22 +358,26 @@ The application uses **Anthropic's Claude Sonnet 4.5** for AI-powered location f
 ## UI/UX Architecture
 
 ### Dashboard Layout
-The main weather dashboard uses a responsive 75/25 split layout with clear section delineation:
+The main weather dashboard uses a responsive 60/40 split layout with compact spacing and clear section delineation:
 
 **Section Headers:**
 - **"Current Conditions"** header appears above city name and weather data
 - **"Forecast & Charts"** header separates forecast section from current conditions
 - Provides clear visual hierarchy and improved navigation
+- Reduced vertical spacing throughout for compact, efficient layout
 
 **Layout Structure:**
-- **75% - Current Conditions Box:**
+- **60% - Current Conditions Box:**
   - Section header: "🌡️ Current Conditions"
   - City name (left) and coordinates/timezone (right)
   - Current weather: temperature, feels-like, conditions
   - **5 compact stat boxes**: Wind, Humidity, Visibility, Clouds, 24h Precipitation
-  - **Interactive radar map** with animation controls and toggleable layers
-  - Map dynamically fills remaining vertical space to match right panel height
-- **25% - Unified Controls Panel:**
+  - **Interactive radar map** (350px height, zoom level 7.5)
+    - Fixed height provides consistent sizing
+    - User-controllable zoom with + and − buttons
+    - Animation controls and toggleable layers
+    - Dark mode support for all controls
+- **40% - Unified Controls Panel:**
   - **Location Section:**
     - Location search bar with autocomplete and recent history
     - "Use My Location" button with robust geolocation
@@ -429,6 +459,10 @@ The app features a professional-grade interactive radar map powered by RainViewe
 - 💧 **Precipitation** - Toggle RainViewer radar overlay
 - ☁️ **Clouds** - Toggle OpenWeather cloud cover
 - 🌡️ **Temperature** - Toggle OpenWeather temperature overlay
+- **+** **Zoom In** - Increase map zoom level (max 18)
+- **−** **Zoom Out** - Decrease map zoom level (min 1)
+  - Bold, high-contrast buttons with dark mode support
+  - Disabled states when reaching zoom limits
 - ⚠️ **Weather Alerts** - Show/hide alert markers on map (when available)
 - 🌀 **Storm Tracking** - Enable movement analysis panel
 - 📷 **Screenshot** - Download current view as PNG image
@@ -472,7 +506,9 @@ The app features a professional-grade interactive radar map powered by RainViewe
 - **Components**: `RadarMap.jsx`, `RadarMap.css`, `radarService.js`
 - **Dependencies**: Leaflet, React-Leaflet, html2canvas
 - **Base map**: OpenStreetMap tiles
-- **Dynamic sizing**: Flexbox-based responsive height
+- **Default zoom**: Level 7.5 (balanced regional view)
+- **Map height**: Fixed 350px for consistent sizing
+- **Zoom controls**: Custom React state-managed zoom with +/− buttons
 
 ### Location Search & Geolocation
 Enhanced location detection with multiple fallback mechanisms:
