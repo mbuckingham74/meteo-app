@@ -7,7 +7,6 @@ import {
   updateUserPreferences,
   updateUserProfile,
   getCloudFavorites,
-  addCloudFavorite,
   removeCloudFavorite
 } from '../../services/authApi';
 import './UserProfileModal.css';

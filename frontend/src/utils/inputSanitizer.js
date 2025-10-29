@@ -118,6 +118,7 @@ export function validateClimatInput(input) {
 export function sanitizeInput(input) {
   return input
     .trim()
+    // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove control characters
     .substring(0, 1000); // Enforce max length
 }

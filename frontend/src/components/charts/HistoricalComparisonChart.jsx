@@ -8,8 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-  ReferenceLine
+  ResponsiveContainer
 } from 'recharts';
 import { formatDateShort, formatTemperature } from '../../utils/weatherHelpers';
 
