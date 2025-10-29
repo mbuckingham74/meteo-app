@@ -3,7 +3,7 @@
 ## ✅ What's Automated
 
 ### On Every Push & PR to `main`:
-1. ✅ Run all 311 tests
+1. ✅ Run all 431 tests
 2. ✅ Generate coverage report (must be ≥25%)
 3. ✅ Upload coverage artifacts
 4. ✅ Comment on PRs with test results
@@ -17,15 +17,15 @@
 
 ## 🎯 Coverage Thresholds
 
-**Current:** 28%
+**Current:** 35%
 **Minimum Required:** 25%
 
 | Metric | Threshold | Current |
 |--------|-----------|---------|
-| Statements | 25% | 28.11% ✅ |
-| Branches | 15% | 15.54% ✅ |
-| Functions | 20% | 23.77% ✅ |
-| Lines | 25% | 29.18% ✅ |
+| Statements | 25% | 34.53% ✅ |
+| Branches | 15% | 19.98% ✅ |
+| Functions | 20% | 30.65% ✅ |
+| Lines | 25% | 36.05% ✅ |
 
 ## 🚀 Testing Your Changes
 
