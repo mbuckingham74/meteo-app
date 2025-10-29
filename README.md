@@ -8,18 +8,20 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 
 <div align="center">
 
+![CI/CD](https://img.shields.io/github/actions/workflow/status/mbuckingham74/meteo-weather/deploy.yml?branch=main&label=deployment&logo=github-actions&logoColor=white)
+![Tests](https://img.shields.io/github/actions/workflow/status/mbuckingham74/meteo-weather/ci.yml?branch=main&label=tests&logo=jest&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)
 ![React](https://img.shields.io/badge/react-19.2.0-blue.svg)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)
 ![MySQL](https://img.shields.io/badge/mysql-8.0-%2300758f.svg?style=flat&logo=mysql&logoColor=white)
 ![Express](https://img.shields.io/badge/express-4.18-%23404d59.svg?style=flat&logo=express)
 
-![GitHub stars](https://img.shields.io/github/stars/mbuckingham74/meteo-app?style=social)
-![GitHub forks](https://img.shields.io/github/forks/mbuckingham74/meteo-app?style=social)
-![GitHub issues](https://img.shields.io/github/issues/mbuckingham74/meteo-app)
-![GitHub last commit](https://img.shields.io/github/last-commit/mbuckingham74/meteo-app)
-![GitHub repo size](https://img.shields.io/github/repo-size/mbuckingham74/meteo-app)
+![GitHub stars](https://img.shields.io/github/stars/mbuckingham74/meteo-weather?style=social)
+![GitHub forks](https://img.shields.io/github/forks/mbuckingham74/meteo-weather?style=social)
+![GitHub issues](https://img.shields.io/github/issues/mbuckingham74/meteo-weather)
+![GitHub last commit](https://img.shields.io/github/last-commit/mbuckingham74/meteo-weather)
+![GitHub repo size](https://img.shields.io/github/repo-size/mbuckingham74/meteo-weather)
 
 </div>
 
@@ -350,11 +352,21 @@ Professional development workflow with automated testing, security scanning, and
 
 ### GitHub Actions CI/CD
 
+**Automated Deployment** (`deploy.yml`):
+- 🚀 Automatic deployment to production on every push to `main`
+- 🔐 Secure SSH key authentication
+- ✅ Runs deployment script on server (`scripts/deploy-beta.sh`)
+- 🔍 Post-deployment health checks (frontend + API)
+- 📊 Deployment summary with commit info
+- ⚡ Zero-downtime deployments
+- 🎯 Manual trigger option via GitHub Actions UI
+- **Required Secret:** `SSH_PRIVATE_KEY` (see `.github/SECRETS_SETUP.md`)
+
 **Automated Testing** (`ci.yml`):
-- ✅ Multi-version testing (Node 14, 16, 18)
+- ✅ Multi-version testing (Node 20.x LTS)
 - ✅ Backend linting and unit tests
-- ✅ Frontend testing with React Testing Library
-- ✅ Production build validation
+- ✅ Frontend testing with Jest and React Testing Library
+- ✅ Production build validation with ESLint checks
 - ✅ Docker image build verification
 - ✅ Docker Compose configuration validation
 - ⚡ Runs on every push and pull request
@@ -362,16 +374,20 @@ Professional development workflow with automated testing, security scanning, and
 **Security Scanning** (`codeql.yml`):
 - 🔒 Automated CodeQL analysis
 - 🔍 JavaScript vulnerability detection
-- 📅 Weekly scheduled scans
+- 📅 Weekly scheduled scans (Mondays)
 - 🚨 Security alerts for dependencies
 - 📊 GitHub Security tab integration
 
 **Container Publishing** (`docker-publish.yml`):
 - 📦 Automated Docker image building
-- 🏷️ Semantic versioning tags
-- 📤 GitHub Container Registry publishing
+- 🏷️ Semantic versioning tags (latest, sha-<commit>, releases)
+- 📤 GitHub Container Registry publishing (ghcr.io)
 - 🔄 Build caching for faster deployments
-- 🎯 Triggered on releases and manual dispatch
+- 🎯 Triggered on push to main, releases, and manual dispatch
+
+**Setup Guide:**
+- See `.github/SECRETS_SETUP.md` for configuring GitHub Secrets
+- See `.github/README.md` for complete workflow documentation
 
 ### Community Health Files
 
