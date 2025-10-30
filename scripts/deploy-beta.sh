@@ -47,12 +47,16 @@ sleep 5
 
 # Verify deployment
 echo "🔍 Verifying deployment..."
-API_KEY_COUNT=$(docker exec meteo-frontend-prod sh -c "grep -c '3a07acbb151700c9b78cc25218578d5c' /usr/share/nginx/html/static/js/main.*.js 2>/dev/null" || echo "0")
+if [ -n "$OPENWEATHER_API_KEY" ]; then
+  API_KEY_COUNT=$(docker exec meteo-frontend-prod sh -c "grep -c '$OPENWEATHER_API_KEY' /usr/share/nginx/html/static/js/main.*.js 2>/dev/null" || echo "0")
 
-if [ "$API_KEY_COUNT" -gt 0 ]; then
-  echo "✅ OpenWeather API key found in bundle"
+  if [ "$API_KEY_COUNT" -gt 0 ]; then
+    echo "✅ OpenWeather API key found in bundle"
+  else
+    echo "❌ WARNING: OpenWeather API key NOT found in bundle!"
+  fi
 else
-  echo "❌ WARNING: OpenWeather API key NOT found in bundle!"
+  echo "⚠️  WARNING: OPENWEATHER_API_KEY not set - skipping bundle verification"
 fi
 
 # Show container status
