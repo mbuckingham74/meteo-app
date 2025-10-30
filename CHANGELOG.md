@@ -13,13 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## ![Unreleased](https://img.shields.io/badge/Unreleased-gray?style=flat-square)
 
 *No unreleased changes yet. Stay tuned for the next update!*
 
 ---
 
-## [0.2.0] - 2025-10-29
+## ![Version](https://img.shields.io/badge/version-0.2.0-yellow?style=flat-square) ![Date](https://img.shields.io/badge/date-Oct_29,_2025-yellow?style=flat-square)
 
 **Release Highlights:** Enterprise-grade security infrastructure, PWA support, accessibility improvements, and enhanced UX features.
 
@@ -175,7 +175,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.1.0] - 2025-10-24
+## ![Version](https://img.shields.io/badge/version-0.1.0-yellow?style=flat-square) ![Date](https://img.shields.io/badge/date-Oct_24,_2025-yellow?style=flat-square)
 
 **Release Name:** Initial Beta Release
 
