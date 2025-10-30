@@ -23,16 +23,21 @@ export $(cat .env.production | grep -v "^#" | xargs)
 echo "✅ Environment variables loaded"
 echo ""
 
-# Build frontend with environment variables
+# Build both frontend and backend
 echo "🏗️  Building frontend..."
 OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY \
   docker compose -f docker-compose.prod.yml build --no-cache frontend
 echo "✅ Frontend built"
 echo ""
 
-# Restart all services
+echo "🏗️  Building backend..."
+docker compose -f docker-compose.prod.yml build --no-cache backend
+echo "✅ Backend built"
+echo ""
+
+# Restart all services (will use newly built images)
 echo "🔄 Restarting services..."
-docker compose -f docker-compose.prod.yml --env-file .env.production up -d
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d --force-recreate
 echo "✅ Services restarted"
 echo ""
 
