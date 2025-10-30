@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Meteo Weather</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #1f2937;
+    }
+
+    .offline-container {
+      max-width: 600px;
+      width: 100%;
+      background: white;
+      border-radius: 16px;
+      padding: 48px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .offline-icon {
+      font-size: 5rem;
+      margin-bottom: 24px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 1.125rem;
+      color: #6b7280;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .offline-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .offline-tips {
+      margin-top: 40px;
+      padding-top: 32px;
+      border-top: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    .offline-tips h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+
+    .offline-tips ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .offline-tips li {
+      padding: 8px 0;
+      color: #6b7280;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .offline-tips li::before {
+      content: "✓";
+      color: #10b981;
+      font-weight: 700;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .status {
+      margin-top: 24px;
+      padding: 12px;
+      background: #fef3c7;
+      border: 1px solid #fbbf24;
+      border-radius: 8px;
+      color: #92400e;
+      font-size: 0.875rem;
+      display: none;
+    }
+
+    .status.online {
+      background: #d1fae5;
+      border-color: #10b981;
+      color: #065f46;
+      display: block;
+    }
+
+    .status.offline {
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .offline-container {
+        padding: 32px 24px;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+      }
+
+      .offline-icon {
+        font-size: 4rem;
+      }
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #111827;
+      }
+
+      .offline-container {
+        background: #1f2937;
+        color: #f9fafb;
+      }
+
+      h1 {
+        color: #f9fafb;
+      }
+
+      p {
+        color: #d1d5db;
+      }
+
+      .btn-secondary {
+        background: #374151;
+        color: #f9fafb;
+      }
+
+      .btn-secondary:hover {
+        background: #4b5563;
+      }
+
+      .offline-tips {
+        border-top-color: #374151;
+      }
+
+      .offline-tips h2 {
+        color: #f9fafb;
+      }
+
+      .offline-tips li {
+        color: #d1d5db;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="offline-icon">📡</div>
+    <h1>You're Offline</h1>
+    <p>
+      It looks like you've lost your internet connection. Don't worry, some features
+      may still work with cached data!
+    </p>
+
+    <div id="connectionStatus" class="status offline">
+      Connection Status: <strong id="statusText">Offline</strong>
+    </div>
+
+    <div class="offline-actions">
+      <button class="btn btn-primary" onclick="window.location.reload()">
+        🔄 Try Again
+      </button>
+      <a href="/" class="btn btn-secondary">
+        🏠 Go to Home
+      </a>
+    </div>
+
+    <div class="offline-tips">
+      <h2>What you can still do:</h2>
+      <ul>
+        <li>View previously loaded weather data</li>
+        <li>Browse cached locations and forecasts</li>
+        <li>See your favorite locations</li>
+        <li>The app will automatically reconnect when you're back online</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Monitor connection status
+    function updateConnectionStatus() {
+      const status = document.getElementById('connectionStatus');
+      const statusText = document.getElementById('statusText');
+
+      if (navigator.onLine) {
+        status.className = 'status online';
+        statusText.textContent = 'Online';
+
+        // Automatically reload after 1 second when connection is restored
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        status.className = 'status offline';
+        statusText.textContent = 'Offline';
+      }
+    }
+
+    // Check connection status on page load
+    updateConnectionStatus();
+
+    // Listen for connection changes
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+
+    // Periodically check connection (every 5 seconds)
+    setInterval(() => {
+      // Try to fetch a small resource to verify connection
+      fetch('/favicon.ico', { method: 'HEAD', cache: 'no-store' })
+        .then(() => {
+          if (!navigator.onLine) {
+            // Connection restored but browser hasn't detected it yet
+            window.location.reload();
+          }
+        })
+        .catch(() => {
+          // Still offline
+        });
+    }, 5000);
+  </script>
+</body>
+</html>
