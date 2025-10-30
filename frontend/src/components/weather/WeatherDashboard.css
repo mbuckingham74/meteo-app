@@ -393,9 +393,10 @@
 
 .location-name {
   margin: 0;
-  font-size: 14px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--text-primary) !important;
+  line-height: 1.2;
 }
 
 .location-coords {
@@ -843,7 +844,7 @@
   }
 
   .location-name {
-    font-size: 22px;
+    font-size: 32px;
   }
 
   .location-coords {

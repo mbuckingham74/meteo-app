@@ -190,6 +190,33 @@ function WeatherDashboard() {
     return cityName.length > 20 ? cityName.substring(0, 20) + '...' : cityName;
   };
 
+  // Capitalize location name for proper display (in case of cached lowercase data)
+  const getFormattedLocationName = () => {
+    const address = data?.location?.address || locationData?.address || location || 'Unknown Location';
+
+    // If it's all lowercase or has mixed capitalization issues, fix it
+    // Split by comma and capitalize each part
+    return address
+      .split(',')
+      .map(part => {
+        part = part.trim();
+        // Split by spaces and capitalize each word
+        return part
+          .split(' ')
+          .map(word => {
+            // Handle special cases (abbreviations)
+            const upper = word.toUpperCase();
+            if (['US', 'USA', 'UK', 'UAE', 'NSW', 'NY', 'CA', 'FL', 'TX', 'WA', 'DC'].includes(upper)) {
+              return upper;
+            }
+            // Capitalize first letter
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          })
+          .join(' ');
+      })
+      .join(', ');
+  };
+
   // Count visible charts
   const visibleChartCount = Object.values(visibleCharts).filter(Boolean).length;
 
@@ -236,7 +263,7 @@ function WeatherDashboard() {
               {/* Header: City name left, Coords/Timezone right */}
               <div className="location-header">
                 <h2 className="location-name">
-                  {data.location?.address || locationData?.address || location || 'Unknown Location'}
+                  {getFormattedLocationName()}
                 </h2>
                 <p className="location-coords">
                   {data.location?.latitude?.toFixed(4) || locationData?.latitude?.toFixed(4)}, {data.location?.longitude?.toFixed(4) || locationData?.longitude?.toFixed(4)}
