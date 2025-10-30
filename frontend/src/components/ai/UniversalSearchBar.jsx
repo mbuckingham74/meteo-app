@@ -97,7 +97,15 @@ function UniversalSearchBar() {
 
   return (
     <div className="universal-search-bar">
-      {/* Main Input - Larger and More Prominent */}
+      {/* Hero Message */}
+      <div className="universal-hero">
+        <h2 className="universal-hero-title">A New Way to Check Weather</h2>
+        <p className="universal-hero-subtitle">
+          Just type a city name or ask any weather question. Our AI understands both.
+        </p>
+      </div>
+
+      {/* Main Input - Dead Center */}
       <div className="universal-input-wrapper">
         <span className="universal-icon">🔍</span>
         <input
@@ -118,7 +126,7 @@ function UniversalSearchBar() {
         </button>
       </div>
 
-      {/* Example Query Bar - Separate Prominent Row */}
+      {/* Example Query Bar - Centered */}
       <div className="universal-examples">
         <span className="universal-examples-label">Quick Start:</span>
         <button
@@ -151,7 +159,7 @@ function UniversalSearchBar() {
         </button>
       </div>
 
-      {/* Smart Detection Hint */}
+      {/* Smart Detection Hint - Centered */}
       {query.trim() && (
         <div className="universal-hint">
           {isComplexQuery(query) ? (

@@ -4,6 +4,29 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 0;
+  text-align: center;
+}
+
+/* Hero Message */
+.universal-hero {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.universal-hero-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary, white);
+  margin: 0 0 12px 0;
+  letter-spacing: -0.5px;
+}
+
+.universal-hero-subtitle {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-secondary, #888);
+  margin: 0;
+  line-height: 1.5;
 }
 
 /* Main Input Wrapper - Larger, More Prominent */
@@ -198,6 +221,14 @@
 }
 
 /* Light Theme Support */
+[data-theme="light"] .universal-hero-title {
+  color: #1a1a1a;
+}
+
+[data-theme="light"] .universal-hero-subtitle {
+  color: #666;
+}
+
 [data-theme="light"] .universal-input-wrapper {
   background: white;
   border-color: #e0e0e0;
@@ -242,6 +273,14 @@
     max-width: 100%;
   }
 
+  .universal-hero-title {
+    font-size: 28px;
+  }
+
+  .universal-hero-subtitle {
+    font-size: 15px;
+  }
+
   .universal-input-wrapper {
     padding: 14px 18px;
     border-radius: 12px;
@@ -282,6 +321,14 @@
 }
 
 @media (max-width: 480px) {
+  .universal-hero-title {
+    font-size: 24px;
+  }
+
+  .universal-hero-subtitle {
+    font-size: 14px;
+  }
+
   .universal-input-wrapper {
     padding: 12px 16px;
   }
