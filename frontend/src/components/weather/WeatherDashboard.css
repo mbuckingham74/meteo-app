@@ -313,7 +313,7 @@
 
 /* Section Headers */
 .section-header {
-  margin: 0 0 10px 0;
+  margin: 0 0 16px 0;
   padding-bottom: 8px;
   border-bottom: 2px solid var(--border-light);
 }
@@ -358,9 +358,9 @@
 
 .section-title {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary) !important;
+  color: var(--text-secondary) !important;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -386,17 +386,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
-  padding-bottom: 4px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border-light);
 }
 
 .location-name {
   margin: 0;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 36px;
+  font-weight: 800;
   color: var(--text-primary) !important;
   line-height: 1.2;
+  letter-spacing: -0.5px;
 }
 
 .location-coords {
@@ -844,7 +845,7 @@
   }
 
   .location-name {
-    font-size: 32px;
+    font-size: 42px;
   }
 
   .location-coords {
