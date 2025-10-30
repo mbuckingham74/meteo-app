@@ -8,6 +8,39 @@ const axios = require('axios');
 const API_KEY = process.env.VISUAL_CROSSING_API_KEY;
 
 /**
+ * Properly capitalize address text (Visual Crossing returns lowercase)
+ * @param {string} address - Address to capitalize
+ * @returns {string} Properly capitalized address
+ */
+function capitalizeAddress(address) {
+  if (!address) return address;
+
+  // Split by comma to handle each part separately
+  return address
+    .split(',')
+    .map(part => {
+      // Trim whitespace
+      part = part.trim();
+
+      // Split by spaces and capitalize each word
+      return part
+        .split(' ')
+        .map(word => {
+          // Handle special cases (abbreviations, etc.)
+          const upper = word.toUpperCase();
+          if (['US', 'USA', 'UK', 'UAE', 'NSW', 'NY', 'CA', 'FL', 'TX', 'WA', 'DC'].includes(upper)) {
+            return upper;
+          }
+
+          // Capitalize first letter of each word
+          return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        })
+        .join(' ');
+    })
+    .join(', ');
+}
+
+/**
  * Search for locations by query string
  * Uses Visual Crossing's geocoding capabilities
  * @param {string} query - Search query (city name, address, etc.)
@@ -40,7 +73,7 @@ async function searchLocations(query, limit = 5) {
       // Visual Crossing returns a single location resolution
       // For autocomplete, we'll return this as a single result
       const result = {
-        address: response.data.resolvedAddress,
+        address: capitalizeAddress(response.data.resolvedAddress),
         latitude: response.data.latitude,
         longitude: response.data.longitude,
         timezone: response.data.timezone,
@@ -107,7 +140,7 @@ async function reverseGeocode(lat, lon) {
       return {
         success: true,
         location: {
-          address: response.data.resolvedAddress,
+          address: capitalizeAddress(response.data.resolvedAddress),
           latitude: response.data.latitude,
           longitude: response.data.longitude,
           timezone: response.data.timezone,

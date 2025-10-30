@@ -75,14 +75,27 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Filter recent searches based on query
+  // Filter recent searches based on query and remove duplicates with search results
   const getFilteredRecentSearches = (searchQuery) => {
     if (!searchQuery) return recentSearches;
 
     const lowerQuery = searchQuery.toLowerCase();
-    return recentSearches.filter(location =>
+    const filtered = recentSearches.filter(location =>
       location.address.toLowerCase().includes(lowerQuery)
     );
+
+    // Remove duplicates: filter out recent searches that match search results by coordinates
+    if (results.length > 0) {
+      return filtered.filter(recentLoc => {
+        // Check if this recent search matches any new result (within 0.01 degrees)
+        return !results.some(result =>
+          Math.abs(result.latitude - recentLoc.latitude) < 0.01 &&
+          Math.abs(result.longitude - recentLoc.longitude) < 0.01
+        );
+      });
+    }
+
+    return filtered;
   };
 
   // Search for locations with debounce
