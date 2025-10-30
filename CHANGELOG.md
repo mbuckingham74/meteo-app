@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Versioning Scheme:**
 - **0.x.x** - Initial development phase (current)
-- **0.MINOR.0** - New features and major improvements (0.1.0 → 0.2.0 → 0.3.0)
-- **0.MINOR.PATCH** - Bug fixes and minor updates (0.2.0 → 0.2.1 → 0.2.2)
+- **0.MINOR.0** - New features and major improvements (0.1.0 → 0.2.0 → 0.3.0) - ![Green Badge](https://img.shields.io/badge/Feature-brightgreen?style=flat-square)
+- **0.MINOR.PATCH** - Bug fixes and minor updates (0.2.0 → 0.2.1 → 0.2.2) - ![Red Badge](https://img.shields.io/badge/Bug_Fix-red?style=flat-square)
 - **1.0.0** - First stable production release (when ready)
+
+**Badge Color Coding:**
+- 🟢 **Green badges** = Feature releases (new functionality)
+- 🔴 **Red badges** = Bug fix releases (patches and fixes)
+- ⚪ **Gray badges** = Unreleased changes
 
 ---
 
@@ -19,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## ![Version](https://img.shields.io/badge/version-0.2.0-yellow?style=flat-square) ![Date](https://img.shields.io/badge/date-Oct_29,_2025-yellow?style=flat-square)
+## ![Version](https://img.shields.io/badge/version-0.2.0-brightgreen?style=flat-square) ![Date](https://img.shields.io/badge/date-Oct_29,_2025-brightgreen?style=flat-square) ![Release Type](https://img.shields.io/badge/Feature_Release-brightgreen?style=flat-square)
 
 **Release Highlights:** Enterprise-grade security infrastructure, PWA support, accessibility improvements, and enhanced UX features.
 
@@ -175,7 +180,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## ![Version](https://img.shields.io/badge/version-0.1.0-yellow?style=flat-square) ![Date](https://img.shields.io/badge/date-Oct_24,_2025-yellow?style=flat-square)
+## ![Version](https://img.shields.io/badge/version-0.1.0-brightgreen?style=flat-square) ![Date](https://img.shields.io/badge/date-Oct_24,_2025-brightgreen?style=flat-square) ![Release Type](https://img.shields.io/badge/Feature_Release-brightgreen?style=flat-square)
 
 **Release Name:** Initial Beta Release
 
@@ -350,6 +355,29 @@ None in current version.
 - `Security` for vulnerability fixes and security improvements
 - `Testing` for testing infrastructure changes
 - `Documentation` for documentation updates
+
+---
+
+## Badge Templates for Future Releases
+
+### Feature Release (0.MINOR.0) - Green Badges
+```markdown
+## ![Version](https://img.shields.io/badge/version-0.X.0-brightgreen?style=flat-square) ![Date](https://img.shields.io/badge/date-Mon_DD,_YYYY-brightgreen?style=flat-square) ![Release Type](https://img.shields.io/badge/Feature_Release-brightgreen?style=flat-square)
+
+**Release Highlights:** [Brief description of new features]
+```
+
+### Bug Fix Release (0.MINOR.PATCH) - Red Badges
+```markdown
+## ![Version](https://img.shields.io/badge/version-0.X.Y-red?style=flat-square) ![Date](https://img.shields.io/badge/date-Mon_DD,_YYYY-red?style=flat-square) ![Release Type](https://img.shields.io/badge/Bug_Fix_Release-red?style=flat-square)
+
+**Release Highlights:** [Brief description of fixes]
+```
+
+### Examples
+- **Feature Release:** v0.3.0 (green) - New weather maps feature
+- **Bug Fix Release:** v0.2.1 (red) - Fixed radar loading issue
+- **Bug Fix Release:** v0.2.2 (red) - Fixed search autocomplete
 
 ---
 
