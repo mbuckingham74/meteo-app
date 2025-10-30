@@ -32,7 +32,7 @@ import LocationSearchBar from '../location/LocationSearchBar';
 import TemperatureUnitToggle from '../units/TemperatureUnitToggle';
 import DashboardSkeleton from '../common/DashboardSkeleton';
 import RadarMap from './RadarMap';
-import AIWeatherHero from '../ai/AIWeatherHero';
+import AISearchBar from '../ai/AISearchBar';
 import './WeatherDashboard.css';
 
 /**
@@ -588,6 +588,10 @@ function WeatherDashboard() {
                 detectingLocation={detectingLocation}
                 ref={searchInputRef}
               />
+
+              {/* AI Search Bar - Collapsible */}
+              <AISearchBar />
+
               <div className="location-actions">
                 <button
                   className="location-action-button detect-location"
@@ -604,6 +608,13 @@ function WeatherDashboard() {
                   aria-label="Go to location comparison page"
                 >
                   <span aria-hidden="true">📊</span> Compare Locations
+                </a>
+                <a
+                  href="/ai-weather"
+                  className="location-action-button ai-link"
+                  aria-label="Ask AI about the weather"
+                >
+                  <span aria-hidden="true">🤖</span> Ask AI
                 </a>
               </div>
               {locationError && (
