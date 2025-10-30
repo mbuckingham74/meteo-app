@@ -245,6 +245,11 @@ function WeatherDashboard() {
         </div>
       )}
 
+      {/* Universal Search Hero - Full Width */}
+      <div className="universal-search-hero">
+        <UniversalSearchBar />
+      </div>
+
       {/* Data Display */}
       {!loading && !error && data && (
         <>
@@ -577,12 +582,9 @@ function WeatherDashboard() {
 
           {/* Lookup Controls - 25% */}
           <div className="dashboard-controls">
-            <h3 className="controls-title">Location</h3>
+            <h3 className="controls-title">Quick Actions</h3>
 
             <div id="location-search" className="location-search-section">
-              {/* Universal Smart Search - Handles both simple locations and AI queries */}
-              <UniversalSearchBar />
-
               <div className="location-actions">
                 <button
                   className="location-action-button detect-location"

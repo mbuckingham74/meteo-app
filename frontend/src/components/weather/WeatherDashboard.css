@@ -60,6 +60,17 @@
   opacity: 0.9;
 }
 
+/* Universal Search Hero - Full Width */
+.universal-search-hero {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 32px auto;
+  padding: 40px 20px;
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+}
+
 /* Main Row - City Box and Lookup Controls Side by Side */
 .dashboard-main-row {
   display: grid;
@@ -805,6 +816,12 @@
 
   .dashboard-subtitle {
     font-size: 13px;
+  }
+
+  /* Hero section responsive */
+  .universal-search-hero {
+    padding: 30px 16px;
+    margin-bottom: 24px;
   }
 
   /* Stack city box and controls vertically on mobile */
