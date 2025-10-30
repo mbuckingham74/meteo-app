@@ -97,13 +97,13 @@ function UniversalSearchBar() {
 
   return (
     <div className="universal-search-bar">
-      {/* Main Input */}
+      {/* Main Input - Larger and More Prominent */}
       <div className="universal-input-wrapper">
         <span className="universal-icon">🔍</span>
         <input
           type="text"
           className="universal-search-input"
-          placeholder="Seattle, WA or ask anything about weather..."
+          placeholder="Enter a city or ask anything about weather..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyPress={handleKeyPress}
@@ -118,36 +118,40 @@ function UniversalSearchBar() {
         </button>
       </div>
 
-      {/* Example Chips - Show the Range of Possibilities */}
+      {/* Example Query Bar - Separate Prominent Row */}
       <div className="universal-examples">
-        <span className="universal-examples-label">Try:</span>
+        <span className="universal-examples-label">Quick Start:</span>
         <button
           className="universal-example-chip location"
           onClick={() => setQuery("Seattle, WA")}
+          title="Simple location search"
         >
-          Seattle, WA
+          📍 Seattle, WA
         </button>
         <button
           className="universal-example-chip question"
           onClick={() => setQuery("Will it rain this weekend?")}
+          title="Simple weather question"
         >
-          Will it rain this weekend?
+          💧 Will it rain this weekend?
         </button>
         <button
           className="universal-example-chip analysis"
           onClick={() => setQuery("What's similar to Seattle from June-October?")}
+          title="AI-powered climate comparison"
         >
-          Similar climate to Seattle?
+          🤖 Similar climate to Seattle?
         </button>
         <button
           className="universal-example-chip practical"
           onClick={() => setQuery("Should I bring an umbrella tomorrow?")}
+          title="Practical weather advice"
         >
-          Umbrella tomorrow?
+          ☂️ Umbrella tomorrow?
         </button>
       </div>
 
-      {/* Smart Detection Hint (subtle) */}
+      {/* Smart Detection Hint */}
       {query.trim() && (
         <div className="universal-hint">
           {isComplexQuery(query) ? (
