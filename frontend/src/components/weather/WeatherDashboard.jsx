@@ -28,6 +28,7 @@ import AirQualityCard from '../cards/AirQualityCard';
 import WeatherAlertsBanner from './WeatherAlertsBanner';
 import LocationSearchBar from '../location/LocationSearchBar';
 import TemperatureUnitToggle from '../units/TemperatureUnitToggle';
+import DashboardSkeleton from '../common/DashboardSkeleton';
 import RadarMap from './RadarMap';
 import './WeatherDashboard.css';
 
@@ -166,12 +167,7 @@ function WeatherDashboard() {
       </header>
 
       {/* Loading State */}
-      {loading && (
-        <div className="loading-state">
-          <div className="spinner"></div>
-          <p>Loading weather data...</p>
-        </div>
-      )}
+      {loading && <DashboardSkeleton />}
 
       {/* Error State */}
       {error && (

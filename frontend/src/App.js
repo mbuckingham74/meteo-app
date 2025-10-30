@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LocationProvider } from './contexts/LocationContext';
 import { TemperatureUnitProvider } from './contexts/TemperatureUnitContext';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import AuthHeader from './components/auth/AuthHeader';
 import WeatherDashboard from './components/weather/WeatherDashboard';
 import LocationComparisonView from './components/location/LocationComparisonView';
@@ -94,15 +95,17 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <TemperatureUnitProvider>
-          <LocationProvider>
-            <AppContent />
-          </LocationProvider>
-        </TemperatureUnitProvider>
-      </ThemeProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ThemeProvider>
+          <TemperatureUnitProvider>
+            <LocationProvider>
+              <AppContent />
+            </LocationProvider>
+          </TemperatureUnitProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
