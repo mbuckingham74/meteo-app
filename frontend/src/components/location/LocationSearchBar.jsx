@@ -84,6 +84,17 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
     }
   };
 
+  // Clear all recent searches
+  const handleClearRecentSearches = (e) => {
+    e.stopPropagation(); // Prevent dropdown from closing
+    try {
+      setRecentSearches([]);
+      localStorage.removeItem(RECENT_SEARCHES_KEY);
+    } catch (error) {
+      console.error('Error clearing recent searches:', error);
+    }
+  };
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -269,7 +280,15 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
           {query.length < 2 && recentSearches.length > 0 && (
             <div className="dropdown-section">
               <div className="dropdown-section-header">
-                🕐 Recent Searches
+                <span>🕐 Recent Searches</span>
+                <button
+                  className="clear-recent-link"
+                  onClick={handleClearRecentSearches}
+                  aria-label="Clear recent searches"
+                  type="button"
+                >
+                  Clear
+                </button>
               </div>
               {recentSearches.map((location, index) => (
                 <div
@@ -322,7 +341,15 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
           {query.length >= 2 && getFilteredRecentSearches(query).length > 0 && (
             <div className="dropdown-section">
               <div className="dropdown-section-header">
-                🕐 Recent
+                <span>🕐 Recent</span>
+                <button
+                  className="clear-recent-link"
+                  onClick={handleClearRecentSearches}
+                  aria-label="Clear recent searches"
+                  type="button"
+                >
+                  Clear
+                </button>
               </div>
               {getFilteredRecentSearches(query).map((location, index) => (
                 <div
