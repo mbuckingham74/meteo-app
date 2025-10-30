@@ -24,6 +24,9 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 - **Recent search history** with localStorage persistence
 - **Location persistence** across page refreshes
 - **Robust geolocation** with IP-based fallback
+- **Progressive Web App (PWA)** - Offline support, installable, native app-like experience
+- **Error Boundary** - Graceful error handling with recovery options
+- **Loading Skeletons** - Content-aware loading states for better perceived performance
 
 **Architecture:**
 - **Frontend**: React-based web application (Create React App)
@@ -761,6 +764,161 @@ The application uses two complementary analytics platforms for traffic analysis 
 - **Note**: Beta site only - does not track local development or other domains
 
 Both analytics platforms are configured in the HTML template and load automatically when the application is accessed.
+
+## Progressive Web App (PWA)
+
+The application is a fully-featured Progressive Web App with offline support, installability, and native app-like experience.
+
+### Service Worker
+**File:** `frontend/public/service-worker.js`
+
+**Caching Strategies:**
+- **Cache-First**: Static assets (JS, CSS, images, fonts)
+  - Instant loading from cache
+  - Falls back to network if not cached
+  - Best for assets that rarely change
+
+- **Network-First**: API calls and dynamic content
+  - Tries network first for fresh data
+  - Falls back to cache when offline
+  - TTL: 30min for API, 15min for weather data
+
+- **Stale-While-Revalidate**: Weather data
+  - Returns cached data immediately
+  - Updates cache in background
+  - Zero perceived latency for users
+
+**Cache Management:**
+- Automatic versioning: `meteo-v1.0.0`
+- Size limits: 50 dynamic items, 100 API items
+- Auto-cleanup of old caches
+- Background sync for weather updates
+
+**Offline Support:**
+- Beautiful offline fallback page (`/offline.html`)
+- Works after first visit
+- Real-time connection status monitoring
+- Auto-reload when connection restored
+- Lists available offline features
+
+### PWA Manifest
+**File:** `frontend/public/manifest.json`
+
+**Features:**
+- App name: "Meteo Weather"
+- Theme colors: #667eea (light), #1f2937 (dark)
+- Standalone display mode (full-screen)
+- App shortcuts: Current Weather, Compare Locations
+- Categories: weather, utilities, lifestyle
+- Icons: 192x192, 512x512 (maskable)
+
+### Installation
+The app can be installed on:
+- **iOS**: Add to Home Screen
+- **Android**: Install app prompt
+- **Desktop Chrome/Edge**: Install icon in address bar
+- **Windows**: Microsoft Store-like experience
+
+When installed:
+- Runs in standalone mode (no browser UI)
+- App icon on home screen/desktop
+- Splash screen on launch
+- Works like a native app
+- App shortcuts (long-press icon on mobile)
+
+### PWA Testing
+**Local:**
+```bash
+npm run build
+npx serve -s build
+# Open http://localhost:3000
+# DevTools → Application → Service Workers
+```
+
+**Production:**
+- Visit https://meteo-beta.tachyonfuture.com
+- Look for install prompt (⊕ icon in address bar)
+- Test offline: DevTools → Network → Offline checkbox
+
+## Error Handling
+
+### ErrorBoundary Component
+**File:** `frontend/src/components/common/ErrorBoundary.jsx`
+
+React Error Boundary that catches JavaScript errors anywhere in the component tree and displays a user-friendly fallback UI.
+
+**Features:**
+- Catches all React errors before they crash the app
+- Beautiful fallback UI with recovery options:
+  - "Try Again" button - Resets error state
+  - "Refresh Page" button - Full page reload
+  - "Report Issue" button - Opens GitHub issue with error details
+- Multiple error detection warnings
+- Development mode shows detailed stack traces
+- Production mode hides technical details
+- Error logging infrastructure (ready for Sentry/LogRocket)
+- Dark mode support
+- Mobile responsive
+
+**Integration:**
+```javascript
+// App.js wraps entire application
+<ErrorBoundary>
+  <AuthProvider>
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  </AuthProvider>
+</ErrorBoundary>
+```
+
+**Error Logging:**
+The component logs errors with:
+- Error message and stack trace
+- Component stack
+- Timestamp
+- User agent
+- Current URL
+
+In production, errors can be sent to monitoring services:
+```javascript
+// Example integration (in ErrorBoundary.jsx)
+if (process.env.NODE_ENV === 'production') {
+  fetch('/api/errors/log', {
+    method: 'POST',
+    body: JSON.stringify(errorDetails)
+  });
+}
+```
+
+### Loading States
+
+**Components:**
+- `Skeleton.jsx` - Base skeleton primitives
+- `DashboardSkeleton.jsx` - Full dashboard loading state
+- `ChartSkeleton.jsx` - Chart loading visualization
+
+**Features:**
+- Content-aware loading placeholders
+- Smooth shimmer animation
+- Mimics actual content structure
+- Replaces generic spinners
+- Better perceived performance
+- Respects `prefers-reduced-motion`
+- Dark mode support
+
+**Usage:**
+```javascript
+// WeatherDashboard.jsx
+{loading && <DashboardSkeleton />}
+{!loading && <ActualContent />}
+```
+
+**Skeleton Types:**
+- Rectangular: Cards, images, charts
+- Circular: Avatars, icons
+- Text: Single/multi-line text
+- Custom: Weather stats, temperature displays
 
 ## Testing
 
