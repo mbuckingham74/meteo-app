@@ -19,8 +19,6 @@ function AppContent() {
   const [currentView, setCurrentView] = useState('dashboard');
   const { selectLocation } = useLocation();
 
-  console.log('Current view state:', currentView); // DEBUG
-
   // Handle route-based location loading
   useEffect(() => {
     const loadLocationFromUrl = async () => {
@@ -54,21 +52,16 @@ function AppContent() {
   useEffect(() => {
     const handleNavigation = async () => {
       const route = getCurrentRoute();
-      console.log('[ROUTE DEBUG] getCurrentRoute returned:', route); // DEBUG
 
       // Update view based on route
       if (route.path === 'compare') {
-        console.log('[ROUTE DEBUG] Setting view to: compare'); // DEBUG
         setCurrentView('compare');
       } else if (route.path === 'privacy') {
-        console.log('[ROUTE DEBUG] Setting view to: privacy'); // DEBUG
         setCurrentView('privacy');
       } else if (route.path === 'ai-weather') {
-        console.log('[ROUTE DEBUG] Setting view to: ai-weather'); // DEBUG
         setCurrentView('ai-weather');
       } else {
         // Both dashboard and location routes show the dashboard
-        console.log('[ROUTE DEBUG] Setting view to: dashboard (default)'); // DEBUG
         setCurrentView('dashboard');
       }
 

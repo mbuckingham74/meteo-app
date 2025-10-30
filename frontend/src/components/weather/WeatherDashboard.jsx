@@ -32,6 +32,7 @@ import LocationSearchBar from '../location/LocationSearchBar';
 import TemperatureUnitToggle from '../units/TemperatureUnitToggle';
 import DashboardSkeleton from '../common/DashboardSkeleton';
 import RadarMap from './RadarMap';
+import AIWeatherHero from '../ai/AIWeatherHero';
 import './WeatherDashboard.css';
 
 /**
