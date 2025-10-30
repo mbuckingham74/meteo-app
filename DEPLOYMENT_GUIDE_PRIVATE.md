@@ -95,6 +95,9 @@ DB_NAME=meteo_app
 VISUAL_CROSSING_API_KEY=<see_.env.secrets>
 OPENWEATHER_API_KEY=<see_.env.secrets>
 
+# AI Location Finder (Claude API)
+METEO_ANTHROPIC_API_KEY=<see_.env.secrets>
+
 # JWT Authentication
 JWT_SECRET=<secure_jwt_secret>
 JWT_REFRESH_SECRET=<secure_refresh_secret>
@@ -334,6 +337,57 @@ docker exec meteo-backend-prod sh -c 'npm run db:test'
 2. Check firewall allows ports 80/443
 3. In NPM, try regenerating the certificate
 
+### Issue 5: Docker Containers Marked as Unhealthy in Portainer
+**Cause:** Health checks using `localhost` instead of `127.0.0.1` causing DNS resolution failures
+
+**Symptoms:**
+- Portainer shows frontend/backend as "unhealthy" despite containers running correctly
+- Health check logs show "wget: can't connect to remote host: Connection refused"
+- Containers are actually responding to requests normally
+
+**Solution:**
+Health checks must use `127.0.0.1` instead of `localhost` for reliable DNS resolution inside containers.
+
+Already fixed in `docker-compose.prod.yml` (commit aa63f17):
+```yaml
+backend:
+  healthcheck:
+    test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:5001/api/health"]
+
+frontend:
+  healthcheck:
+    test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:80"]
+```
+
+**Verification:**
+```bash
+docker ps  # All containers should show "(healthy)" status
+docker inspect meteo-backend-prod --format='{{.State.Health.Status}}'  # Should return "healthy"
+```
+
+**Past Incidents:**
+- October 30, 2025: localhost DNS resolution failed in Docker containers, causing false unhealthy status
+
+### Issue 6: AI Location Finder Not Working
+**Cause:** Missing `METEO_ANTHROPIC_API_KEY` in `.env.production`
+
+**Symptoms:**
+- Docker Compose logs show: "The METEO_ANTHROPIC_API_KEY variable is not set"
+- AI location finder feature returns errors in frontend
+- Natural language climate queries fail
+
+**Solution:**
+Add the Anthropic API key to `/home/michael/meteo-app/.env.production`:
+```bash
+METEO_ANTHROPIC_API_KEY=<your-anthropic-api-key>
+```
+
+Then restart backend:
+```bash
+cd /home/michael/meteo-app
+docker compose -f docker-compose.prod.yml --env-file .env.production restart backend
+```
+
 ---
 
 ## 📝 Critical Files Modified
@@ -345,12 +399,22 @@ docker exec meteo-backend-prod sh -c 'npm run db:test'
 
 ### Docker Compose Production
 - **File:** `docker-compose.prod.yml`
-- **Critical Section:**
+- **Critical Sections:**
   ```yaml
+  # Frontend build args
   frontend:
     build:
       args:
         REACT_APP_API_URL: https://api.meteo-beta.tachyonfuture.com/api
+
+  # Health checks (MUST use 127.0.0.1, not localhost)
+  backend:
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:5001/api/health"]
+
+  frontend:
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:80"]
   ```
 
 ---
@@ -395,5 +459,5 @@ cd /home/michael/meteo-app
 
 ---
 
-**Last Updated:** October 27, 2025
-**Deployment Status:** ✅ Fully operational - All domains corrected to meteo-beta, responsive design fixed, all services running
+**Last Updated:** October 30, 2025
+**Deployment Status:** ✅ Fully operational - Health checks fixed (127.0.0.1), AI location finder configured, all containers healthy
