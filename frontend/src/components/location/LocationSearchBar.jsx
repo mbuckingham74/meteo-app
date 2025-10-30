@@ -25,10 +25,24 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
     try {
       const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
       if (saved) {
-        setRecentSearches(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        // Validate and filter recent searches - ensure they have coordinates
+        const validRecent = parsed.filter(location =>
+          location &&
+          location.address &&
+          typeof location.latitude === 'number' &&
+          typeof location.longitude === 'number'
+        );
+        setRecentSearches(validRecent);
+        // Update localStorage with cleaned data
+        if (validRecent.length !== parsed.length) {
+          localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(validRecent));
+        }
       }
     } catch (error) {
       console.error('Error loading recent searches:', error);
+      // Clear corrupted localStorage data
+      localStorage.removeItem(RECENT_SEARCHES_KEY);
     }
   }, []);
 
@@ -37,7 +51,14 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
     const loadPopular = async () => {
       try {
         const popular = await getPopularLocations();
-        setPopularLocations(popular);
+        // Validate popular locations have coordinates
+        const validPopular = popular.filter(location =>
+          location &&
+          location.address &&
+          typeof location.latitude === 'number' &&
+          typeof location.longitude === 'number'
+        );
+        setPopularLocations(validPopular);
       } catch (error) {
         console.error('Error loading popular locations:', error);
       }
@@ -110,7 +131,23 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
 
     try {
       const searchResults = await geocodeLocation(searchQuery, 5);
-      setResults(searchResults);
+      // Filter out any invalid results without coordinates
+      const validResults = searchResults.filter(location =>
+        location &&
+        location.address &&
+        typeof location.latitude === 'number' &&
+        typeof location.longitude === 'number'
+      );
+
+      // Debug logging to identify issues
+      if (searchResults.length !== validResults.length) {
+        console.warn(`Filtered out ${searchResults.length - validResults.length} invalid location(s) from search results`);
+        console.debug('Invalid results:', searchResults.filter(loc =>
+          !loc || !loc.address || typeof loc.latitude !== 'number' || typeof loc.longitude !== 'number'
+        ));
+      }
+
+      setResults(validResults);
       setShowDropdown(true);
     } catch (error) {
       console.error('Error searching locations:', error);
