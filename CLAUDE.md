@@ -69,7 +69,7 @@ The application is containerized using Docker Compose for consistent development
 - GitHub branch protection via repository rulesets (main branch protected)
 - Repository admin bypass enabled (allows direct pushes while preventing accidents)
 - Prevents accidental branch deletion on main
-- Comprehensive security headers documentation (`SECURITY_HEADERS.md`)
+- Comprehensive security headers documentation (`docs/SECURITY_HEADERS.md`)
 - Content Security Policy (CSP), X-Frame-Options, HSTS, Permissions-Policy
 - All `.env` files properly gitignored (never committed to git history)
 - API keys rotated after any exposure incidents
@@ -80,7 +80,7 @@ The application is containerized using Docker Compose for consistent development
 - `.github/workflows/security-scan.yml` - Automated security scanning CI/CD
 - `.github/dependabot.yml` - Automated dependency updates and vulnerability monitoring
 - `.git/hooks/pre-commit` - Local pre-commit secret scanning hook
-- `SECURITY_HEADERS.md` - HTTP security headers implementation guide
+- `docs/SECURITY_HEADERS.md` - HTTP security headers implementation guide
 - `frontend/package.json` - npm overrides for secure dependency versions
 
 **Best Practices Enforced:**

@@ -752,7 +752,7 @@ Before pushing to GitHub, verify:
 
 **Quarterly Security Audit (30 minutes):**
 - [ ] Run SecurityHeaders.com scan on production
-- [ ] Review and update security headers (see `SECURITY_HEADERS.md`)
+- [ ] Review and update security headers (see [`docs/SECURITY_HEADERS.md`](docs/SECURITY_HEADERS.md))
 - [ ] Rotate API keys (best practice: annual rotation)
 - [ ] Update npm dependencies: `npm update` + test thoroughly
 - [ ] Review git history for any missed secret exposures
@@ -776,7 +776,7 @@ Main branch is protected with GitHub repository rulesets.
 - No pull request requirement for solo development
 
 **HTTP Security Headers:**
-Comprehensive security headers guide available in [`SECURITY_HEADERS.md`](SECURITY_HEADERS.md)
+Comprehensive security headers guide available in [`docs/SECURITY_HEADERS.md`](docs/SECURITY_HEADERS.md)
 
 **Includes:**
 - Content Security Policy (CSP) to prevent XSS attacks
