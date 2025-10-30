@@ -9,6 +9,7 @@ import AuthHeader from './components/auth/AuthHeader';
 import WeatherDashboard from './components/weather/WeatherDashboard';
 import LocationComparisonView from './components/location/LocationComparisonView';
 import PrivacyPolicy from './components/legal/PrivacyPolicy';
+import AIWeatherPage from './components/ai/AIWeatherPage';
 import { getCurrentRoute, parseLocationSlug } from './utils/urlHelpers';
 import { geocodeLocation } from './services/weatherApi';
 import './styles/themes.css';
@@ -17,6 +18,8 @@ import './App.css';
 function AppContent() {
   const [currentView, setCurrentView] = useState('dashboard');
   const { selectLocation } = useLocation();
+
+  console.log('Current view state:', currentView); // DEBUG
 
   // Handle route-based location loading
   useEffect(() => {
@@ -51,14 +54,21 @@ function AppContent() {
   useEffect(() => {
     const handleNavigation = async () => {
       const route = getCurrentRoute();
+      console.log('[ROUTE DEBUG] getCurrentRoute returned:', route); // DEBUG
 
       // Update view based on route
       if (route.path === 'compare') {
+        console.log('[ROUTE DEBUG] Setting view to: compare'); // DEBUG
         setCurrentView('compare');
       } else if (route.path === 'privacy') {
+        console.log('[ROUTE DEBUG] Setting view to: privacy'); // DEBUG
         setCurrentView('privacy');
+      } else if (route.path === 'ai-weather') {
+        console.log('[ROUTE DEBUG] Setting view to: ai-weather'); // DEBUG
+        setCurrentView('ai-weather');
       } else {
         // Both dashboard and location routes show the dashboard
+        console.log('[ROUTE DEBUG] Setting view to: dashboard (default)'); // DEBUG
         setCurrentView('dashboard');
       }
 
@@ -110,6 +120,8 @@ function AppContent() {
       <main id="main-content" tabIndex={-1}>
         {currentView === 'privacy' ? (
           <PrivacyPolicy />
+        ) : currentView === 'ai-weather' ? (
+          <AIWeatherPage />
         ) : currentView === 'compare' ? (
           <>
           <div style={{ padding: '20px 20px 0 20px', maxWidth: '1400px', margin: '0 auto' }}>

@@ -11,6 +11,7 @@ const userRoutes = require('./routes/user');
 const airQualityRoutes = require('./routes/airQuality');
 const cacheRoutes = require('./routes/cache');
 const aiLocationFinderRoutes = require('./routes/aiLocationFinder');
+const aiWeatherAnalysisRoutes = require('./routes/aiWeatherAnalysis');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -56,6 +57,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/air-quality', airQualityRoutes);
 app.use('/api/cache', cacheRoutes);
 app.use('/api/ai-location-finder', aiLocationFinderRoutes);
+app.use('/api/ai-weather', aiWeatherAnalysisRoutes);
 
 // 404 handler
 app.use((req, res) => {

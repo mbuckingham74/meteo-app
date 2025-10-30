@@ -85,6 +85,10 @@ export const getCurrentRoute = () => {
     return { path: 'privacy', params: {}, state: null };
   }
 
+  if (path === '/ai-weather') {
+    return { path: 'ai-weather', params: {}, state: null };
+  }
+
   // Default to dashboard
   return { path: 'dashboard', params: {}, state: null };
 };
