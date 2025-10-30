@@ -195,32 +195,45 @@ This application requires API keys from the following services to function. Some
 
 ### 🔍 Universal Smart Search Bar
 
-**Revolutionary AI-First Input** - The app features a radical redesign with ONE flexible input that handles both simple locations and complex AI queries.
+**A New Way to Check Weather** - The app features a revolutionary AI-first interface where natural language queries are the PRIMARY experience, not a hidden feature.
+
+**Design Philosophy:**
+Traditional weather apps make you search for cities, then click through menus to find answers. Meteo reverses this: describe what you want to know, and AI figures out the rest.
 
 **How It Works:**
 - Type **"Seattle"** → Instant location change via geocoding (< 1 second, free)
-- Type **"What's similar to Seattle from June-October?"** → AI analysis (2-3 seconds, ~$0.005)
+- Type **"Will it rain this weekend in Seattle?"** → AI extracts location + time + metric → Focused forecast
+- Type **"I live in Florida June-November and it's miserable - where should I move?"** → AI suggests alternatives with data
 - Smart detection automatically routes queries based on complexity
 
 **User Interface:**
-- **Main Input:** "Seattle, WA or ask anything about weather..."
-- **Real-time Hints:** Shows "📍 Searching for location" or "🤖 AI will analyze this question" as you type
-- **Example Chips:** Color-coded examples demonstrating simple to complex queries:
-  - 🟢 "Seattle, WA" (simple location - instant)
-  - 🔵 "Will it rain this weekend?" (question - AI analysis)
-  - 🟣 "Similar climate to Seattle?" (complex - AI recommendations)
-  - 🟠 "Umbrella tomorrow?" (practical - AI advice)
+- **Centered Hero Section** - Search bar is the FIRST thing you see, spanning full width
+- **Conversational Placeholder** - Shows example complex query to inspire experimentation:
+  - _"Ask me anything... e.g., 'Will it rain this weekend in Seattle?' or 'When did Denver experience its highest temperature?' or 'I live in Florida June-November and it's miserable - where should I move?'"_
+- **Dynamic Quick Start Buttons** - Location-aware suggestions that change based on your current city:
+  - 🌧️ "Will it rain this weekend in **Seattle**?" (uses YOUR city)
+  - 📊 "When did **Seattle** have its coldest December?"
+  - 🏝️ "Find me somewhere warmer than **Seattle**"
+- **👇 Try asking:** label - Encourages exploration with emoji-coded examples
 
 **Smart Detection:**
-- **Triggers AI Mode:** Question words (what, when, where, how, should, will), comparative terms (similar, warmer, cooler), analytical queries
+- **Triggers AI Mode:** Question words (what, when, where, how, should, will), comparative terms (similar, warmer, cooler, less humid), analytical phrases (climate like, better than, compared to)
 - **Triggers Location Mode:** Simple city names, addresses, zip codes - anything that doesn't match AI patterns
-- **Invisible Intelligence:** Users don't need to know which mode they're using - it just works
+- **Invisible Intelligence:** Users don't need to choose which mode - it just works
+
+**Progressive Discovery:**
+Users start with familiar location search, then discover AI capabilities through:
+1. Seeing the conversational placeholder text
+2. Clicking Quick Start buttons with their city's name
+3. Experimenting with variations
+4. Eventually crafting complex custom queries
 
 **Why This Approach?**
-- ✅ **Differentiation** - No other weather app does this
-- ✅ **Discovery-Driven** - Users naturally explore AI capabilities through examples
-- ✅ **Cost-Effective** - Simple queries stay free, complex ones use AI only when needed
-- ✅ **Zero Learning Curve** - Works like normal search but with AI superpowers
+- ✅ **Differentiation** - Most weather apps HIDE AI features in settings or make them feel experimental
+- ✅ **AI-First** - Meteo makes natural language queries the DEFAULT, encouraging exploration
+- ✅ **Discovery-Driven** - Users naturally learn through examples instead of reading docs
+- ✅ **Cost-Effective** - Simple queries stay free, complex ones use AI only when needed (~$0.005-0.01)
+- ✅ **Zero Learning Curve** - Works like normal search but unlocks AI superpowers
 
 ### 🌤️ Weather Forecasts
 

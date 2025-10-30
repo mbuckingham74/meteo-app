@@ -146,10 +146,44 @@ Standard Create React App structure with React 19.2.0. Key architectural compone
 - **src/services/radarService.js** - RainViewer API integration with 5-minute caching
 - **src/components/ai/UniversalSearchBar.jsx** - Smart search handling both locations and AI queries
 - **src/components/ai/AIWeatherPage.jsx** - Full-page AI weather assistant interface
+- **src/components/location/LocationSearchBar.jsx** - Autocomplete search with recent history
 - **src/components/auth/UserProfileModal.jsx** - User profile with favorites management
 - **src/components/units/TemperatureUnitToggle.jsx** - Global C/F toggle in header
 - **src/services/geolocationService.js** - Browser + IP-based geolocation with fallbacks
+- **src/components/charts/** - 13 chart components for weather visualization
+- **src/components/charts/charts.css** - Centralized stylesheet for all charts with CSS variables
 - **public/** - Static assets
+
+### CSS Architecture & Best Practices
+
+The frontend follows React best practices for styling with a clear separation of concerns between logic and presentation.
+
+**Centralized Chart Styling:**
+All 13 weather chart components share a unified CSS architecture via `src/components/charts/charts.css`.
+
+**Key Principles:**
+- **CSS Variables** - All colors use theme-aware variables (e.g., `var(--text-primary)`)
+- **No Inline Styles** - Eliminated 275+ hardcoded inline styles across components
+- **Reusable Classes** - `.chart-title`, `.chart-subtitle`, `.chart-summary-card`, etc.
+- **Automatic Theme Adaptation** - Charts seamlessly switch between light/dark modes
+- **Performance** - CSS variables are faster than inline style recalculations
+
+**Example:**
+```javascript
+// Before (hardcoded):
+<Text fill="#111827" fontSize={13} />
+
+// After (theme-aware):
+<Text fill="var(--text-primary, #111827)" fontSize={13} />
+```
+
+**CSS Variables Used:**
+- `--text-primary`, `--text-secondary`, `--text-tertiary` - Text colors
+- `--bg-elevated`, `--bg-tertiary` - Background colors
+- All defined in `src/styles/themes.css` with light/dark variants
+
+**Chart Components:**
+CloudCoverChart, FeelsLikeChart, HistoricalComparisonChart, HourlyForecastChart, HumidityDewpointChart, PrecipitationChart, RecordTemperaturesChart, SunChart, TemperatureBandChart, TemperatureProbabilityChart, UVIndexChart, WeatherOverviewChart, WindChart
 
 ### Environment Configuration
 
@@ -527,6 +561,61 @@ handleSubmit() // Smart router that calls appropriate handler
 - Text: #333
 
 ## UI/UX Architecture
+
+### Universal Smart Search Bar - A New Way to Check Weather
+
+The app features a revolutionary AI-first search interface that makes natural language weather queries the default experience, not a hidden feature.
+
+**Design Philosophy:**
+Traditional weather apps force users to search for cities, then navigate multiple screens to find answers. Meteo reverses this: users describe what they want to know, and AI figures out the rest.
+
+**Smart Detection Logic:**
+The Universal Search Bar intelligently routes queries based on content:
+- **Simple location** → Free geocoding API → Instant results
+- **Complex question** → Claude AI → Parsed criteria → Relevant data
+
+**Recognition Patterns:**
+- Question words: "will", "when", "where", "what", "how"
+- Comparative terms: "similar", "warmer", "cooler", "less humid"
+- Analytical phrases: "climate like", "better than", "compared to"
+
+**User Experience:**
+```
+Input: "Seattle"
+→ Shows Seattle weather (traditional, instant, free)
+
+Input: "Will it rain this weekend in Seattle?"
+→ AI understands: location + time period + precipitation question
+→ Returns focused forecast with rain probability
+
+Input: "I live in Florida June-November and it's miserable - where should I move?"
+→ AI extracts: current location, time period, discomfort factors
+→ Suggests cooler, less humid alternatives with data
+```
+
+**Progressive Discovery:**
+- **Centered hero section** - Search bar is the first thing users see
+- **Conversational placeholder** - Shows example complex query to inspire experimentation
+- **Dynamic Quick Start buttons** - Location-aware (e.g., "Will it rain this weekend in Seattle?")
+- **👇 Try asking:** label - Encourages exploration with emoji-coded examples:
+  - 🌧️ Weather questions (rain, snow, temperature)
+  - 📊 Analytical queries (historical trends, comparisons)
+  - 🏝️ Lifestyle searches (similar climates, better locations)
+
+**Cost Optimization:**
+- Simple queries: $0 (uses OpenWeather geocoding)
+- Complex AI queries: ~$0.005-0.01 per parse
+- Two-step validation prevents abuse
+- Users never pay - cost absorbed by app
+
+**Technical Implementation:**
+- **UniversalSearchBar.jsx** - Smart detection and routing logic
+- **aiLocationFinderService.js** - Claude API integration
+- **LocationContext** - Provides current city for dynamic queries
+- **UniversalSearchBar.css** - Centered hero layout with max-width 900px
+
+**Why This Matters:**
+Most weather apps hide AI features in settings or make them feel experimental. Meteo makes AI the primary interface, encouraging users to ask questions naturally instead of learning app navigation patterns.
 
 ### URL Routing & Navigation
 The application uses a custom client-side routing system with shareable URLs and proper browser navigation support:
