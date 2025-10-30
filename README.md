@@ -760,6 +760,21 @@ Before pushing to GitHub, verify:
 
 ### 🌐 Infrastructure Security
 
+**Branch Protection (GitHub Rulesets):**
+Main branch is protected with GitHub repository rulesets.
+
+**Protections Enabled:**
+- ✅ Prevents accidental branch deletion
+- ✅ Repository admin bypass enabled (maintains workflow flexibility)
+- ✅ Targets main branch only (feature branches remain unrestricted)
+- ✅ Works seamlessly with pre-commit hooks and CI/CD
+
+**What This Means:**
+- Direct pushes to main still work (admin bypass)
+- Force pushes allowed for emergency fixes
+- Prevents accidental `git branch -D main`
+- No pull request requirement for solo development
+
 **HTTP Security Headers:**
 Comprehensive security headers guide available in [`SECURITY_HEADERS.md`](SECURITY_HEADERS.md)
 

@@ -66,6 +66,9 @@ The application is containerized using Docker Compose for consistent development
 - Fixed CVEs: CVE-2021-3803 (nth-check), CVE-2023-44270 (postcss), webpack-dev-server vulnerabilities
 
 **4. Infrastructure Security:**
+- GitHub branch protection via repository rulesets (main branch protected)
+- Repository admin bypass enabled (allows direct pushes while preventing accidents)
+- Prevents accidental branch deletion on main
 - Comprehensive security headers documentation (`SECURITY_HEADERS.md`)
 - Content Security Policy (CSP), X-Frame-Options, HSTS, Permissions-Policy
 - All `.env` files properly gitignored (never committed to git history)
