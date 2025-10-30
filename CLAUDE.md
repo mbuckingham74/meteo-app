@@ -150,7 +150,7 @@ Standard Create React App structure with React 19.2.0. Key architectural compone
 
 ### Environment Configuration
 
-Backend requires `.env` file (see `.env.example`):
+Backend requires `.env` file (see `config/examples/.env.backend.example`):
 - Server: `PORT`, `NODE_ENV`
 - Database: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
 - Weather APIs: `OPENWEATHER_API_KEY`, `VISUAL_CROSSING_API_KEY`

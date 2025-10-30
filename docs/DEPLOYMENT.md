@@ -48,7 +48,7 @@ Copy the production environment template and fill in your values:
 
 ```bash
 cd /path/to/meteo-app
-cp .env.production.example .env.production
+cp config/examples/.env.production.example .env.production
 ```
 
 Edit `.env.production` with your actual values:

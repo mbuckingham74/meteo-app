@@ -69,8 +69,8 @@ curl http://localhost:5001/api/health
 - `.env` - Project root environment file (gitignored)
 
 ### ✅ What's in Git (Safe to Share)
-- `backend/.env.example` - Template without real keys
-- `DEPLOYMENT.md` - Instructions for deployment
+- `config/examples/.env.backend.example` - Template without real keys
+- `docs/DEPLOYMENT.md` - Instructions for deployment
 - `docker-compose.yml` - Reads from `.env` file
 - All source code
 
@@ -82,7 +82,7 @@ curl http://localhost:5001/api/health
    - Environment variables are injected into containers
 
 2. **Git Repository:**
-   - Only `.env.example` is committed (template, no real keys)
+   - Only example configs in `config/examples/` are committed (templates, no real keys)
    - `.gitignore` prevents `.env` from being committed
    - Your secrets stay local
 

@@ -50,7 +50,7 @@ Feature suggestions are welcome! Please provide:
 
 2. **Set up environment variables:**
    ```bash
-   cp backend/.env.example backend/.env
+   cp config/examples/.env.backend.example backend/.env
    # Edit backend/.env with your API keys
    ```
 

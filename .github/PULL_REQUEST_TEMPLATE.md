@@ -73,7 +73,7 @@ Fixes #(issue number)
 
 ### Dependencies
 - [ ] I have updated package.json (if dependencies changed)
-- [ ] I have updated .env.example (if environment variables changed)
+- [ ] I have updated config/examples/*.example files (if environment variables changed)
 - [ ] I have tested with Docker Compose
 
 ### Database

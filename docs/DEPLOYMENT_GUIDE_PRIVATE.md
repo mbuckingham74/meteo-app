@@ -128,7 +128,7 @@ git clone https://github.com/mbuckingham74/meteo-app.git
 cd meteo-app
 
 # Create .env.production file
-cp .env.production.example .env.production
+cp config/examples/.env.production.example .env.production
 nano .env.production  # Edit with actual credentials
 ```
 
