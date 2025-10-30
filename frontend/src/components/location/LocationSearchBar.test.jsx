@@ -128,7 +128,8 @@ describe('LocationSearchBar Component', () => {
       const input = screen.getByPlaceholderText(/search for a city/i);
       fireEvent.focus(input);
 
-      expect(screen.getByRole('textbox')).toHaveValue('');
+      expect(input).toHaveValue('');
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
   });
 

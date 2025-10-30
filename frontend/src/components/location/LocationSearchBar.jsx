@@ -286,6 +286,7 @@ function LocationSearchBar({ onLocationSelect, currentLocation, onDetectLocation
                   onDetectLocation();
                 }}
                 role="option"
+                aria-selected={false}
                 aria-label="Use my current location"
               >
                 <span className="location-icon">{detectingLocation ? '🔄' : '📍'}</span>
