@@ -35,7 +35,8 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **🛡️ Security-First Architecture** - Enterprise-grade security with automated secret scanning, Dependabot monitoring, and 0 vulnerabilities
 - **⚡ Plug and Play** - Get started with a few free API keys in minutes
 - **💾 Small Server Config Requirements** - Runs on minimal hardware ($6/month VPS)
-- **🤖 AI-Powered Location Finder** - Natural language search using Claude AI to find ideal climates
+- **🔍 Universal Smart Search** - ONE intelligent input handles simple locations AND complex AI queries
+- **🤖 AI-First Interface** - Natural language weather questions powered by Claude Sonnet 4.5
 - **📊 Rich Data Visualization** - 15+ interactive charts for weather analysis
 - **🌧️ Interactive Radar Map** - Real historical precipitation data with animation, alerts overlay, and storm tracking
 - **⚠️ Weather Alerts** - Real-time severe weather warnings with map markers
@@ -192,6 +193,35 @@ This application requires API keys from the following services to function. Some
 
 ## ✨ Features
 
+### 🔍 Universal Smart Search Bar
+
+**Revolutionary AI-First Input** - The app features a radical redesign with ONE flexible input that handles both simple locations and complex AI queries.
+
+**How It Works:**
+- Type **"Seattle"** → Instant location change via geocoding (< 1 second, free)
+- Type **"What's similar to Seattle from June-October?"** → AI analysis (2-3 seconds, ~$0.005)
+- Smart detection automatically routes queries based on complexity
+
+**User Interface:**
+- **Main Input:** "Seattle, WA or ask anything about weather..."
+- **Real-time Hints:** Shows "📍 Searching for location" or "🤖 AI will analyze this question" as you type
+- **Example Chips:** Color-coded examples demonstrating simple to complex queries:
+  - 🟢 "Seattle, WA" (simple location - instant)
+  - 🔵 "Will it rain this weekend?" (question - AI analysis)
+  - 🟣 "Similar climate to Seattle?" (complex - AI recommendations)
+  - 🟠 "Umbrella tomorrow?" (practical - AI advice)
+
+**Smart Detection:**
+- **Triggers AI Mode:** Question words (what, when, where, how, should, will), comparative terms (similar, warmer, cooler), analytical queries
+- **Triggers Location Mode:** Simple city names, addresses, zip codes - anything that doesn't match AI patterns
+- **Invisible Intelligence:** Users don't need to know which mode they're using - it just works
+
+**Why This Approach?**
+- ✅ **Differentiation** - No other weather app does this
+- ✅ **Discovery-Driven** - Users naturally explore AI capabilities through examples
+- ✅ **Cost-Effective** - Simple queries stay free, complex ones use AI only when needed
+- ✅ **Zero Learning Curve** - Works like normal search but with AI superpowers
+
 ### 🌤️ Weather Forecasts
 
 - **Multi-Day Forecasts** - 3, 7, or 14-day weather forecasts with dynamic time labels
@@ -263,8 +293,7 @@ This application requires API keys from the following services to function. Some
 
 ### 📍 Location Management
 
-- **Smart Search** - Location search with autocomplete and keyboard navigation
-- **Popular Locations** - Quick access to major cities worldwide
+- **Universal Smart Search** - ONE intelligent input for locations AND AI queries (see dedicated section above)
 - **Geolocation Detection** - Automatic detection of current location via browser with intelligent fallback
   - Multi-tier fallback system (browser geolocation → IP-based fallback)
   - Works even when reverse geocoding is rate-limited
@@ -1081,8 +1110,12 @@ meteo-app/
 │   │   │   │   └── ThemeToggle.jsx
 │   │   │   ├── units/               # NEW: Unit preference components
 │   │   │   │   └── TemperatureUnitToggle.jsx    # NEW: C/F toggle
+│   │   │   ├── ai/                  # AI-powered features
+│   │   │   │   ├── UniversalSearchBar.jsx       # NEW: Smart search (locations + AI)
+│   │   │   │   ├── UniversalSearchBar.css       # Styling for universal search
+│   │   │   │   ├── AIWeatherPage.jsx            # Full-page AI weather assistant
+│   │   │   │   └── AIWeatherPage.css            # AI page styling
 │   │   │   ├── location/            # Location management
-│   │   │   │   ├── LocationSearchBar.jsx
 │   │   │   │   ├── FavoritesPanel.jsx
 │   │   │   │   └── LocationComparisonView.jsx
 │   │   │   └── weather/             # Main dashboard
