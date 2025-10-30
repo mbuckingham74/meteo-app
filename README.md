@@ -90,6 +90,7 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - [🔍 Features in Detail](#-features-in-detail)
 - [🚀 Performance & Caching](#-performance--caching)
 - [⚠️ API Rate Limiting](#️-api-rate-limiting)
+- [🔒 Recommended Security Practices](#-recommended-security-practices)
 - [🗺️ Project Status & Roadmap](#️-project-status--roadmap)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
@@ -593,6 +594,103 @@ docker-compose up --build
 #### 4. Access the application
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:5001
+
+---
+
+## 🔒 Recommended Security Practices
+
+After setting up the project, follow these security best practices to protect your API keys and sensitive data:
+
+### 🛡️ Gitleaks - Secret Scanning
+
+**Already Configured!** This repository uses [Gitleaks](https://github.com/gitleaks/gitleaks) to prevent accidental commits of secrets.
+
+**What's Set Up:**
+- ✅ **Pre-commit hook** - Automatically scans staged changes before every commit
+- ✅ **GitHub Actions** - Runs security scans on every push and weekly
+- ✅ **Custom rules** - Detects OpenWeather, Visual Crossing, Anthropic API keys, JWT secrets, and database passwords
+- ✅ **Configuration file** - `.gitleaks.toml` with project-specific rules
+
+**How It Works:**
+```bash
+# When you try to commit a file with secrets:
+git add .env  # (hypothetically)
+git commit -m "Add config"
+
+# Output:
+🔍 Running Gitleaks security scan...
+❌ COMMIT BLOCKED: Gitleaks detected potential secrets!
+```
+
+**Manual Scan:**
+```bash
+# Scan entire repository
+gitleaks detect --verbose
+
+# Scan staged changes only
+gitleaks protect --staged
+```
+
+**Installation (if not using Docker):**
+```bash
+# macOS
+brew install gitleaks
+
+# Linux
+curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz \
+  | tar -xz -C /usr/local/bin gitleaks
+
+# The pre-commit hook is already configured in .git/hooks/pre-commit
+```
+
+**Bypass Hook (NOT RECOMMENDED):**
+```bash
+# Only use if you're absolutely sure the detection is a false positive
+git commit --no-verify
+```
+
+### 🔑 API Key Management
+
+**Best Practices:**
+
+1. **Never commit `.env` files** - Already gitignored ✅
+2. **Use `.env.example` for documentation** - Placeholder values only ✅
+3. **Rotate exposed keys immediately** - Check git history for leaks
+4. **Use environment-specific files**:
+   - `.env` - Local development
+   - `.env.production` - Production server (gitignored)
+   - `.env.secrets` - Documentation of all keys (gitignored)
+
+5. **Restrict API key domains** (when possible):
+   - OpenWeather: Add domain restrictions in dashboard
+   - Anthropic: Monitor usage for anomalies
+   - Visual Crossing: Set usage alerts
+
+### 🔐 Secrets Checklist
+
+Before pushing to GitHub, verify:
+
+- [ ] All `.env` files are in `.gitignore`
+- [ ] No API keys hardcoded in source code
+- [ ] Example files use placeholder values only
+- [ ] Gitleaks pre-commit hook is active
+- [ ] Production secrets are stored securely on server
+- [ ] Database passwords are strong and unique
+- [ ] JWT secrets are at least 32 characters
+
+### 📊 Security Monitoring
+
+**Set up usage alerts:**
+- **OpenWeather**: Monitor daily API calls
+- **Visual Crossing**: Track query volume
+- **Anthropic**: Watch token usage
+- **Database**: Enable MySQL audit log (optional)
+
+**Weekly Security Tasks:**
+- Review GitHub security alerts (Dependabot)
+- Check Gitleaks GitHub Actions results
+- Monitor server logs for unusual activity
+- Verify all services have latest security patches
 
 ---
 
