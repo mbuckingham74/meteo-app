@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { formatTemperature } from '../../utils/weatherHelpers';
 import { METRIC_COLORS } from '../../utils/colorScales';
+import './charts.css';
 
 /**
  * Hourly Forecast Chart Component
@@ -23,7 +24,7 @@ function HourlyForecastChart({ hourlyData, unit = 'C', height = 400 }) {
 
   if (!hourlyData || hourlyData.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary, #6b7280)' }}>
         No hourly forecast data available
       </div>
     );
@@ -69,9 +70,9 @@ function HourlyForecastChart({ hourlyData, unit = 'C', height = 400 }) {
 
     return (
       <div style={{
-        background: 'white',
+        background: 'var(--bg-elevated, white)',
         padding: '12px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border-light, #e5e7eb)',
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '200px'
@@ -98,7 +99,7 @@ function HourlyForecastChart({ hourlyData, unit = 'C', height = 400 }) {
         </p>
 
         {data.conditions && (
-          <p style={{ margin: '6px 0 0 0', fontSize: '11px', color: '#6b7280', fontStyle: 'italic' }}>
+          <p style={{ margin: '6px 0 0 0', fontSize: '11px', color: 'var(--text-secondary, #6b7280)', fontStyle: 'italic' }}>
             {data.conditions}
           </p>
         )}
@@ -521,10 +522,10 @@ function HourlyForecastChart({ hourlyData, unit = 'C', height = 400 }) {
             }
           }}
         >
-          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#374151', textTransform: 'uppercase', fontWeight: '600' }}>
+          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: 'var(--text-secondary, #374151)', textTransform: 'uppercase', fontWeight: '600' }}>
             💨 Avg Wind
           </p>
-          <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#4b5563' }}>
+          <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: 'var(--text-secondary, #4b5563)' }}>
             {stats.avgWind.toFixed(1)} km/h
           </p>
         </button>

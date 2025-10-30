@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Legend
 } from 'recharts';
+import './charts.css';
 import { TEMPERATURE_BANDS } from '../../utils/colorScales';
 import { formatTemperature, formatDateShort } from '../../utils/weatherHelpers';
 
@@ -19,7 +20,7 @@ import { formatTemperature, formatDateShort } from '../../utils/weatherHelpers';
 function TemperatureBandChart({ data, unit = 'C', height = 400, days, aggregationLabel }) {
   if (!data || data.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary, #6b7280)' }}>
         No temperature data available
       </div>
     );
@@ -52,9 +53,9 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days, aggregatio
 
     return (
       <div style={{
-        background: 'white',
+        background: 'var(--bg-elevated, white)',
         padding: '12px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border-light, #e5e7eb)',
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
       }}>
@@ -72,7 +73,7 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days, aggregatio
         <p style={{ margin: '4px 0', color: '#3b82f6' }}>
           Low: {formatTemperature(data.low, unit)}
         </p>
-        <p style={{ margin: '4px 0', color: '#6b7280' }}>
+        <p style={{ margin: '4px 0', color: 'var(--text-secondary, #6b7280)' }}>
           Avg: {formatTemperature(data.avg, unit)}
         </p>
       </div>
@@ -152,7 +153,7 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days, aggregatio
 
       {/* Temperature Band Legend */}
       <div style={{ marginTop: '12px', padding: '8px', background: '#f9fafb', borderRadius: '8px' }}>
-        <p style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '600', color: '#374151' }}>
+        <p style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary, #374151)' }}>
           Temperature Comfort Zones:
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -164,7 +165,7 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days, aggregatio
                 backgroundColor: band.color,
                 borderRadius: '3px'
               }} />
-              <span style={{ fontSize: '12px', color: '#6b7280' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)' }}>
                 {band.name} ({band.min}°-{band.max}°C)
               </span>
             </div>

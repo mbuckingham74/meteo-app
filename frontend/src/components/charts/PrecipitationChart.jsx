@@ -10,6 +10,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+import './charts.css';
 import { PRECIPITATION_COLORS } from '../../utils/colorScales';
 import { formatDateShort, formatPrecipitation } from '../../utils/weatherHelpers';
 
@@ -20,7 +21,7 @@ import { formatDateShort, formatPrecipitation } from '../../utils/weatherHelpers
 function PrecipitationChart({ data, height = 350, days, aggregationLabel }) {
   if (!data || data.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary, #6b7280)' }}>
         No precipitation data available
       </div>
     );
@@ -53,9 +54,9 @@ function PrecipitationChart({ data, height = 350, days, aggregationLabel }) {
 
     return (
       <div style={{
-        background: 'white',
+        background: 'var(--bg-elevated, white)',
         padding: '12px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border-light, #e5e7eb)',
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
       }}>

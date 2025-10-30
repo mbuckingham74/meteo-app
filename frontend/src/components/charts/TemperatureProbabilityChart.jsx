@@ -11,6 +11,7 @@ import {
   ReferenceLine,
   Cell
 } from 'recharts';
+import './charts.css';
 import { getTemperatureColor } from '../../utils/colorScales';
 import { formatTemperature } from '../../utils/weatherHelpers';
 
@@ -21,7 +22,7 @@ import { formatTemperature } from '../../utils/weatherHelpers';
 function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400 }) {
   if (!probabilityData || !probabilityData.distribution || probabilityData.distribution.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary, #6b7280)' }}>
         No temperature probability data available
       </div>
     );
@@ -37,9 +38,9 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
 
     return (
       <div style={{
-        background: 'white',
+        background: 'var(--bg-elevated, white)',
         padding: '12px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border-light, #e5e7eb)',
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '160px'
@@ -50,7 +51,7 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
         <p style={{ margin: '4px 0', color: '#6366f1', fontSize: '14px', fontWeight: '600' }}>
           {data.probability.toFixed(1)}% of days
         </p>
-        <p style={{ margin: '4px 0', color: '#9ca3af', fontSize: '11px' }}>
+        <p style={{ margin: '4px 0', color: 'var(--text-tertiary, #9ca3af)', fontSize: '11px' }}>
           ({data.count} occurrences)
         </p>
       </div>
@@ -71,7 +72,7 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
         marginBottom: '20px'
       }}>
         <div style={{ padding: '10px', background: '#f9fafb', borderRadius: '6px', textAlign: 'center' }}>
-          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#6b7280', textTransform: 'uppercase' }}>
+          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: 'var(--text-secondary, #6b7280)', textTransform: 'uppercase' }}>
             Mean
           </p>
           <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: 'var(--text-primary, #111827)' }}>
@@ -80,7 +81,7 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
         </div>
 
         <div style={{ padding: '10px', background: '#f9fafb', borderRadius: '6px', textAlign: 'center' }}>
-          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#6b7280', textTransform: 'uppercase' }}>
+          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: 'var(--text-secondary, #6b7280)', textTransform: 'uppercase' }}>
             Median
           </p>
           <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: 'var(--text-primary, #111827)' }}>
@@ -89,7 +90,7 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
         </div>
 
         <div style={{ padding: '10px', background: '#f9fafb', borderRadius: '6px', textAlign: 'center' }}>
-          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#6b7280', textTransform: 'uppercase' }}>
+          <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: 'var(--text-secondary, #6b7280)', textTransform: 'uppercase' }}>
             Std Dev
           </p>
           <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: 'var(--text-primary, #111827)' }}>
@@ -181,17 +182,17 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
 
       {/* Interpretation guide */}
       <div style={{ marginTop: '16px', padding: '12px', background: '#f9fafb', borderRadius: '8px' }}>
-        <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: '600', color: '#374151' }}>
+        <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary, #374151)' }}>
           Understanding the Distribution:
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
-          <div style={{ fontSize: '11px', color: '#6b7280' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             <strong>Bell curve:</strong> Most temperatures cluster around the mean
           </div>
-          <div style={{ fontSize: '11px', color: '#6b7280' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             <strong>Wider spread:</strong> Greater temperature variability
           </div>
-          <div style={{ fontSize: '11px', color: '#6b7280' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             <strong>Skewed distribution:</strong> Tendency toward warmer or cooler temps
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+import './charts.css';
 import { formatDateShort, formatTemperature } from '../../utils/weatherHelpers';
 
 /**
@@ -19,7 +20,7 @@ import { formatDateShort, formatTemperature } from '../../utils/weatherHelpers';
 function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', height = 400, aggregationLabel }) {
   if (!forecastData || forecastData.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary, #6b7280)' }}>
         No forecast data available
       </div>
     );
@@ -27,7 +28,7 @@ function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', h
 
   if (!historicalData || historicalData.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary, #6b7280)' }}>
         Loading historical climate data...
       </div>
     );
@@ -65,9 +66,9 @@ function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', h
 
     return (
       <div style={{
-        background: 'white',
+        background: 'var(--bg-elevated, white)',
         padding: '12px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border-light, #e5e7eb)',
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '220px'
@@ -85,13 +86,13 @@ function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', h
           <p style={{ margin: '2px 0', fontSize: '12px', fontWeight: '600', color: '#6366f1' }}>
             Forecast:
           </p>
-          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: '#6b7280' }}>
+          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             High: {formatTemperature(data.forecastMax, unit)}
           </p>
-          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: '#6b7280' }}>
+          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             Low: {formatTemperature(data.forecastMin, unit)}
           </p>
-          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: '#6b7280' }}>
+          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             Avg: {formatTemperature(data.forecastAvg, unit)}
           </p>
         </div>
@@ -100,13 +101,13 @@ function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', h
           <p style={{ margin: '2px 0', fontSize: '12px', fontWeight: '600', color: '#10b981' }}>
             Historical Normal:
           </p>
-          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: '#6b7280' }}>
+          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             High: {formatTemperature(data.normalMax, unit)}
           </p>
-          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: '#6b7280' }}>
+          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             Low: {formatTemperature(data.normalMin, unit)}
           </p>
-          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: '#6b7280' }}>
+          <p style={{ margin: '2px 0 2px 12px', fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             Avg: {formatTemperature(data.normalAvg, unit)}
           </p>
         </div>
@@ -228,17 +229,17 @@ function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', h
 
       {/* Legend explanation */}
       <div style={{ marginTop: '16px', padding: '12px', background: '#f9fafb', borderRadius: '8px' }}>
-        <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: '600', color: '#374151' }}>
+        <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary, #374151)' }}>
           Understanding the chart:
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
-          <div style={{ fontSize: '11px', color: '#6b7280' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             <span style={{ color: '#6366f1', fontWeight: '600' }}>Solid lines:</span> Current forecast
           </div>
-          <div style={{ fontSize: '11px', color: '#6b7280' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             <span style={{ color: '#10b981', fontWeight: '600' }}>Dashed line:</span> Historical average
           </div>
-          <div style={{ fontSize: '11px', color: '#6b7280' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             <span style={{ color: '#10b981', fontWeight: '600' }}>Shaded area:</span> Normal temperature range (10th-90th percentile)
           </div>
         </div>

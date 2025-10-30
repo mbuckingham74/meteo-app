@@ -10,6 +10,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+import './charts.css';
 
 /**
  * FeelsLikeChart Component
@@ -25,7 +26,7 @@ function FeelsLikeChart({ data, days, unit = 'C', height = 300 }) {
 
   if (!data || data.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-tertiary, #9ca3af)' }}>
         <p>No temperature data available</p>
       </div>
     );

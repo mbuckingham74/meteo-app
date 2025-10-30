@@ -11,6 +11,7 @@ import {
   Cell,
   ReferenceLine
 } from 'recharts';
+import './charts.css';
 import { getUVIndexColor } from '../../utils/colorScales';
 import { formatDateShort } from '../../utils/weatherHelpers';
 
@@ -28,7 +29,7 @@ function UVIndexChart({ data, days, height = 350 }) {
 
   if (!data || data.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary, #6b7280)' }}>
         No UV Index data available
       </div>
     );
@@ -69,9 +70,9 @@ function UVIndexChart({ data, days, height = 350 }) {
 
     return (
       <div style={{
-        background: 'white',
+        background: 'var(--bg-elevated, white)',
         padding: '12px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border-light, #e5e7eb)',
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '180px'
@@ -82,10 +83,10 @@ function UVIndexChart({ data, days, height = 350 }) {
         <p style={{ margin: '4px 0', color: getUVIndexColor(data.uvIndex), fontWeight: '600' }}>
           UV Index: {data.uvIndex}
         </p>
-        <p style={{ margin: '4px 0', fontSize: '12px', color: '#6b7280' }}>
+        <p style={{ margin: '4px 0', fontSize: '12px', color: 'var(--text-secondary, #6b7280)' }}>
           Risk: {riskLevel}
         </p>
-        <p style={{ margin: '4px 0', fontSize: '11px', color: '#9ca3af', fontStyle: 'italic' }}>
+        <p style={{ margin: '4px 0', fontSize: '11px', color: 'var(--text-tertiary, #9ca3af)', fontStyle: 'italic' }}>
           {advice}
         </p>
       </div>
@@ -144,47 +145,47 @@ function UVIndexChart({ data, days, height = 350 }) {
 
       {/* UV Risk Categories */}
       <div style={{ marginTop: '20px', padding: '12px', background: '#f9fafb', borderRadius: '8px' }}>
-        <p style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', color: '#374151' }}>
+        <p style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', color: 'var(--text-secondary, #374151)' }}>
           UV Risk Categories:
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'var(--bg-elevated, white)', borderRadius: '6px' }}>
             <div style={{ width: '16px', height: '16px', backgroundColor: '#10b981', borderRadius: '3px' }} />
             <div>
               <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary, #111827)' }}>Low (0-2)</div>
-              <div style={{ fontSize: '10px', color: '#6b7280' }}>No protection needed</div>
+              <div style={{ fontSize: '10px', color: 'var(--text-secondary, #6b7280)' }}>No protection needed</div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'var(--bg-elevated, white)', borderRadius: '6px' }}>
             <div style={{ width: '16px', height: '16px', backgroundColor: '#fbbf24', borderRadius: '3px' }} />
             <div>
               <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary, #111827)' }}>Moderate (3-5)</div>
-              <div style={{ fontSize: '10px', color: '#6b7280' }}>Wear sunscreen</div>
+              <div style={{ fontSize: '10px', color: 'var(--text-secondary, #6b7280)' }}>Wear sunscreen</div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'var(--bg-elevated, white)', borderRadius: '6px' }}>
             <div style={{ width: '16px', height: '16px', backgroundColor: '#f97316', borderRadius: '3px' }} />
             <div>
               <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary, #111827)' }}>High (6-7)</div>
-              <div style={{ fontSize: '10px', color: '#6b7280' }}>Sunscreen + hat</div>
+              <div style={{ fontSize: '10px', color: 'var(--text-secondary, #6b7280)' }}>Sunscreen + hat</div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'var(--bg-elevated, white)', borderRadius: '6px' }}>
             <div style={{ width: '16px', height: '16px', backgroundColor: '#dc2626', borderRadius: '3px' }} />
             <div>
               <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary, #111827)' }}>Very High (8-10)</div>
-              <div style={{ fontSize: '10px', color: '#6b7280' }}>Extra protection</div>
+              <div style={{ fontSize: '10px', color: 'var(--text-secondary, #6b7280)' }}>Extra protection</div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'var(--bg-elevated, white)', borderRadius: '6px' }}>
             <div style={{ width: '16px', height: '16px', backgroundColor: '#7c2d12', borderRadius: '3px' }} />
             <div>
               <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary, #111827)' }}>Extreme (11+)</div>
-              <div style={{ fontSize: '10px', color: '#6b7280' }}>Avoid sun exposure</div>
+              <div style={{ fontSize: '10px', color: 'var(--text-secondary, #6b7280)' }}>Avoid sun exposure</div>
             </div>
           </div>
         </div>

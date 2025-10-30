@@ -10,6 +10,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+import './charts.css';
 import { formatDateShort, formatTemperature } from '../../utils/weatherHelpers';
 
 /**
@@ -19,7 +20,7 @@ import { formatDateShort, formatTemperature } from '../../utils/weatherHelpers';
 function RecordTemperaturesChart({ records, unit = 'C', height = 400 }) {
   if (!records || records.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary, #6b7280)' }}>
         No record temperature data available
       </div>
     );
@@ -47,9 +48,9 @@ function RecordTemperaturesChart({ records, unit = 'C', height = 400 }) {
 
     return (
       <div style={{
-        background: 'white',
+        background: 'var(--bg-elevated, white)',
         padding: '14px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border-light, #e5e7eb)',
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '200px'
@@ -62,7 +63,7 @@ function RecordTemperaturesChart({ records, unit = 'C', height = 400 }) {
           <p style={{ margin: '4px 0', fontSize: '12px', color: '#dc2626', fontWeight: '600' }}>
             🔥 Record High: {formatTemperature(data.recordHigh, unit)}
           </p>
-          <p style={{ margin: '4px 0 4px 16px', fontSize: '10px', color: '#9ca3af' }}>
+          <p style={{ margin: '4px 0 4px 16px', fontSize: '10px', color: 'var(--text-tertiary, #9ca3af)' }}>
             Set in {data.recordHighYear}
           </p>
         </div>
@@ -71,16 +72,16 @@ function RecordTemperaturesChart({ records, unit = 'C', height = 400 }) {
           <p style={{ margin: '4px 0', fontSize: '12px', color: '#3b82f6', fontWeight: '600' }}>
             ❄️ Record Low: {formatTemperature(data.recordLow, unit)}
           </p>
-          <p style={{ margin: '4px 0 4px 16px', fontSize: '10px', color: '#9ca3af' }}>
+          <p style={{ margin: '4px 0 4px 16px', fontSize: '10px', color: 'var(--text-tertiary, #9ca3af)' }}>
             Set in {data.recordLowYear}
           </p>
         </div>
 
         <div>
-          <p style={{ margin: '4px 0', fontSize: '11px', color: '#6b7280' }}>
+          <p style={{ margin: '4px 0', fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             Avg High: {formatTemperature(data.avgHigh, unit)}
           </p>
-          <p style={{ margin: '4px 0', fontSize: '11px', color: '#6b7280' }}>
+          <p style={{ margin: '4px 0', fontSize: '11px', color: 'var(--text-secondary, #6b7280)' }}>
             Avg Low: {formatTemperature(data.avgLow, unit)}
           </p>
         </div>

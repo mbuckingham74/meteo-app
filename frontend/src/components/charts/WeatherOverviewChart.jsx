@@ -10,6 +10,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+import './charts.css';
 import { METRIC_COLORS } from '../../utils/colorScales';
 import { formatDateShort, formatTemperature, formatPrecipitation } from '../../utils/weatherHelpers';
 
@@ -36,7 +37,7 @@ function WeatherOverviewChart({ data, days, unit = 'C', height = 450 }) {
 
   if (!data || data.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary, #6b7280)' }}>
         No weather data available
       </div>
     );
@@ -70,9 +71,9 @@ function WeatherOverviewChart({ data, days, unit = 'C', height = 450 }) {
 
     return (
       <div style={{
-        background: 'white',
+        background: 'var(--bg-elevated, white)',
         padding: '12px',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--border-light, #e5e7eb)',
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '200px'
