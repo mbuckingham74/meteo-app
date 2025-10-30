@@ -172,7 +172,7 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
   return (
     <div className="location-search-bar" ref={searchRef}>
       <div className="search-input-wrapper">
-        <span className="search-icon">📍</span>
+        <span className="search-icon" aria-hidden="true">📍</span>
         <input
           type="text"
           className="search-input"
@@ -181,6 +181,13 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
           onChange={handleInputChange}
           onFocus={() => setShowDropdown(true)}
           onKeyDown={handleKeyDown}
+          data-search-input
+          aria-label="Search for a city or location"
+          aria-autocomplete="list"
+          aria-controls={showDropdown ? "search-results" : undefined}
+          aria-expanded={showDropdown}
+          role="combobox"
+          aria-activedescendant={selectedIndex >= 0 ? `result-${selectedIndex}` : undefined}
         />
         {isLoading && (
           <span className="search-loading">⏳</span>
@@ -193,14 +200,21 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
               setResults([]);
               setShowDropdown(true);
             }}
+            aria-label="Clear search"
+            type="button"
           >
-            ✕
+            <span aria-hidden="true">✕</span>
           </button>
         )}
       </div>
 
       {showDropdown && (
-        <div className="search-dropdown">
+        <div
+          className="search-dropdown"
+          id="search-results"
+          role="listbox"
+          aria-label="Search results"
+        >
           {/* Recent Searches (shown when no query or with filtered results) */}
           {query.length < 2 && recentSearches.length > 0 && (
             <div className="dropdown-section">
@@ -210,9 +224,12 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
               {recentSearches.map((location, index) => (
                 <div
                   key={index}
+                  id={`result-${index}`}
                   className={`dropdown-item ${selectedIndex === index ? 'selected' : ''}`}
                   onClick={() => handleSelectLocation(location)}
                   onMouseEnter={() => setSelectedIndex(index)}
+                  role="option"
+                  aria-selected={selectedIndex === index}
                 >
                   <span className="location-icon">📍</span>
                   <div className="location-details">

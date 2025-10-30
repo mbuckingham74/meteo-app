@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from '../../contexts/LocationContext';
 import { useTemperatureUnit } from '../../contexts/TemperatureUnitContext';
 import { useForecast, useHourlyForecast, useCurrentWeather } from '../../hooks/useWeatherData';
@@ -10,6 +10,7 @@ import {
 } from '../../hooks/useClimateData';
 import { getCurrentLocation } from '../../services/geolocationService';
 import { celsiusToFahrenheit } from '../../utils/weatherHelpers';
+import useKeyboardShortcuts, { useScreenReaderAnnouncement } from '../../hooks/useKeyboardShortcuts';
 import TemperatureBandChart from '../charts/TemperatureBandChart';
 import PrecipitationChart from '../charts/PrecipitationChart';
 import WindChart from '../charts/WindChart';
@@ -67,10 +68,39 @@ function WeatherDashboard() {
     tempProbability: false
   });
 
+  // Refs for keyboard navigation
+  const searchInputRef = useRef(null);
+
+  // Screen reader announcements
+  const { announce } = useScreenReaderAnnouncement();
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onFocusSearch: () => {
+      // Focus the search input (will be passed to LocationSearchBar)
+      const searchInput = document.querySelector('[data-search-input]');
+      if (searchInput) {
+        searchInput.focus();
+        announce('Search focused. Type to search for a location.');
+      }
+    },
+    onEscape: () => {
+      // Clear focus from search
+      document.activeElement?.blur();
+    }
+  });
+
   // Fetch weather data
   const { data, loading, error } = useForecast(location, days);
   const hourlyData = useHourlyForecast(location, 48);
   const currentWeather = useCurrentWeather(location);
+
+  // Announce location changes to screen readers
+  useEffect(() => {
+    if (locationData?.address) {
+      announce(`Location changed to ${locationData.address}`);
+    }
+  }, [locationData?.address, announce]);
 
   // Get date ranges for records and probability
   const today = new Date();
@@ -512,21 +542,28 @@ function WeatherDashboard() {
           <div className="dashboard-controls">
             <h3 className="controls-title">Location</h3>
 
-            <div className="location-search-section">
+            <div id="location-search" className="location-search-section">
               <LocationSearchBar
                 onLocationSelect={handleLocationSelect}
                 currentLocation={locationData}
+                ref={searchInputRef}
               />
               <div className="location-actions">
                 <button
                   className="location-action-button detect-location"
                   onClick={handleDetectLocation}
                   disabled={detectingLocation}
+                  aria-label={detectingLocation ? 'Detecting your location...' : 'Use my current location'}
+                  aria-busy={detectingLocation}
                 >
-                  {detectingLocation ? '🔄' : '📍'} {detectingLocation ? 'Detecting...' : 'Use My Location'}
+                  <span aria-hidden="true">{detectingLocation ? '🔄' : '📍'}</span> {detectingLocation ? 'Detecting...' : 'Use My Location'}
                 </button>
-                <a href="/compare" className="location-action-button compare-link">
-                  📊 Compare Locations
+                <a
+                  href="/compare"
+                  className="location-action-button compare-link"
+                  aria-label="Go to location comparison page"
+                >
+                  <span aria-hidden="true">📊</span> Compare Locations
                 </a>
               </div>
               {locationError && (
@@ -701,7 +738,7 @@ function WeatherDashboard() {
           </div>
 
           {/* Charts */}
-          <div className="charts-grid">
+          <div id="weather-charts" className="charts-grid" tabIndex={-1}>
             {/* FORECAST TAB */}
             {activeTab === 'forecast' && visibleCharts.hourly && (
               <div id="chart-hourly" className="chart-card chart-card-wide">

@@ -4,6 +4,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { LocationProvider } from './contexts/LocationContext';
 import { TemperatureUnitProvider } from './contexts/TemperatureUnitContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import SkipToContent from './components/common/SkipToContent';
 import AuthHeader from './components/auth/AuthHeader';
 import WeatherDashboard from './components/weather/WeatherDashboard';
 import LocationComparisonView from './components/location/LocationComparisonView';
@@ -57,11 +58,13 @@ function AppContent() {
 
   return (
     <div className="App">
+      <SkipToContent />
       <AuthHeader />
-      {currentView === 'privacy' ? (
-        <PrivacyPolicy />
-      ) : currentView === 'compare' ? (
-        <>
+      <main id="main-content" tabIndex={-1}>
+        {currentView === 'privacy' ? (
+          <PrivacyPolicy />
+        ) : currentView === 'compare' ? (
+          <>
           <div style={{ padding: '20px 20px 0 20px', maxWidth: '1400px', margin: '0 auto' }}>
             <a
               href="/"
@@ -86,9 +89,10 @@ function AppContent() {
           </div>
           <LocationComparisonView />
         </>
-      ) : (
-        <WeatherDashboard />
-      )}
+        ) : (
+          <WeatherDashboard />
+        )}
+      </main>
     </div>
   );
 }
