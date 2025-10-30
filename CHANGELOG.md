@@ -7,13 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Versioning Scheme:**
 - **0.x.x** - Initial development phase (current)
-- **0.MINOR.0** - New features and major improvements (0.1.0 → 0.2.0 → 0.3.0) - ![Green Badge](https://img.shields.io/badge/Feature-brightgreen?style=flat-square)
-- **0.MINOR.PATCH** - Bug fixes and minor updates (0.2.0 → 0.2.1 → 0.2.2) - ![Red Badge](https://img.shields.io/badge/Bug_Fix-red?style=flat-square)
+- **0.MINOR.0** - New features and major improvements (0.1.0 → 0.2.0 → 0.3.0) - ![Green Badge](https://img.shields.io/badge/Feature-228B22?style=flat-square&labelColor=228B22&color=228B22)
+- **0.MINOR.PATCH** - Bug fixes and minor updates (0.2.0 → 0.2.1 → 0.2.2) - ![Red Badge](https://img.shields.io/badge/Bug_Fix-B22222?style=flat-square&labelColor=B22222&color=B22222)
 - **1.0.0** - First stable production release (when ready)
 
 **Badge Color Coding:**
-- 🟢 **Green badges** = Feature releases (new functionality)
-- 🔴 **Red badges** = Bug fix releases (patches and fixes)
+- 🌲 **Forest green badges** = Feature releases (new functionality)
+- 🔴 **Dark red badges** = Bug fix releases (patches and fixes)
 - ⚪ **Gray badges** = Unreleased changes
 
 ---
@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## ![Version](https://img.shields.io/badge/version-0.2.0-brightgreen?style=flat-square) ![Date](https://img.shields.io/badge/date-Oct_29,_2025-brightgreen?style=flat-square) ![Release Type](https://img.shields.io/badge/Feature_Release-brightgreen?style=flat-square)
+## ![Version](https://img.shields.io/badge/version-0.2.0-228B22?style=flat-square&labelColor=228B22&color=228B22) ![Date](https://img.shields.io/badge/date-Oct_29,_2025-228B22?style=flat-square&labelColor=228B22&color=228B22) ![Release Type](https://img.shields.io/badge/Feature_Release-228B22?style=flat-square&labelColor=228B22&color=228B22)
 
 **Release Highlights:** Enterprise-grade security infrastructure, PWA support, accessibility improvements, and enhanced UX features.
 
@@ -180,7 +180,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## ![Version](https://img.shields.io/badge/version-0.1.0-brightgreen?style=flat-square) ![Date](https://img.shields.io/badge/date-Oct_24,_2025-brightgreen?style=flat-square) ![Release Type](https://img.shields.io/badge/Feature_Release-brightgreen?style=flat-square)
+## ![Version](https://img.shields.io/badge/version-0.1.0-228B22?style=flat-square&labelColor=228B22&color=228B22) ![Date](https://img.shields.io/badge/date-Oct_24,_2025-228B22?style=flat-square&labelColor=228B22&color=228B22) ![Release Type](https://img.shields.io/badge/Feature_Release-228B22?style=flat-square&labelColor=228B22&color=228B22)
 
 **Release Name:** Initial Beta Release
 
@@ -360,24 +360,28 @@ None in current version.
 
 ## Badge Templates for Future Releases
 
-### Feature Release (0.MINOR.0) - Green Badges
+### Feature Release (0.MINOR.0) - Forest Green Badges 🌲
 ```markdown
-## ![Version](https://img.shields.io/badge/version-0.X.0-brightgreen?style=flat-square) ![Date](https://img.shields.io/badge/date-Mon_DD,_YYYY-brightgreen?style=flat-square) ![Release Type](https://img.shields.io/badge/Feature_Release-brightgreen?style=flat-square)
+## ![Version](https://img.shields.io/badge/version-0.X.0-228B22?style=flat-square&labelColor=228B22&color=228B22) ![Date](https://img.shields.io/badge/date-Mon_DD,_YYYY-228B22?style=flat-square&labelColor=228B22&color=228B22) ![Release Type](https://img.shields.io/badge/Feature_Release-228B22?style=flat-square&labelColor=228B22&color=228B22)
 
 **Release Highlights:** [Brief description of new features]
 ```
 
-### Bug Fix Release (0.MINOR.PATCH) - Red Badges
+### Bug Fix Release (0.MINOR.PATCH) - Dark Red Badges 🔴
 ```markdown
-## ![Version](https://img.shields.io/badge/version-0.X.Y-red?style=flat-square) ![Date](https://img.shields.io/badge/date-Mon_DD,_YYYY-red?style=flat-square) ![Release Type](https://img.shields.io/badge/Bug_Fix_Release-red?style=flat-square)
+## ![Version](https://img.shields.io/badge/version-0.X.Y-B22222?style=flat-square&labelColor=B22222&color=B22222) ![Date](https://img.shields.io/badge/date-Mon_DD,_YYYY-B22222?style=flat-square&labelColor=B22222&color=B22222) ![Release Type](https://img.shields.io/badge/Bug_Fix_Release-B22222?style=flat-square&labelColor=B22222&color=B22222)
 
 **Release Highlights:** [Brief description of fixes]
 ```
 
 ### Examples
-- **Feature Release:** v0.3.0 (green) - New weather maps feature
-- **Bug Fix Release:** v0.2.1 (red) - Fixed radar loading issue
-- **Bug Fix Release:** v0.2.2 (red) - Fixed search autocomplete
+- **Feature Release:** v0.3.0 (forest green 🌲) - New weather maps feature
+- **Bug Fix Release:** v0.2.1 (dark red 🔴) - Fixed radar loading issue
+- **Bug Fix Release:** v0.2.2 (dark red 🔴) - Fixed search autocomplete
+
+### Color Codes
+- **Forest Green:** `#228B22` - Easy on the eyes, professional appearance
+- **Dark Red (Firebrick):** `#B22222` - Clear indication without being harsh
 
 ---
 
