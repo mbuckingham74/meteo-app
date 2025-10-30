@@ -920,6 +920,94 @@ if (process.env.NODE_ENV === 'production') {
 - Text: Single/multi-line text
 - Custom: Weather stats, temperature displays
 
+## Accessibility & Keyboard Navigation
+
+The application is fully accessible and compliant with WCAG 2.1 AA guidelines.
+
+### Keyboard Shortcuts
+**File:** `frontend/src/hooks/useKeyboardShortcuts.js`
+
+**Available Shortcuts:**
+- **`/`** - Focus location search (like GitHub/Slack)
+- **`Escape`** - Clear focus, close dropdowns
+- **`Ctrl/Cmd+K`** - Quick search (prepared for future features)
+- **`Tab`** - Navigate through interactive elements
+- **`Shift+Tab`** - Navigate backwards
+
+**Usage:**
+```javascript
+// In any component
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts';
+
+useKeyboardShortcuts({
+  onFocusSearch: () => { /* focus search */ },
+  onEscape: () => { /* clear focus */ }
+});
+```
+
+### Skip Navigation Links
+**Component:** `SkipToContent.jsx`
+
+Provides quick navigation for keyboard users to bypass repetitive content:
+- Skip to main content
+- Skip to location search
+- Skip to weather charts
+
+**Features:**
+- Only visible when focused (Tab key)
+- Smooth scroll with focus management
+- High contrast mode support
+- WCAG 2.1 compliant
+
+### ARIA Labels & Semantic HTML
+
+**LocationSearchBar:**
+- `role="combobox"` - Search input
+- `aria-autocomplete="list"` - Dropdown suggestions
+- `aria-controls` - Links input to results
+- `aria-expanded` - Dropdown state
+- `aria-activedescendant` - Active result
+- `role="listbox"` - Results container
+- `role="option"` - Individual results
+
+**Interactive Elements:**
+- All buttons have descriptive `aria-label` attributes
+- Loading states use `aria-busy`
+- Decorative icons marked with `aria-hidden="true"`
+- Proper semantic HTML (`<main>`, `<nav>`, etc.)
+
+### Screen Reader Support
+
+**Announcements:**
+- Location changes announced automatically
+- Search focus announced
+- Loading states announced
+- Status updates for location detection
+
+**Implementation:**
+```javascript
+import { useScreenReaderAnnouncement } from '../../hooks/useKeyboardShortcuts';
+
+const { announce } = useScreenReaderAnnouncement();
+announce('Location changed to New York, NY');
+```
+
+### Focus Management
+
+**Features:**
+- Sections focusable via `tabIndex={-1}`
+- Skip links manage focus automatically
+- Smooth scroll to content
+- Visual focus indicators throughout
+- Focus trap prepared for modals
+
+**Testing Accessibility:**
+1. **Keyboard-only navigation:** Unplug mouse, navigate with Tab/Enter/Escape
+2. **Screen reader:** Test with NVDA (Windows), JAWS (Windows), or VoiceOver (Mac)
+3. **High contrast mode:** Enable in OS settings
+4. **Zoom:** Test at 200% zoom
+5. **Browser extensions:** Use axe DevTools or Lighthouse
+
 ## Testing
 
 Frontend uses Jest and React Testing Library (configured via react-scripts).
