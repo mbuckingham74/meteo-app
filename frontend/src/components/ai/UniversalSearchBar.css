@@ -118,12 +118,13 @@
 }
 
 .universal-examples-label {
-  color: var(--text-secondary, #888);
-  font-size: 14px;
+  display: block;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 15px;
   font-weight: 600;
-  margin-right: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+  text-transform: none;
+  letter-spacing: 0.3px;
 }
 
 .universal-example-chip {
@@ -172,6 +173,16 @@
 .universal-example-chip.analysis:hover {
   background: #9c27b0;
   border-color: #9c27b0;
+  color: white;
+}
+
+.universal-example-chip.comparison {
+  border-color: #00bcd4;
+}
+
+.universal-example-chip.comparison:hover {
+  background: #00bcd4;
+  border-color: #00bcd4;
   color: white;
 }
 
@@ -264,7 +275,7 @@
 }
 
 [data-theme="light"] .universal-examples-label {
-  color: #666;
+  color: rgba(0, 0, 0, 0.87);
 }
 
 /* Responsive Design */

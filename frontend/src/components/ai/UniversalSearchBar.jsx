@@ -10,9 +10,12 @@ import './UniversalSearchBar.css';
  * - Complex questions (e.g., "What's similar to Seattle?") → AI analysis
  */
 function UniversalSearchBar() {
-  const { selectLocation } = useLocation();
+  const { location, selectLocation } = useLocation();
   const [query, setQuery] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Get current city for dynamic queries
+  const currentCity = location?.address?.split(',')[0] || 'Seattle';
 
   /**
    * Smart detection: Is this a simple location or a complex AI query?
@@ -111,7 +114,7 @@ function UniversalSearchBar() {
         <input
           type="text"
           className="universal-search-input"
-          placeholder="Enter a city or ask anything about weather..."
+          placeholder="Ask me anything... e.g., 'Will it rain this weekend in Seattle?' or 'When did Denver experience its highest temperature?' or 'I live in Florida June-November and it's miserable - where should I move?'"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyPress={handleKeyPress}
@@ -128,34 +131,34 @@ function UniversalSearchBar() {
 
       {/* Example Query Bar - Centered */}
       <div className="universal-examples">
-        <span className="universal-examples-label">Quick Start:</span>
-        <button
-          className="universal-example-chip location"
-          onClick={() => setQuery("Seattle, WA")}
-          title="Simple location search"
-        >
-          📍 Seattle, WA
-        </button>
+        <span className="universal-examples-label">👇 Try asking:</span>
         <button
           className="universal-example-chip question"
-          onClick={() => setQuery("Will it rain this weekend?")}
-          title="Simple weather question"
+          onClick={() => setQuery(`Will it rain this weekend in ${currentCity}?`)}
+          title="Weather forecast question"
         >
-          💧 Will it rain this weekend?
+          🌧️ Will it rain this weekend?
         </button>
         <button
           className="universal-example-chip analysis"
-          onClick={() => setQuery("What's similar to Seattle from June-October?")}
-          title="AI-powered climate comparison"
+          onClick={() => setQuery(`What are the rainiest months in ${currentCity} based on historical data?`)}
+          title="Historical data analysis"
         >
-          🤖 Similar climate to Seattle?
+          📊 Show me the rainiest months
+        </button>
+        <button
+          className="universal-example-chip comparison"
+          onClick={() => setQuery(`What cities have a similar climate to ${currentCity}?`)}
+          title="Find similar climates"
+        >
+          🌍 Find similar climates
         </button>
         <button
           className="universal-example-chip practical"
-          onClick={() => setQuery("Should I bring an umbrella tomorrow?")}
-          title="Practical weather advice"
+          onClick={() => setQuery(`How does ${currentCity}'s weather compare to Denver, Colorado?`)}
+          title="Compare cities"
         >
-          ☂️ Umbrella tomorrow?
+          🏔️ Compare to another city
         </button>
       </div>
 
