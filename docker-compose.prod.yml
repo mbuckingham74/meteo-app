@@ -6,6 +6,8 @@ services:
     image: mysql:8.0
     container_name: meteo-mysql-prod
     restart: unless-stopped
+    env_file:
+      - .env.production
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
@@ -30,6 +32,8 @@ services:
       dockerfile: Dockerfile
     container_name: meteo-backend-prod
     restart: unless-stopped
+    env_file:
+      - .env.production
     environment:
       NODE_ENV: production
       PORT: 5001
@@ -57,6 +61,8 @@ services:
 
   # Frontend Web Service (NPM network only)
   frontend:
+    env_file:
+      - .env.production
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
