@@ -198,8 +198,10 @@ function WeatherDashboard() {
       {/* Header */}
       <header className="dashboard-header">
         <h1 className="dashboard-title">
-          <span className="title-icon">🌤️</span>
-          Meteo Weather
+          <a href="/" className="dashboard-title-link">
+            <span className="title-icon">🌤️</span>
+            Meteo Weather
+          </a>
         </h1>
         <p className="dashboard-subtitle">Historical Weather Data & Forecasts</p>
       </header>
