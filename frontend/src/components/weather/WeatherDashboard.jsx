@@ -556,6 +556,8 @@ function WeatherDashboard() {
               <LocationSearchBar
                 onLocationSelect={handleLocationSelect}
                 currentLocation={locationData}
+                onDetectLocation={handleDetectLocation}
+                detectingLocation={detectingLocation}
                 ref={searchInputRef}
               />
               <div className="location-actions">

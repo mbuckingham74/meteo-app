@@ -9,7 +9,7 @@ const MAX_RECENT_SEARCHES = 5;
  * LocationSearchBar Component
  * Autocomplete search bar for location selection with search history
  */
-function LocationSearchBar({ onLocationSelect, currentLocation }) {
+function LocationSearchBar({ onLocationSelect, currentLocation, onDetectLocation, detectingLocation }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [popularLocations, setPopularLocations] = useState([]);
@@ -276,6 +276,31 @@ function LocationSearchBar({ onLocationSelect, currentLocation }) {
           role="listbox"
           aria-label="Search results"
         >
+          {/* Use My Location Option (shown when no query) */}
+          {query.length < 2 && onDetectLocation && (
+            <div className="dropdown-section">
+              <div
+                className="dropdown-item use-my-location-item"
+                onClick={() => {
+                  setShowDropdown(false);
+                  onDetectLocation();
+                }}
+                role="option"
+                aria-label="Use my current location"
+              >
+                <span className="location-icon">{detectingLocation ? '🔄' : '📍'}</span>
+                <div className="location-details">
+                  <div className="location-name use-my-location-text">
+                    {detectingLocation ? 'Detecting your location...' : 'Use My Location'}
+                  </div>
+                  <div className="location-coords">
+                    {detectingLocation ? 'Please wait...' : 'Detect current location automatically'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Recent Searches (shown when no query or with filtered results) */}
           {query.length < 2 && recentSearches.length > 0 && (
             <div className="dropdown-section">
