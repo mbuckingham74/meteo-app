@@ -387,6 +387,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  padding-top: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-light);
 }
@@ -402,9 +403,12 @@
 
 .location-coords {
   margin: 0;
-  font-size: 11px;
-  color: var(--text-tertiary) !important;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary) !important;
   text-align: right;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', monospace;
+  letter-spacing: 0.3px;
 }
 
 /* Current Conditions */
