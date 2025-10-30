@@ -54,7 +54,7 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 ## 📋 Table of Contents
 
 **Quick Links:**
-- [🚀 Setup Instructions](#-setup-instructions) | [🌐 Live Demo](https://meteo-beta.tachyonfuture.com) | [🤝 Contributing](#-contributing)
+- [🚀 Setup Instructions](#-setup-instructions) | [🌐 Live Demo](https://meteo-beta.tachyonfuture.com) | [📋 Changelog](CHANGELOG.md) | [🤝 Contributing](#-contributing)
 
 **Getting Started:**
 - [💻 Minimum Server Requirements](#-minimum-server-requirements)
@@ -94,6 +94,7 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - [🚀 Performance & Caching](#-performance--caching)
 - [⚠️ API Rate Limiting](#️-api-rate-limiting)
 - [🔒 Recommended Security Practices](#-recommended-security-practices)
+- [📋 Changelog](CHANGELOG.md)
 - [🗺️ Project Status & Roadmap](#️-project-status--roadmap)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
