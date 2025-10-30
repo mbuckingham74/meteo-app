@@ -10,8 +10,8 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 
 ![CI/CD](https://img.shields.io/github/actions/workflow/status/mbuckingham74/meteo-weather/deploy.yml?branch=main&label=deployment&logo=github-actions&logoColor=white)
 ![Tests](https://img.shields.io/github/actions/workflow/status/mbuckingham74/meteo-weather/ci.yml?branch=main&label=tests&logo=jest&logoColor=white)
-![Test Coverage](https://img.shields.io/badge/coverage-35%25-yellow?logo=jest&logoColor=white)
-![Tests Passing](https://img.shields.io/badge/tests-431%2F431%20passing-brightgreen?logo=jest&logoColor=white)
+![Test Coverage](https://img.shields.io/badge/coverage-34%25-yellow?logo=jest&logoColor=white)
+![Tests Passing](https://img.shields.io/badge/tests-476%2F476%20passing-brightgreen?logo=jest&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)
 ![React](https://img.shields.io/badge/react-19.2.0-blue.svg)
@@ -1183,6 +1183,20 @@ MIT License - feel free to use this project for learning and development.
   - Increased font sizes for titles, axis labels, and legends
   - Better chart readability with explicit color values
   - 5 compact stat boxes including new 24-hour precipitation total
+  - City name prominence increased (36-42px, extra bold weight)
+  - Equal padding and spacing in location header
+  - Improved coordinates/timezone readability (monospace font, better contrast)
+- [x] **Accessibility & Quality Improvements (Oct 2025)**
+  - Fixed ARIA accessibility warnings (added `aria-selected` to dropdown options)
+  - Test coverage increased from 31.48% to 33.65%
+  - Added comprehensive color scales utility tests (100% coverage)
+  - Fixed LocationSearchBar test failure
+  - All 476 tests passing with zero failures
+- [x] **Deployment Infrastructure**
+  - Fixed backend auto-restart issue in deployment script
+  - Backend now rebuilds and restarts automatically on code changes
+  - Added `--force-recreate` flag to ensure container recreation
+  - Prevents stale code running in production
 
 ### 🚧 Planned Enhancements
 

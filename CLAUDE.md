@@ -48,6 +48,9 @@ The application is containerized using Docker Compose for consistent development
 - **Domains:** meteo-beta.tachyonfuture.com, api.meteo-beta.tachyonfuture.com
 - **Proxy:** Nginx Proxy Manager (port 81)
 - **Deployment:** See `scripts/deploy-beta.sh` or `DEPLOYMENT_GUIDE_PRIVATE.md`
+  - **Auto-restart:** Script now rebuilds both frontend AND backend containers
+  - **Force recreate:** Uses `--force-recreate` flag to ensure fresh container deployment
+  - **Zero downtime:** Backend changes automatically deploy without manual intervention
 
 ## Architecture
 
@@ -1041,6 +1044,17 @@ announce('Location changed to New York, NY');
 
 ## Testing
 
-Frontend uses Jest and React Testing Library (configured via react-scripts).
-Backend testing framework not yet implemented.
-- 1 is done by me and two other people, great job! let's move forward with 3, 4 and 5
+**Frontend Testing:**
+- **Framework:** Jest and React Testing Library (configured via react-scripts)
+- **Current Coverage:** 33.65% (improved from 31.48%)
+- **Test Suites:** 20 passing
+- **Total Tests:** 476 passing, 0 failures
+- **Recent Improvements:**
+  - Added comprehensive color scales utility tests (100% coverage)
+  - Fixed ARIA accessibility warnings in LocationSearchBar
+  - Fixed failing LocationSearchBar test
+  - All tests passing with zero failures
+
+**Backend Testing:**
+- Backend testing framework not yet implemented
+- Planned: Jest + Supertest for API endpoint testing
