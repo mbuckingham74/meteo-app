@@ -76,7 +76,7 @@ function UVIndexChart({ data, days, height = 350 }) {
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '180px'
       }}>
-        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#111827' }}>
+        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: 'var(--text-primary, #111827)' }}>
           {data.displayDate}
         </p>
         <p style={{ margin: '4px 0', color: getUVIndexColor(data.uvIndex), fontWeight: '600' }}>
@@ -94,7 +94,7 @@ function UVIndexChart({ data, days, height = 350 }) {
 
   return (
     <div>
-      <h3 style={{ marginBottom: '16px', color: '#111827', fontSize: '18px', fontWeight: '600' }}>
+      <h3 style={{ marginBottom: '16px', color: 'var(--text-primary, #111827)', fontSize: '18px', fontWeight: '600' }}>
         UV Index & Sun Safety - {getTimeLabel()}
       </h3>
 
@@ -151,7 +151,7 @@ function UVIndexChart({ data, days, height = 350 }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px' }}>
             <div style={{ width: '16px', height: '16px', backgroundColor: '#10b981', borderRadius: '3px' }} />
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '600', color: '#111827' }}>Low (0-2)</div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary, #111827)' }}>Low (0-2)</div>
               <div style={{ fontSize: '10px', color: '#6b7280' }}>No protection needed</div>
             </div>
           </div>
@@ -159,7 +159,7 @@ function UVIndexChart({ data, days, height = 350 }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px' }}>
             <div style={{ width: '16px', height: '16px', backgroundColor: '#fbbf24', borderRadius: '3px' }} />
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '600', color: '#111827' }}>Moderate (3-5)</div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary, #111827)' }}>Moderate (3-5)</div>
               <div style={{ fontSize: '10px', color: '#6b7280' }}>Wear sunscreen</div>
             </div>
           </div>
@@ -167,7 +167,7 @@ function UVIndexChart({ data, days, height = 350 }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px' }}>
             <div style={{ width: '16px', height: '16px', backgroundColor: '#f97316', borderRadius: '3px' }} />
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '600', color: '#111827' }}>High (6-7)</div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary, #111827)' }}>High (6-7)</div>
               <div style={{ fontSize: '10px', color: '#6b7280' }}>Sunscreen + hat</div>
             </div>
           </div>
@@ -175,7 +175,7 @@ function UVIndexChart({ data, days, height = 350 }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px' }}>
             <div style={{ width: '16px', height: '16px', backgroundColor: '#dc2626', borderRadius: '3px' }} />
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '600', color: '#111827' }}>Very High (8-10)</div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary, #111827)' }}>Very High (8-10)</div>
               <div style={{ fontSize: '10px', color: '#6b7280' }}>Extra protection</div>
             </div>
           </div>
@@ -183,7 +183,7 @@ function UVIndexChart({ data, days, height = 350 }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', background: 'white', borderRadius: '6px' }}>
             <div style={{ width: '16px', height: '16px', backgroundColor: '#7c2d12', borderRadius: '3px' }} />
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '600', color: '#111827' }}>Extreme (11+)</div>
+              <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary, #111827)' }}>Extreme (11+)</div>
               <div style={{ fontSize: '10px', color: '#6b7280' }}>Avoid sun exposure</div>
             </div>
           </div>

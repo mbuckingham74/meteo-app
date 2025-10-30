@@ -72,7 +72,7 @@ function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', h
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '220px'
       }}>
-        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#111827' }}>
+        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: 'var(--text-primary, #111827)' }}>
           {data.displayDate}
         </p>
         {data.aggregatedDays && (
@@ -130,7 +130,7 @@ function HistoricalComparisonChart({ forecastData, historicalData, unit = 'C', h
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h3 style={{ margin: 0, color: '#111827', fontSize: '18px', fontWeight: '600' }}>
+        <h3 style={{ margin: 0, color: 'var(--text-primary, #111827)', fontSize: '18px', fontWeight: '600' }}>
           Forecast vs Historical Climate
         </h3>
       </div>

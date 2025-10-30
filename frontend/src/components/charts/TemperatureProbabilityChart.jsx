@@ -44,7 +44,7 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '160px'
       }}>
-        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#111827' }}>
+        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: 'var(--text-primary, #111827)' }}>
           {formatTemperature(data.temperature, unit)} - {formatTemperature(data.temperature + 5, unit)}
         </p>
         <p style={{ margin: '4px 0', color: '#6366f1', fontSize: '14px', fontWeight: '600' }}>
@@ -59,7 +59,7 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
 
   return (
     <div>
-      <h3 style={{ marginBottom: '16px', color: '#111827', fontSize: '18px', fontWeight: '600' }}>
+      <h3 style={{ marginBottom: '16px', color: 'var(--text-primary, #111827)', fontSize: '18px', fontWeight: '600' }}>
         Temperature Probability Distribution
       </h3>
 
@@ -74,7 +74,7 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
           <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#6b7280', textTransform: 'uppercase' }}>
             Mean
           </p>
-          <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111827' }}>
+          <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: 'var(--text-primary, #111827)' }}>
             {formatTemperature(statistics.mean, unit)}
           </p>
         </div>
@@ -83,7 +83,7 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
           <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#6b7280', textTransform: 'uppercase' }}>
             Median
           </p>
-          <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111827' }}>
+          <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: 'var(--text-primary, #111827)' }}>
             {formatTemperature(statistics.median, unit)}
           </p>
         </div>
@@ -92,7 +92,7 @@ function TemperatureProbabilityChart({ probabilityData, unit = 'C', height = 400
           <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#6b7280', textTransform: 'uppercase' }}>
             Std Dev
           </p>
-          <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111827' }}>
+          <p style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: 'var(--text-primary, #111827)' }}>
             {statistics.stdDev?.toFixed(1)}°
           </p>
         </div>

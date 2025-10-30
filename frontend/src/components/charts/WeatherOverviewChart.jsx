@@ -77,7 +77,7 @@ function WeatherOverviewChart({ data, days, unit = 'C', height = 450 }) {
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '200px'
       }}>
-        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#111827' }}>
+        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: 'var(--text-primary, #111827)' }}>
           {data.displayDate}
         </p>
         {visibleMetrics.temperature && (
@@ -117,7 +117,7 @@ function WeatherOverviewChart({ data, days, unit = 'C', height = 450 }) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
-        <h3 style={{ margin: 0, color: '#111827', fontSize: '18px', fontWeight: '600' }}>
+        <h3 style={{ margin: 0, color: 'var(--text-primary, #111827)', fontSize: '18px', fontWeight: '600' }}>
           Multi-Metric Weather Overview - {getTimeLabel()}
         </h3>
 

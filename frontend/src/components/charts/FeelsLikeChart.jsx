@@ -86,7 +86,7 @@ function FeelsLikeChart({ data, days, unit = 'C', height = 300 }) {
         margin: '0 0 8px 0',
         fontSize: '16px',
         fontWeight: '600',
-        color: '#111827'
+        color: 'var(--text-primary, #111827)'
       }}>
         🌡️ Feels Like Temperature - {getTimeLabel()}
       </h3>

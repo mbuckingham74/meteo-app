@@ -54,7 +54,7 @@ function RecordTemperaturesChart({ records, unit = 'C', height = 400 }) {
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         minWidth: '200px'
       }}>
-        <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', color: '#111827', fontSize: '13px' }}>
+        <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', color: 'var(--text-primary, #111827)', fontSize: '13px' }}>
           {data.displayDate}
         </p>
 
@@ -95,7 +95,7 @@ function RecordTemperaturesChart({ records, unit = 'C', height = 400 }) {
 
   return (
     <div>
-      <h3 style={{ marginBottom: '16px', color: '#111827', fontSize: '18px', fontWeight: '600' }}>
+      <h3 style={{ marginBottom: '16px', color: 'var(--text-primary, #111827)', fontSize: '18px', fontWeight: '600' }}>
         Record High & Low Temperatures
       </h3>
 

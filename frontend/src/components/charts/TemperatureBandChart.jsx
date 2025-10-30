@@ -58,7 +58,7 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days, aggregatio
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
       }}>
-        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#111827' }}>
+        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: 'var(--text-primary, #111827)' }}>
           {data.displayDate}
         </p>
         {data.aggregatedDays && (
@@ -81,7 +81,7 @@ function TemperatureBandChart({ data, unit = 'C', height = 400, days, aggregatio
 
   return (
     <div>
-      <h3 style={{ marginBottom: '8px', marginTop: '0', color: '#111827', fontSize: '16px', fontWeight: '600' }}>
+      <h3 style={{ marginBottom: '8px', marginTop: '0', color: 'var(--text-primary, #111827)', fontSize: '16px', fontWeight: '600' }}>
         Temperature Range - {getTimeLabel()}
       </h3>
       <ResponsiveContainer width="100%" height={height}>
