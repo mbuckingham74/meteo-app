@@ -1,0 +1,234 @@
+.universal-search-bar {
+  margin: 20px 0;
+}
+
+/* Main Input Wrapper */
+.universal-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-elevated, #1a1a2e);
+  border: 2px solid var(--border-color, #3a3a4e);
+  border-radius: 12px;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.universal-input-wrapper:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.universal-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.universal-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary, white);
+  font-size: 16px;
+  outline: none;
+  padding: 4px 0;
+}
+
+.universal-search-input::placeholder {
+  color: var(--text-secondary, #888);
+  opacity: 0.8;
+}
+
+.universal-search-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.universal-submit-button {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.universal-submit-button:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.universal-submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Example Chips */
+.universal-examples {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding: 0 4px;
+}
+
+.universal-examples-label {
+  color: var(--text-secondary, #888);
+  font-size: 13px;
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.universal-example-chip {
+  padding: 6px 12px;
+  background: var(--bg-secondary, #2a2a3e);
+  border: 1px solid var(--border-color, #3a3a4e);
+  border-radius: 16px;
+  color: var(--text-primary, white);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.universal-example-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Color-coded chip types to show variety */
+.universal-example-chip.location:hover {
+  background: #4caf50;
+  border-color: #4caf50;
+}
+
+.universal-example-chip.question:hover {
+  background: #2196f3;
+  border-color: #2196f3;
+}
+
+.universal-example-chip.analysis:hover {
+  background: #9c27b0;
+  border-color: #9c27b0;
+}
+
+.universal-example-chip.practical:hover {
+  background: #ff9800;
+  border-color: #ff9800;
+}
+
+/* Smart Detection Hint */
+.universal-hint {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--bg-secondary, #2a2a3e);
+  border-radius: 8px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hint-ai {
+  color: #9c27b0;
+  font-weight: 500;
+}
+
+.hint-location {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+/* Light Theme Support */
+[data-theme="light"] .universal-input-wrapper {
+  background: white;
+  border-color: #e0e0e0;
+}
+
+[data-theme="light"] .universal-input-wrapper:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+[data-theme="light"] .universal-search-input {
+  color: #333;
+}
+
+[data-theme="light"] .universal-search-input::placeholder {
+  color: #666;
+}
+
+[data-theme="light"] .universal-example-chip {
+  background: #f5f5f5;
+  border-color: #e0e0e0;
+  color: #333;
+}
+
+[data-theme="light"] .universal-hint {
+  background: #f5f5f5;
+}
+
+[data-theme="light"] .universal-examples-label {
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .universal-input-wrapper {
+    padding: 10px 14px;
+  }
+
+  .universal-search-input {
+    font-size: 15px;
+  }
+
+  .universal-submit-button {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .universal-example-chip {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .universal-hint {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}
+
+/* Focus/Active States for Accessibility */
+.universal-example-chip:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.universal-submit-button:focus {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}

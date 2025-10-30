@@ -28,11 +28,10 @@ import FeelsLikeChart from '../charts/FeelsLikeChart';
 import ThisDayInHistoryCard from '../cards/ThisDayInHistoryCard';
 import AirQualityCard from '../cards/AirQualityCard';
 import WeatherAlertsBanner from './WeatherAlertsBanner';
-import LocationSearchBar from '../location/LocationSearchBar';
 import TemperatureUnitToggle from '../units/TemperatureUnitToggle';
 import DashboardSkeleton from '../common/DashboardSkeleton';
 import RadarMap from './RadarMap';
-import AISearchBar from '../ai/AISearchBar';
+import UniversalSearchBar from '../ai/UniversalSearchBar';
 import './WeatherDashboard.css';
 
 /**
@@ -581,16 +580,8 @@ function WeatherDashboard() {
             <h3 className="controls-title">Location</h3>
 
             <div id="location-search" className="location-search-section">
-              <LocationSearchBar
-                onLocationSelect={handleLocationSelect}
-                currentLocation={locationData}
-                onDetectLocation={handleDetectLocation}
-                detectingLocation={detectingLocation}
-                ref={searchInputRef}
-              />
-
-              {/* AI Search Bar - Collapsible */}
-              <AISearchBar />
+              {/* Universal Smart Search - Handles both simple locations and AI queries */}
+              <UniversalSearchBar />
 
               <div className="location-actions">
                 <button
