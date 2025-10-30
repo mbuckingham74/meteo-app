@@ -42,6 +42,9 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
 - **🎨 Theme System** - Light, dark, and auto modes
 - **🌍 Location Comparison** - Compare weather across multiple cities with AI assistance
 - **📱 Mobile Responsive** - Fully optimized for all device sizes
+- **🔗 Shareable URLs** - Direct links to any city's weather with browser back/forward support
+- **⌨️ Keyboard Navigation** - Full accessibility with keyboard shortcuts (WCAG 2.1 AA)
+- **📴 PWA Support** - Install as app, offline mode, and smart caching
 
 ---
 
@@ -65,6 +68,7 @@ A comprehensive weather dashboard inspired by Weather Spark, providing detailed 
   - [Interactive Radar Map](#️-interactive-radar-map)
   - [Interactive Charts](#-interactive-charts)
   - [Location Management](#-location-management)
+  - [URL Routing & Navigation](#-url-routing--navigation)
   - [AI-Powered Location Finder](#-ai-powered-location-finder)
   - [Air Quality Monitoring](#-air-quality-index-aqi)
   - [User Authentication](#-user-authentication--profiles)
@@ -270,6 +274,19 @@ This application requires API keys from the following services to function. Some
   - **Weather Comparison Charts** - Temperature, precipitation, and wind visualizations
   - **Historical Climate Data** - 10-year averages for long-term comparisons
   - **Comparison Insights** - Automatic analysis showing warmest, coldest, wettest locations and temperature differences
+
+### 🔗 URL Routing & Navigation
+
+- **Shareable Location URLs** - Direct links to any city's weather
+  - `/location/seattle-wa` - Seattle weather
+  - `/location/new-york-ny-usa` - New York weather
+  - Share links via text, email, or social media
+- **Browser Navigation** - Full support for back/forward buttons
+- **Deep Linking** - Load location directly from URL on page load
+- **SEO-Friendly URLs** - Meaningful paths for better search indexing
+- **Clickable Header** - "Meteo Weather" banner always links home (/)
+- **Auto URL Sync** - URL updates automatically when you select a new location
+- **Bookmarkable** - Save favorite city URLs in your browser
 
 ### 🤖 AI-Powered Location Finder
 
@@ -890,6 +907,7 @@ meteo-app/
 │   │   │   └── geolocationService.js
 │   │   └── utils/                   # Helper functions
 │   │       ├── weatherHelpers.js
+│   │       ├── urlHelpers.js                # NEW: URL routing and slug generation
 │   │       ├── inputSanitizer.js            # NEW: Client-side query validation
 │   │       └── inputSanitizer.test.js       # NEW: Validation tests
 │   └── public/
@@ -1115,6 +1133,12 @@ MIT License - feel free to use this project for learning and development.
 - [x] Location comparison tool (2-4 locations side-by-side)
 - [x] Responsive mobile design
 - [x] Chart visibility controls
+- [x] **URL routing with shareable links** (e.g., `/location/seattle-wa`)
+- [x] **Progressive Web App (PWA)** - Install, offline support, smart caching
+- [x] **Error Boundary** - Graceful error handling with retry options
+- [x] **Loading Skeletons** - Content-aware loading states
+- [x] **Keyboard Navigation** - Full accessibility (/, Esc, Ctrl+K shortcuts)
+- [x] **ARIA labels** - Screen reader support (WCAG 2.1 AA compliant)
 
 **Performance & Infrastructure**
 - [x] MySQL-based API response caching (99% reduction in API calls)

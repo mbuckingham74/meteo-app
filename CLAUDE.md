@@ -27,6 +27,8 @@ Meteo App is a Weather Spark (weatherspark.com) clone - a comprehensive weather 
 - **Progressive Web App (PWA)** - Offline support, installable, native app-like experience
 - **Error Boundary** - Graceful error handling with recovery options
 - **Loading Skeletons** - Content-aware loading states for better perceived performance
+- **URL Routing** - Shareable location-specific URLs with browser back/forward support
+- **Keyboard Navigation** - Full keyboard shortcuts and accessibility features (WCAG 2.1 AA)
 
 **Architecture:**
 - **Frontend**: React-based web application (Create React App)
@@ -343,6 +345,35 @@ The application uses **Anthropic's Claude Sonnet 4.5** for AI-powered location f
 - Fallback allows manual location search
 
 ## UI/UX Architecture
+
+### URL Routing & Navigation
+The application uses a custom client-side routing system with shareable URLs and proper browser navigation support:
+
+**URL Structure:**
+- `/` - Dashboard (default/last location)
+- `/location/seattle-wa` - Specific location weather view
+- `/location/new-york-ny-usa` - Location with full address in slug
+- `/compare` - Location comparison tool
+- `/privacy` - Privacy policy
+
+**Features:**
+- **Shareable Links** - Direct URLs to any city's weather data
+- **Browser Navigation** - Full support for back/forward buttons
+- **Deep Linking** - Load location directly from URL on page load
+- **SEO-Friendly** - Meaningful URLs for search engine indexing
+- **Auto URL Sync** - URL automatically updates when location changes
+- **Clickable Header** - "Meteo Weather" banner always links to home (/)
+
+**Implementation:**
+- **urlHelpers.js** - Utility functions for URL slug generation and parsing
+- `createLocationSlug(address)` - Converts location addresses to URL-friendly slugs
+- `parseLocationSlug(slug)` - Converts slugs back to search queries
+- `updateLocationUrl(location)` - Updates browser URL without page reload
+- `getCurrentRoute()` - Parses current route and parameters from URL
+- **App.js** - Route handling with popstate events for navigation
+- **WeatherDashboard.jsx** - Syncs location changes with URL updates
+- History state caching for instant back/forward navigation
+- Geocoding fallback for direct URL access without cached state
 
 ### Dashboard Layout
 The main weather dashboard uses a responsive 65/35 split layout with compact spacing, dark theme support, and efficient use of screen space:
