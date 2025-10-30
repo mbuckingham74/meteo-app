@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { LocationProvider } from './contexts/LocationContext';
+import { LocationProvider, useLocation } from './contexts/LocationContext';
 import { TemperatureUnitProvider } from './contexts/TemperatureUnitContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import SkipToContent from './components/common/SkipToContent';
@@ -9,22 +9,74 @@ import AuthHeader from './components/auth/AuthHeader';
 import WeatherDashboard from './components/weather/WeatherDashboard';
 import LocationComparisonView from './components/location/LocationComparisonView';
 import PrivacyPolicy from './components/legal/PrivacyPolicy';
+import { getCurrentRoute, parseLocationSlug } from './utils/urlHelpers';
+import { geocodeLocation } from './services/weatherApi';
 import './styles/themes.css';
 import './App.css';
 
 function AppContent() {
   const [currentView, setCurrentView] = useState('dashboard');
+  const { selectLocation } = useLocation();
+
+  // Handle route-based location loading
+  useEffect(() => {
+    const loadLocationFromUrl = async () => {
+      const route = getCurrentRoute();
+
+      // Handle location route
+      if (route.path === 'location' && route.params.slug) {
+        // If we have cached location state from navigation, use it
+        if (route.state?.location) {
+          selectLocation(route.state.location);
+        } else {
+          // Otherwise, geocode the slug
+          try {
+            const searchQuery = parseLocationSlug(route.params.slug);
+            const results = await geocodeLocation(searchQuery, 1);
+            if (results && results.length > 0) {
+              selectLocation(results[0]);
+            }
+          } catch (error) {
+            console.error('Error loading location from URL:', error);
+          }
+        }
+      }
+    };
+
+    loadLocationFromUrl();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount - selectLocation is stable from context
 
   // Simple client-side routing
   useEffect(() => {
-    const handleNavigation = () => {
-      const path = window.location.pathname;
-      if (path === '/compare') {
+    const handleNavigation = async () => {
+      const route = getCurrentRoute();
+
+      // Update view based on route
+      if (route.path === 'compare') {
         setCurrentView('compare');
-      } else if (path === '/privacy') {
+      } else if (route.path === 'privacy') {
         setCurrentView('privacy');
       } else {
+        // Both dashboard and location routes show the dashboard
         setCurrentView('dashboard');
+      }
+
+      // Load location if navigating to a location route via back/forward
+      if (route.path === 'location' && route.params.slug) {
+        if (route.state?.location) {
+          selectLocation(route.state.location);
+        } else {
+          try {
+            const searchQuery = parseLocationSlug(route.params.slug);
+            const results = await geocodeLocation(searchQuery, 1);
+            if (results && results.length > 0) {
+              selectLocation(results[0]);
+            }
+          } catch (error) {
+            console.error('Error loading location from URL:', error);
+          }
+        }
       }
     };
 
@@ -32,7 +84,7 @@ function AppContent() {
     window.addEventListener('popstate', handleNavigation);
 
     return () => window.removeEventListener('popstate', handleNavigation);
-  }, []);
+  }, [selectLocation]);
 
   // Handle link clicks
   useEffect(() => {
@@ -42,13 +94,8 @@ function AppContent() {
         const url = new URL(e.target.href);
         window.history.pushState({}, '', url.pathname);
 
-        if (url.pathname === '/compare') {
-          setCurrentView('compare');
-        } else if (url.pathname === '/privacy') {
-          setCurrentView('privacy');
-        } else {
-          setCurrentView('dashboard');
-        }
+        // Trigger popstate event to handle navigation consistently
+        window.dispatchEvent(new PopStateEvent('popstate', { state: {} }));
       }
     };
 

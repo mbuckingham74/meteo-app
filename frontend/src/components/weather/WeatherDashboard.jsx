@@ -10,6 +10,7 @@ import {
 } from '../../hooks/useClimateData';
 import { getCurrentLocation } from '../../services/geolocationService';
 import { celsiusToFahrenheit } from '../../utils/weatherHelpers';
+import { updateLocationUrl } from '../../utils/urlHelpers';
 import useKeyboardShortcuts, { useScreenReaderAnnouncement } from '../../hooks/useKeyboardShortcuts';
 import TemperatureBandChart from '../charts/TemperatureBandChart';
 import PrecipitationChart from '../charts/PrecipitationChart';
@@ -101,6 +102,13 @@ function WeatherDashboard() {
       announce(`Location changed to ${locationData.address}`);
     }
   }, [locationData?.address, announce]);
+
+  // Sync location with URL
+  useEffect(() => {
+    if (locationData?.address) {
+      updateLocationUrl(locationData, true); // Use replace to avoid cluttering history
+    }
+  }, [locationData]);
 
   // Get date ranges for records and probability
   const today = new Date();
