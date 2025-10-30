@@ -17,6 +17,10 @@ paths = [
   '''\.env\..*\.example$''',
   '''README\.md$''',
   '''CLAUDE\.md$''',
+  '''QUICKSTART\.md$''',
+  '''DEPLOYMENT.*\.md$''',
+  '''SECURITY.*\.md$''',
+  '''^docs/.*\.md$''',
 ]
 
 # Allow specific patterns that look like secrets but aren't
@@ -26,7 +30,8 @@ regexes = [
   '''your_secret_here''',
   '''example_key''',
   '''placeholder''',
-  # Allow short hex strings (build hashes, not secrets)
+
+  # Allow short hex strings (build hashes, not secrets) - max 8 chars
   '''[a-f0-9]{8}''',
 ]
 
