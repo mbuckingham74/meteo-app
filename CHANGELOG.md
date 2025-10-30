@@ -5,9 +5,23 @@ All notable changes to the Meteo Weather App project will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+**Versioning Scheme:**
+- **0.x.x** - Initial development phase (current)
+- **0.MINOR.0** - New features and major improvements (0.1.0 → 0.2.0 → 0.3.0)
+- **0.MINOR.PATCH** - Bug fixes and minor updates (0.2.0 → 0.2.1 → 0.2.2)
+- **1.0.0** - First stable production release (when ready)
+
 ---
 
 ## [Unreleased]
+
+*No unreleased changes yet. Stay tuned for the next update!*
+
+---
+
+## [0.2.0] - 2025-10-29
+
+**Release Highlights:** Enterprise-grade security infrastructure, PWA support, accessibility improvements, and enhanced UX features.
 
 ### Security
 - **Enterprise-Grade Security Infrastructure** - Achieved 9.4/10 security score
@@ -161,7 +175,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.1.0] - Initial Beta Release
+## [0.1.0] - 2025-10-24
+
+**Release Name:** Initial Beta Release
 
 ### Core Features
 - **Weather Dashboard**
