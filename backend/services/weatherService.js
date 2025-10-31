@@ -109,7 +109,7 @@ async function makeApiRequest(url, retries = 2, delay = 1000) {
 
       // Handle rate limiting with exponential backoff
       if (statusCode === 429 && retries > 0) {
-        console.log(`⏳ Rate limit hit, retrying in ${delay}ms... (${retries} retries left)`);
+        // console.log(`⏳ Rate limit hit, retrying in ${delay}ms... (${retries} retries left)`); // Disabled: reduce log volume
         await new Promise(resolve => setTimeout(resolve, delay));
         return makeApiRequest(url, retries - 1, delay * 2); // Exponential backoff
       }

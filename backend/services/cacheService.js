@@ -168,14 +168,14 @@ async function withCache(apiSource, params, apiFunction, ttlMinutes = 60, locati
   // Try to get from cache first
   const cached = await getCachedResponse(cacheKey);
   if (cached) {
-    console.log(`✓ Cache hit for ${apiSource}:`, params);
+    // console.log(`✓ Cache hit for ${apiSource}:`, params); // Disabled: causes 69 GB/day logs
     return {
       ...cached,
       fromCache: true
     };
   }
 
-  console.log(`✗ Cache miss for ${apiSource}:`, params);
+  // console.log(`✗ Cache miss for ${apiSource}:`, params); // Disabled: causes 69 GB/day logs
 
   // Make API call
   const response = await apiFunction();
@@ -201,9 +201,10 @@ async function withCache(apiSource, params, apiFunction, ttlMinutes = 60, locati
 // Schedule automatic cleanup of expired cache entries every hour
 setInterval(() => {
   clearExpiredCache().then(count => {
-    if (count > 0) {
-      console.log(`🧹 Auto cleanup: Removed ${count} expired cache entries`);
-    }
+    // Only log if significant cleanup occurred (disabled to reduce log volume)
+    // if (count > 0) {
+    //   console.log(`🧹 Auto cleanup: Removed ${count} expired cache entries`);
+    // }
   });
 }, 60 * 60 * 1000); // 1 hour
 

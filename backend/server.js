@@ -25,15 +25,15 @@ const corsOptions = process.env.NODE_ENV === 'production'
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Request logging middleware
-app.use((req, res, next) => {
-  const start = Date.now();
-  res.on('finish', () => {
-    const duration = Date.now() - start;
-    console.log(`${req.method} ${req.path} ${res.statusCode} - ${duration}ms`);
-  });
-  next();
-});
+// Request logging middleware (disabled in production to prevent 69 GB/day logs)
+// app.use((req, res, next) => {
+//   const start = Date.now();
+//   res.on('finish', () => {
+//     const duration = Date.now() - start;
+//     console.log(`${req.method} ${req.path} ${res.statusCode} - ${duration}ms`);
+//   });
+//   next();
+// });
 
 // Health check route
 app.get('/api/health', async (req, res) => {
