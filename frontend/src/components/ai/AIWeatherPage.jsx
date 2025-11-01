@@ -15,6 +15,7 @@ function AIWeatherPage() {
   const [answer, setAnswer] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [autoSubmitted, setAutoSubmitted] = useState(false);
 
   // Read question from URL parameter on mount
   React.useEffect(() => {
@@ -27,7 +28,7 @@ function AIWeatherPage() {
     }
   }, []);
 
-  const handleAskQuestion = async () => {
+  const handleAskQuestion = React.useCallback(async () => {
     if (!question.trim()) {
       setError('Please enter a question');
       return;
@@ -84,7 +85,15 @@ function AIWeatherPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [question, location]);
+
+  // Auto-submit when question is pre-filled from URL and location is available
+  React.useEffect(() => {
+    if (question && location && !autoSubmitted && !loading) {
+      setAutoSubmitted(true);
+      handleAskQuestion();
+    }
+  }, [question, location, autoSubmitted, loading, handleAskQuestion]);
 
   const exampleQuestions = [
     "Will it rain this weekend?",
