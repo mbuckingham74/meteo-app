@@ -137,7 +137,9 @@ function AIWeatherPage() {
         notLoading: !loading
       });
     }
-  }, [question, location, autoSubmitted, loading, handleAskQuestion]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question, location, autoSubmitted, loading]);
+  // Note: handleAskQuestion is intentionally omitted from dependencies to avoid circular updates
 
   const exampleQuestions = [
     "Will it rain this weekend?",
