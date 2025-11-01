@@ -239,6 +239,35 @@
   color: white;
 }
 
+/* Visualizations Section */
+.visualizations-section {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 2px solid var(--border-light, #e5e7eb);
+}
+
+.visualizations-section h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 24px 0;
+}
+
+.visualization-container {
+  margin-bottom: 32px;
+}
+
+.viz-header {
+  margin-bottom: 16px;
+}
+
+.viz-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  margin: 0;
+}
+
 /* Dark mode support */
 [data-theme="dark"] .ai-page-header h1 {
   color: var(--text-primary, #f9fafb);
@@ -249,6 +278,10 @@
 [data-theme="dark"] .example-button {
   background: var(--bg-elevated, #1f2937);
   color: var(--text-primary, #f9fafb);
+}
+
+[data-theme="dark"] .visualizations-section {
+  border-top-color: var(--border-color, #374151);
 }
 
 /* Responsive */

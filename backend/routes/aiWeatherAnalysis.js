@@ -70,8 +70,14 @@ router.post('/analyze', async (req, res) => {
       weatherData: {
         location: weatherData.location.address,
         currentConditions: weatherData.current.conditions,
-        temperature: weatherData.current.temperature
+        temperature: weatherData.current.temperature,
+        // Add coordinates for map centering
+        coordinates: {
+          lat: weatherData.location.latitude,
+          lon: weatherData.location.longitude
+        }
       },
+      suggestedVisualizations: analysis.suggestedVisualizations || [], // NEW: Include visualization suggestions
       tokensUsed: analysis.tokensUsed,
       model: analysis.model,
       timestamp: new Date().toISOString()

@@ -439,10 +439,100 @@ async function getHistoricalWeather(location, startDate, endDate) {
   };
 }
 
+/**
+ * Get historical weather data for a specific date (MM-DD) across multiple years
+ * Example: Get weather for November 1st over the last 25 years
+ *
+ * @param {string} location - City name or coordinates
+ * @param {string} date - Date in MM-DD format (e.g., "11-01")
+ * @param {number} years - Number of years to retrieve (default: 25)
+ * @returns {Promise<Object>} Historical weather data with statistics
+ */
+async function getHistoricalDateData(location, date, years = 25) {
+  const cacheKey = `historical-date:${location}:${date}:${years}`;
+
+  return withCache(cacheKey, async () => {
+    const [month, day] = date.split('-');
+    const currentYear = new Date().getFullYear();
+    const historicalData = [];
+
+    console.log(`📅 Fetching ${years} years of historical data for ${date} in ${location}...`);
+
+    // Fetch data for each year in parallel (in batches to respect rate limits)
+    const BATCH_SIZE = 3; // Match MAX_CONCURRENT_REQUESTS
+
+    for (let i = 0; i < years; i += BATCH_SIZE) {
+      const batch = [];
+
+      for (let j = 0; j < BATCH_SIZE && (i + j) < years; j++) {
+        const year = currentYear - i - j - 1; // Start from last year
+        const fullDate = `${year}-${month}-${day}`;
+
+        batch.push(
+          (async () => {
+            try {
+              const url = buildApiUrl(location, fullDate, fullDate, {
+                include: 'days',
+                elements: 'datetime,tempmax,tempmin,temp,precip,precipprob,snow,conditions,description,icon'
+              });
+
+              const data = await makeApiRequest(url);
+
+              if (data.days && data.days.length > 0) {
+                return {
+                  year,
+                  date: fullDate,
+                  ...data.days[0]
+                };
+              }
+              return null;
+            } catch (error) {
+              console.error(`⚠️  Failed to fetch data for ${fullDate}:`, error.message);
+              return null;
+            }
+          })()
+        );
+      }
+
+      const batchResults = await Promise.all(batch);
+      historicalData.push(...batchResults.filter(d => d !== null));
+
+      // Small delay between batches
+      if (i + BATCH_SIZE < years) {
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+    }
+
+    console.log(`✅ Retrieved ${historicalData.length}/${years} years of data`);
+
+    // Calculate statistics
+    const precipData = historicalData.map(d => d.precip || 0);
+    const avgPrecip = precipData.reduce((sum, val) => sum + val, 0) / precipData.length;
+    const maxPrecip = Math.max(...precipData);
+    const minPrecip = Math.min(...precipData);
+
+    return {
+      location,
+      date,
+      years: historicalData.length,
+      requestedYears: years,
+      data: historicalData.sort((a, b) => b.year - a.year), // Most recent first
+      statistics: {
+        averagePrecipitation: avgPrecip,
+        maxPrecipitation: maxPrecip,
+        minPrecipitation: minPrecip,
+        rainyDays: precipData.filter(p => p > 0.1).length, // Days with > 0.1mm rain
+        rainyDayPercentage: (precipData.filter(p => p > 0.1).length / precipData.length * 100).toFixed(1)
+      }
+    };
+  }, CACHE_TTL.HISTORICAL); // 7 days cache
+}
+
 module.exports = {
   testApiConnection,
   getCurrentWeather,
   getForecast,
   getHourlyForecast,
-  getHistoricalWeather
+  getHistoricalWeather,
+  getHistoricalDateData
 };

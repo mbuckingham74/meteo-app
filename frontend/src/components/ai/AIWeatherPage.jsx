@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from '../../contexts/LocationContext';
+import RadarMap from '../weather/RadarMap';
+import HistoricalRainTable from '../weather/HistoricalRainTable';
 import './AIWeatherPage.css';
 
 // Use environment variable for API URL, fallback to localhost for development
@@ -211,6 +213,33 @@ function AIWeatherPage() {
             <strong>Location:</strong> {answer.weatherData.location} <br />
             <strong>Current Conditions:</strong> {answer.weatherData.currentConditions}, {answer.weatherData.temperature}°C
           </div>
+
+          {/* Render Suggested Visualizations */}
+          {answer.suggestedVisualizations && answer.suggestedVisualizations.length > 0 && (
+            <div className="visualizations-section">
+              <h3>📊 Interactive Visualizations</h3>
+              {answer.suggestedVisualizations.map((viz, index) => (
+                <div key={index} className="visualization-container">
+                  <div className="viz-header">
+                    <h4>{viz.reason}</h4>
+                  </div>
+                  {viz.type === 'radar' && answer.weatherData.coordinates && (
+                    <RadarMap
+                      center={[answer.weatherData.coordinates.lat, answer.weatherData.coordinates.lon]}
+                      zoom={8}
+                    />
+                  )}
+                  {viz.type === 'historical-precipitation' && viz.params && (
+                    <HistoricalRainTable
+                      location={location}
+                      date={viz.params.date}
+                      years={viz.params.years}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

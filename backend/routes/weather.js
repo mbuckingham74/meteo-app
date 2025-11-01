@@ -450,4 +450,51 @@ router.get('/climate/probability/:location', async (req, res) => {
   }
 });
 
+/**
+ * Get historical weather for specific date across multiple years
+ * GET /api/weather/historical-date
+ * Query params: location, date (MM-DD), years (default 25)
+ *
+ * Example: /api/weather/historical-date?location=Seattle,WA&date=11-01&years=25
+ * Returns: Last 25 years of weather data for November 1st
+ */
+router.get('/historical-date', async (req, res) => {
+  try {
+    const { location, date, years = 25 } = req.query;
+
+    if (!location || !date) {
+      return res.status(400).json({
+        success: false,
+        error: 'Location and date (MM-DD) are required'
+      });
+    }
+
+    // Validate date format (MM-DD)
+    const dateRegex = /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
+    if (!dateRegex.test(date)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Date must be in MM-DD format (e.g., 11-01)'
+      });
+    }
+
+    const historicalData = await weatherService.getHistoricalDateData(
+      location,
+      date,
+      parseInt(years)
+    );
+
+    res.json({
+      success: true,
+      data: historicalData
+    });
+  } catch (error) {
+    console.error('Error fetching historical date data:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;
