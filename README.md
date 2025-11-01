@@ -210,11 +210,12 @@ Traditional weather apps make you search for cities, then click through menus to
 - **Auto-Submit** - Questions from Universal Search Bar submit automatically without requiring Enter twice
 - **Smart Timeout Handling** - 30-second overall timeout with granular 10s validation + 20s analysis limits
 - **Two-Step Validation** - Quick spam check (~$0.001) before full AI analysis (~$0.005)
-- **Context-Aware Visualizations** - AI automatically detects query intent and displays relevant components:
-  - "Will it rain today?" → Shows live radar map + 25-year historical precipitation table
-  - Temperature queries → Temperature trend charts
-  - Wind queries → Wind speed/direction visualizations
-  - Forecast queries → 48-hour detailed charts
+- **Context-Aware Visualizations** - AI automatically detects query intent and displays fully interactive charts:
+  - **Rain queries** ("Will it rain today?") → Live RainViewer radar map + 25-year historical precipitation table with statistics
+  - **Temperature queries** ("What's the temperature trend?") → Color-coded temperature band chart with high/low ranges
+  - **Wind queries** ("How windy will it be?") → Wind speed and direction chart with compass indicators
+  - **Forecast queries** ("What's the 48-hour forecast?") → Interactive hourly chart with clickable metric views (temp, precip, wind)
+  - All charts respect user's temperature unit preference (°C/°F)
 - **Historical Precipitation Analysis** - When asking about rain "today", see 25 years of rainfall data for the current date with statistics (average, rainy day %, wettest year)
 - **Confidence Indicators** - Shows High/Medium/Low confidence with answer
 - **Token Transparency** - Displays exact token usage and cost per query
