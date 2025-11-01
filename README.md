@@ -193,7 +193,7 @@ This application requires API keys from the following services to function. Some
 
 ## ✨ Features
 
-### 🔍 Universal Smart Search Bar
+### 🔍 Universal Smart Search Bar + AI Weather Assistant
 
 **A New Way to Check Weather** - The app features a revolutionary AI-first interface where natural language queries are the PRIMARY experience, not a hidden feature.
 
@@ -202,9 +202,18 @@ Traditional weather apps make you search for cities, then click through menus to
 
 **How It Works:**
 - Type **"Seattle"** → Instant location change via geocoding (< 1 second, free)
-- Type **"Will it rain this weekend in Seattle?"** → AI extracts location + time + metric → Focused forecast
+- Type **"Will it rain this weekend in Seattle?"** → Navigates to AI Weather page with auto-submit → Instant answer
 - Type **"I live in Florida June-November and it's miserable - where should I move?"** → AI suggests alternatives with data
 - Smart detection automatically routes queries based on complexity
+
+**AI Weather Assistant Features:**
+- **Auto-Submit** - Questions from Universal Search Bar submit automatically without requiring Enter twice
+- **Smart Timeout Handling** - 30-second overall timeout with granular 10s validation + 20s analysis limits
+- **Two-Step Validation** - Quick spam check (~$0.001) before full AI analysis (~$0.005)
+- **Confidence Indicators** - Shows High/Medium/Low confidence with answer
+- **Token Transparency** - Displays exact token usage and cost per query
+- **Error Recovery** - Clear, actionable error messages with timeout protection
+- **Weather Context** - Displays current conditions and location with AI answer
 
 **User Interface:**
 - **Centered Hero Section** - Search bar is the FIRST thing you see, spanning full width
@@ -1067,6 +1076,52 @@ POST /api/ai-location-finder/parse-query
 
 ---
 
+### AI Weather Analysis
+
+#### Validate Weather Query
+```
+POST /api/ai-weather/validate
+```
+- **Body**: `{ query: "Will it rain today?", location: "Seattle, WA" }`
+- **Returns**: `{ isValid: true/false, reason: "...", tokensUsed: 275 }`
+- **Cost**: ~$0.001 per query (~200-300 tokens)
+- **Purpose**: Quick validation to ensure query is weather-related before expensive analysis
+- **Timeout**: 10 seconds with AbortController
+
+#### Analyze Weather Question
+```
+POST /api/ai-weather/analyze
+```
+- **Body**: `{ query: "Will it rain this weekend?", location: "Seattle, WA", days: 7 }`
+- **Returns**:
+  ```json
+  {
+    "answer": "Based on the forecast...",
+    "confidence": "high",
+    "tokensUsed": 825,
+    "weatherData": {
+      "location": "Seattle, WA",
+      "currentConditions": "Partly cloudy",
+      "temperature": 18.5
+    }
+  }
+  ```
+- **Cost**: ~$0.005-0.01 per query (~500-1000 tokens)
+- **Purpose**: Full AI analysis of weather question with context from Visual Crossing API
+- **Model**: Claude Sonnet 4.5
+- **Timeout**: 20 seconds with AbortController
+- **Overall Timeout**: 30 seconds for complete request
+
+**Features:**
+- Two-step validation prevents spam and abuse
+- AbortController for proper timeout handling
+- Weather data fetched from Visual Crossing API before AI analysis
+- Confidence scoring (high/medium/low)
+- Token usage tracking for cost transparency
+- Comprehensive error messages
+
+---
+
 ### Air Quality
 
 #### Get Air Quality Data
@@ -1124,9 +1179,9 @@ meteo-app/
 │   │   │   ├── units/               # NEW: Unit preference components
 │   │   │   │   └── TemperatureUnitToggle.jsx    # NEW: C/F toggle
 │   │   │   ├── ai/                  # AI-powered features
-│   │   │   │   ├── UniversalSearchBar.jsx       # NEW: Smart search (locations + AI)
+│   │   │   │   ├── UniversalSearchBar.jsx       # Smart search (locations + AI)
 │   │   │   │   ├── UniversalSearchBar.css       # Styling for universal search
-│   │   │   │   ├── AIWeatherPage.jsx            # Full-page AI weather assistant
+│   │   │   │   ├── AIWeatherPage.jsx            # Full-page AI weather assistant with auto-submit
 │   │   │   │   └── AIWeatherPage.css            # AI page styling
 │   │   │   ├── location/            # Location management
 │   │   │   │   ├── FavoritesPanel.jsx
@@ -1163,15 +1218,17 @@ meteo-app/
 ├── backend/
 │   ├── routes/
 │   │   ├── weather.js               # Weather API endpoints
-│   │   ├── airQuality.js            # NEW: Air quality API endpoints
-│   │   ├── aiLocationFinder.js      # NEW: AI-powered location finder endpoints
+│   │   ├── airQuality.js            # Air quality API endpoints
+│   │   ├── aiLocationFinder.js      # AI-powered location finder endpoints
+│   │   ├── aiWeatherAnalysis.js     # AI weather question analysis endpoints
 │   │   ├── locations.js             # Location API endpoints
 │   │   ├── auth.js                  # Authentication endpoints
 │   │   └── user.js                  # User preferences & favorites
 │   ├── services/
 │   │   ├── weatherService.js        # Weather data fetching (includes alerts)
-│   │   ├── airQualityService.js     # NEW: Air quality data from Open-Meteo
-│   │   ├── aiLocationFinderService.js # NEW: Claude AI integration for NLP
+│   │   ├── airQualityService.js     # Air quality data from Open-Meteo
+│   │   ├── aiLocationFinderService.js # Claude AI integration for NLP (climate search)
+│   │   ├── aiWeatherAnalysisService.js # Claude AI for weather Q&A with timeout handling
 │   │   ├── climateService.js        # Historical climate analysis
 │   │   ├── geocodingService.js      # Location search
 │   │   ├── authService.js           # Authentication logic
@@ -1395,7 +1452,18 @@ MIT License - feel free to use this project for learning and development.
 - [x] Request throttling and exponential backoff retry
 - [x] Graceful API rate limit handling
 
-**Recent Enhancements (2025)**
+**Recent Enhancements (November 2025)**
+- [x] **AI Weather Assistant** - Full conversational weather Q&A interface
+  - Auto-submit from Universal Search Bar (no double-Enter required)
+  - Smart timeout handling (30s overall, 10s validation, 20s analysis)
+  - Two-step validation system with cost transparency
+  - Confidence indicators and token usage display
+  - Comprehensive error recovery with actionable messages
+  - Circular dependency prevention in React hooks
+  - Environment-aware API URLs for production deployment
+  - AbortController for proper fetch cancellation
+
+**Recent Enhancements (October 2025)**
 - [x] **Interactive radar map with real historical precipitation data** (RainViewer API)
   - Real past 2 hours + 30 min forecast data
   - Time selector for frame navigation
