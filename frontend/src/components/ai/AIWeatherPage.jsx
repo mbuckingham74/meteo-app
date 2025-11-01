@@ -15,10 +15,18 @@ function AIWeatherPage() {
 
   // Read question from URL parameter on mount
   React.useEffect(() => {
+    console.log('[AIWeatherPage] Full URL:', window.location.href);
+    console.log('[AIWeatherPage] Search params:', window.location.search);
+
     const urlParams = new URLSearchParams(window.location.search);
     const questionParam = urlParams.get('q');
+
+    console.log('[AIWeatherPage] Question from URL:', questionParam);
+
     if (questionParam) {
-      setQuestion(decodeURIComponent(questionParam));
+      // URLSearchParams.get() already decodes the value
+      setQuestion(questionParam);
+      console.log('[AIWeatherPage] Question set to:', questionParam);
     }
   }, []);
 
