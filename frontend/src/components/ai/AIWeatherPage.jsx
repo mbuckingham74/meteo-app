@@ -89,8 +89,9 @@ function AIWeatherPage() {
 
   // Auto-submit when question is pre-filled from URL and location is available
   React.useEffect(() => {
-    console.log('[Auto-submit check]', { question, location: location?.address, autoSubmitted, loading });
-    if (question && location && !autoSubmitted && !loading) {
+    console.log('[Auto-submit check]', { question, location, autoSubmitted, loading });
+    // Check that location is actually a non-empty string
+    if (question && location && typeof location === 'string' && location.trim() && !autoSubmitted && !loading) {
       console.log('[Auto-submit] Submitting question automatically...');
       setAutoSubmitted(true);
       handleAskQuestion();
