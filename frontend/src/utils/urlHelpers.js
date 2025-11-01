@@ -129,3 +129,15 @@ export const navigateToPrivacy = () => {
   window.history.pushState({}, '', '/privacy');
   window.dispatchEvent(new PopStateEvent('popstate'));
 };
+
+/**
+ * Navigate to AI weather page
+ * @param {string} question - Optional pre-filled question
+ */
+export const navigateToAIWeather = (question = null) => {
+  const url = question
+    ? `/ai-weather?q=${encodeURIComponent(question)}`
+    : '/ai-weather';
+  window.history.pushState({}, '', url);
+  window.dispatchEvent(new PopStateEvent('popstate'));
+};

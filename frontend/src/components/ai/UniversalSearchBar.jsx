@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from '../../contexts/LocationContext';
 import { geocodeLocation } from '../../services/weatherApi';
+import { navigateToAIWeather } from '../../utils/urlHelpers';
 import './UniversalSearchBar.css';
 
 /**
@@ -72,9 +73,8 @@ function UniversalSearchBar() {
    * Handle complex AI query (intelligent analysis)
    */
   const handleAIQuery = (question) => {
-    // Navigate to AI page with question
-    const questionParam = encodeURIComponent(question);
-    window.location.href = `/ai-weather?q=${questionParam}`;
+    // Navigate to AI page with question using client-side routing
+    navigateToAIWeather(question);
   };
 
   /**
