@@ -12,6 +12,9 @@ frontend/.env
 .env.secrets
 .env.production
 
+# Private developer documentation (contains deployment credentials and internal details)
+.DEVELOPER_ONBOARDING.md
+
 # Build outputs
 frontend/build/
 dist/
