@@ -13,6 +13,15 @@ function AIWeatherPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Read question from URL parameter on mount
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const questionParam = urlParams.get('q');
+    if (questionParam) {
+      setQuestion(decodeURIComponent(questionParam));
+    }
+  }, []);
+
   const handleAskQuestion = async () => {
     if (!question.trim()) {
       setError('Please enter a question');
