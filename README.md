@@ -216,6 +216,10 @@ Traditional weather apps make you search for cities, then click through menus to
   - **Wind queries** ("How windy will it be?") → Wind speed and direction chart with compass indicators
   - **Forecast queries** ("What's the 48-hour forecast?") → Interactive hourly chart with clickable metric views (temp, precip, wind)
   - All charts respect user's temperature unit preference (°C/°F)
+- **Smart Follow-Up Questions** - After each answer, see 2-3 contextual follow-up questions that encourage exploration:
+  - "Will it rain today?" → "How does today compare to historical averages?", "What's the hourly rain forecast?"
+  - Click any follow-up to instantly get a new AI answer with relevant visualizations
+  - Zero API cost (generated server-side) with instant submission
 - **Historical Precipitation Analysis** - When asking about rain "today", see 25 years of rainfall data for the current date with statistics (average, rainy day %, wettest year)
 - **Confidence Indicators** - Shows High/Medium/Low confidence with answer
 - **Token Transparency** - Displays exact token usage and cost per query
