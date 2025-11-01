@@ -75,7 +75,10 @@ router.post('/analyze', async (req, res) => {
         coordinates: {
           lat: weatherData.location.latitude,
           lon: weatherData.location.longitude
-        }
+        },
+        // Add full forecast and hourly data for chart rendering
+        forecast: weatherData.forecast, // Array of daily forecast objects
+        hourly: forecast.hourly || [] // Array of hourly forecast objects (if available)
       },
       suggestedVisualizations: analysis.suggestedVisualizations || [], // NEW: Include visualization suggestions
       tokensUsed: analysis.tokensUsed,

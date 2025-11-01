@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useLocation } from '../../contexts/LocationContext';
+import { useTemperatureUnit } from '../../contexts/TemperatureUnitContext';
 import RadarMap from '../weather/RadarMap';
 import HistoricalRainTable from '../weather/HistoricalRainTable';
+import TemperatureBandChart from '../charts/TemperatureBandChart';
+import WindChart from '../charts/WindChart';
+import HourlyForecastChart from '../charts/HourlyForecastChart';
 import './AIWeatherPage.css';
 
 // Use environment variable for API URL, fallback to localhost for development
@@ -13,6 +17,7 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api
  */
 function AIWeatherPage() {
   const { location } = useLocation();
+  const { unit } = useTemperatureUnit();
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -144,11 +149,11 @@ function AIWeatherPage() {
   // Note: handleAskQuestion is intentionally omitted from dependencies to avoid circular updates
 
   const exampleQuestions = [
-    "Will it rain this weekend?",
-    "What's the warmest day this week?",
-    "Should I bring an umbrella tomorrow?",
-    "When is the best day for outdoor activities?",
-    "Will it be sunny on Friday?"
+    "Will it rain today?", // Triggers radar + historical table
+    "What's the temperature trend this week?", // Triggers temperature chart
+    "How windy will it be tomorrow?", // Triggers wind chart
+    "What's the 48-hour forecast?", // Triggers hourly chart
+    "Should I bring an umbrella this weekend?" // Triggers radar
   ];
 
   return (
@@ -234,6 +239,26 @@ function AIWeatherPage() {
                       location={location}
                       date={viz.params.date}
                       years={viz.params.years}
+                    />
+                  )}
+                  {viz.type === 'chart-temperature' && answer.weatherData.forecast && (
+                    <TemperatureBandChart
+                      data={answer.weatherData.forecast}
+                      unit={unit}
+                      height={400}
+                    />
+                  )}
+                  {viz.type === 'chart-wind' && answer.weatherData.forecast && (
+                    <WindChart
+                      data={answer.weatherData.forecast}
+                      height={350}
+                    />
+                  )}
+                  {viz.type === 'chart-hourly' && answer.weatherData.hourly && (
+                    <HourlyForecastChart
+                      hourlyData={answer.weatherData.hourly}
+                      unit={unit}
+                      height={400}
                     />
                   )}
                 </div>
