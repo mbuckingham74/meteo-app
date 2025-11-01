@@ -85,6 +85,63 @@ function detectVisualizationIntent(query, weatherData) {
 }
 
 /**
+ * Generate contextual follow-up questions based on the original query
+ * Encourages exploration and showcases different features
+ * @param {string} query - Original user query
+ * @param {Array} visualizations - Suggested visualizations from intent detection
+ * @param {Object} weatherData - Weather context
+ * @returns {Array} Array of follow-up question strings
+ */
+function generateFollowUpQuestions(query, visualizations, weatherData) {
+  const followUps = [];
+  const queryLower = query.toLowerCase();
+
+  // Rain/Precipitation follow-ups
+  if (/\b(rain|rainy|precipitation|umbrella)\b/i.test(query)) {
+    if (/\b(today|tonight)\b/i.test(query)) {
+      followUps.push("How does today compare to historical averages?");
+      followUps.push("What's the hourly rain forecast?");
+      followUps.push("Is this typical for this time of year?");
+    } else if (/\b(weekend|week)\b/i.test(query)) {
+      followUps.push("Will it rain today?");
+      followUps.push("What's the total rainfall expected this week?");
+      followUps.push("Which day will be the driest?");
+    }
+  }
+
+  // Temperature follow-ups
+  if (/\b(temperature|temp|hot|cold|warm|cool)\b/i.test(query)) {
+    followUps.push("How windy will it be?");
+    followUps.push("What's the UV index forecast?");
+    followUps.push("Will it rain this week?");
+  }
+
+  // Wind follow-ups
+  if (/\b(wind|windy|gust)\b/i.test(query)) {
+    followUps.push("What's the temperature trend?");
+    followUps.push("Is it a good day for outdoor activities?");
+    followUps.push("How humid will it be?");
+  }
+
+  // Forecast/Planning follow-ups
+  if (/\b(forecast|outlook|week|weekend)\b/i.test(query)) {
+    followUps.push("What's the best day for outdoor plans?");
+    followUps.push("Will temperatures stay consistent?");
+    followUps.push("Any chance of storms?");
+  }
+
+  // General follow-ups if nothing specific matched
+  if (followUps.length === 0) {
+    followUps.push("What's the 48-hour forecast?");
+    followUps.push("How does today compare historically?");
+    followUps.push("What's the temperature trend this week?");
+  }
+
+  // Return up to 3 unique follow-ups
+  return [...new Set(followUps)].slice(0, 3);
+}
+
+/**
  * Validate that a user query is a legitimate weather question
  * Quick, low-cost validation before expensive parsing
  *
@@ -181,12 +238,16 @@ ${JSON.stringify(weatherData, null, 2)}`;
 
     const answer = message.content[0].text.trim();
 
+    // Generate contextual follow-up questions
+    const followUpQuestions = generateFollowUpQuestions(query, suggestedVisualizations, weatherData);
+
     return {
       answer,
       confidence: 'high', // Could be enhanced with actual confidence scoring
       tokensUsed: message.usage.input_tokens + message.usage.output_tokens,
       model: MODEL,
-      suggestedVisualizations // NEW: Return visualization suggestions
+      suggestedVisualizations, // Return visualization suggestions
+      followUpQuestions // NEW: Return follow-up questions
     };
   } catch (error) {
     console.error('Error analyzing weather question:', error);

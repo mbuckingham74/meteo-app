@@ -265,6 +265,29 @@ function AIWeatherPage() {
               ))}
             </div>
           )}
+
+          {/* Render Follow-Up Questions */}
+          {answer.followUpQuestions && answer.followUpQuestions.length > 0 && (
+            <div className="followup-section">
+              <h3>💬 You might also want to know:</h3>
+              <div className="followup-chips">
+                {answer.followUpQuestions.map((followUp, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setQuestion(followUp);
+                      setAutoSubmitted(false); // Reset auto-submit flag
+                      handleAskQuestion();
+                    }}
+                    className="followup-chip"
+                    disabled={loading}
+                  >
+                    {followUp}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

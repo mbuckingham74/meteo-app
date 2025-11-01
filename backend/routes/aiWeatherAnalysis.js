@@ -80,7 +80,8 @@ router.post('/analyze', async (req, res) => {
         forecast: weatherData.forecast, // Array of daily forecast objects
         hourly: forecast.hourly || [] // Array of hourly forecast objects (if available)
       },
-      suggestedVisualizations: analysis.suggestedVisualizations || [], // NEW: Include visualization suggestions
+      suggestedVisualizations: analysis.suggestedVisualizations || [], // Include visualization suggestions
+      followUpQuestions: analysis.followUpQuestions || [], // NEW: Include follow-up questions
       tokensUsed: analysis.tokensUsed,
       model: analysis.model,
       timestamp: new Date().toISOString()
