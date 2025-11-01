@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useLocation } from '../../contexts/LocationContext';
 import './AIWeatherPage.css';
 
+// Use environment variable for API URL, fallback to localhost for development
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+
 /**
  * AI Weather Page
  * Standalone page for asking weather questions with AI analysis
@@ -47,7 +50,7 @@ function AIWeatherPage() {
 
     try {
       // Step 1: Validate query
-      const validateResponse = await fetch('http://localhost:5001/api/ai-weather/validate', {
+      const validateResponse = await fetch(`${API_BASE_URL}/ai-weather/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -65,7 +68,7 @@ function AIWeatherPage() {
       }
 
       // Step 2: Get AI analysis
-      const analyzeResponse = await fetch('http://localhost:5001/api/ai-weather/analyze', {
+      const analyzeResponse = await fetch(`${API_BASE_URL}/ai-weather/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
