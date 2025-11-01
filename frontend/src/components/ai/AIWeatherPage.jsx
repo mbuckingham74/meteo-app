@@ -6,6 +6,9 @@ import HistoricalRainTable from '../weather/HistoricalRainTable';
 import TemperatureBandChart from '../charts/TemperatureBandChart';
 import WindChart from '../charts/WindChart';
 import HourlyForecastChart from '../charts/HourlyForecastChart';
+import { ChartSkeleton, TableSkeleton, MapSkeleton } from '../common/Skeleton';
+import AIHistoryDropdown from './AIHistoryDropdown';
+import { addToAIHistory } from '../../utils/aiHistoryStorage';
 import './AIWeatherPage.css';
 
 // Use environment variable for API URL, fallback to localhost for development
@@ -23,14 +26,36 @@ function AIWeatherPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [autoSubmitted, setAutoSubmitted] = useState(false);
+  const [visualizationsLoaded, setVisualizationsLoaded] = useState({});
+  const [shareUrl, setShareUrl] = useState(null);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+
+  // Auto-mark visualizations as loaded after a short delay (simulates loading)
+  React.useEffect(() => {
+    if (answer && answer.suggestedVisualizations) {
+      const timer = setTimeout(() => {
+        const loadedStates = {};
+        answer.suggestedVisualizations.forEach((viz, index) => {
+          loadedStates[`${viz.type}-${index}`] = true;
+        });
+        setVisualizationsLoaded(loadedStates);
+      }, 300); // 300ms delay for smooth skeleton display
+
+      return () => clearTimeout(timer);
+    }
+  }, [answer]);
 
   // Read question from URL parameter on mount
   React.useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const questionParam = urlParams.get('q');
 
+    console.log('[URL param check]', { questionParam });
+
     if (questionParam) {
       // URLSearchParams.get() already decodes the value
+      console.log('[URL param] Setting question:', questionParam);
       setQuestion(questionParam);
     }
   }, []);
@@ -49,6 +74,7 @@ function AIWeatherPage() {
     setLoading(true);
     setError(null);
     setAnswer(null);
+    setVisualizationsLoaded({}); // Reset visualization loading states
 
     // Set up 30-second timeout
     const timeoutId = setTimeout(() => {
@@ -105,6 +131,17 @@ function AIWeatherPage() {
         setError(`Error: ${analysis.error}`);
       } else {
         setAnswer(analysis);
+
+        // Save to history
+        addToAIHistory({
+          question,
+          answer: analysis.answer,
+          location: analysis.weatherData.location,
+          confidence: analysis.confidence,
+          tokensUsed: analysis.tokensUsed,
+          visualizations: analysis.suggestedVisualizations,
+          followUpQuestions: analysis.followUpQuestions
+        });
       }
     } catch (err) {
       clearTimeout(timeoutId);
@@ -121,32 +158,114 @@ function AIWeatherPage() {
 
   // Auto-submit when question is pre-filled from URL and location is available
   React.useEffect(() => {
-    console.log('[Auto-submit check]', {
+    console.log('[Auto-submit check] Current state:', {
       question,
+      questionLength: question?.length,
       location,
       locationType: typeof location,
       locationValue: JSON.stringify(location),
       autoSubmitted,
-      loading
+      loading,
+      urlSearch: window.location.search
     });
+
     // Check that location is actually a non-empty string
-    if (question && location && typeof location === 'string' && location.trim() && !autoSubmitted && !loading) {
-      console.log('[Auto-submit] Submitting question automatically...');
-      setAutoSubmitted(true);
-      handleAskQuestion();
-    } else {
-      console.log('[Auto-submit] NOT submitting:', {
-        hasQuestion: !!question,
-        hasLocation: !!location,
-        isString: typeof location === 'string',
-        hasTrim: location && typeof location === 'string' ? !!location.trim() : false,
-        notAutoSubmitted: !autoSubmitted,
-        notLoading: !loading
-      });
+    const shouldAutoSubmit = question &&
+                            question.trim() &&
+                            location &&
+                            typeof location === 'string' &&
+                            location.trim() &&
+                            !autoSubmitted &&
+                            !loading;
+
+    console.log('[Auto-submit] Should auto-submit?', shouldAutoSubmit, {
+      hasQuestion: !!(question && question.trim()),
+      hasLocation: !!(location && typeof location === 'string' && location.trim()),
+      notAutoSubmitted: !autoSubmitted,
+      notLoading: !loading
+    });
+
+    if (shouldAutoSubmit) {
+      console.log('[Auto-submit] ✓ Will submit question automatically in 200ms...');
+      // Increased delay to ensure everything is ready
+      const timer = setTimeout(() => {
+        console.log('[Auto-submit] ✓✓ Submitting now with question:', question);
+        setAutoSubmitted(true);
+        handleAskQuestion();
+      }, 200);
+
+      return () => {
+        console.log('[Auto-submit] Cleanup: clearing timer');
+        clearTimeout(timer);
+      };
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question, location, autoSubmitted, loading]);
   // Note: handleAskQuestion is intentionally omitted from dependencies to avoid circular updates
+
+  // Handle creating a shareable link
+  const handleShare = React.useCallback(async () => {
+    if (!answer) return;
+
+    setShareLoading(true);
+    try {
+      const shareData = {
+        question,
+        answer: answer.answer,
+        location: answer.weatherData.location,
+        weatherData: answer.weatherData,
+        visualizations: answer.suggestedVisualizations,
+        followUpQuestions: answer.followUpQuestions,
+        confidence: answer.confidence,
+        tokensUsed: answer.tokensUsed,
+        model: answer.model
+      };
+
+      const response = await fetch(`${API_BASE_URL}/share/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(shareData)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        const fullUrl = `${window.location.origin}${result.shareUrl}`;
+        setShareUrl(fullUrl);
+
+        // Copy to clipboard
+        await navigator.clipboard.writeText(fullUrl);
+        setShareCopied(true);
+
+        // Reset copied state after 3 seconds
+        setTimeout(() => setShareCopied(false), 3000);
+      } else {
+        setError(`Failed to create share link: ${result.error}`);
+      }
+    } catch (err) {
+      setError(`Failed to create share link: ${err.message}`);
+    } finally {
+      setShareLoading(false);
+    }
+  }, [answer, question]);
+
+  // Handle selecting a history item - replay the cached answer
+  const handleSelectHistory = React.useCallback((historyItem) => {
+    setQuestion(historyItem.question);
+    setAnswer({
+      answer: historyItem.answer,
+      confidence: historyItem.confidence,
+      tokensUsed: historyItem.tokensUsed,
+      weatherData: {
+        location: historyItem.location,
+        currentConditions: '', // Not cached
+        temperature: '' // Not cached
+      },
+      suggestedVisualizations: historyItem.visualizations || [],
+      followUpQuestions: historyItem.followUpQuestions || []
+    });
+    setAutoSubmitted(false);
+  }, []);
 
   const exampleQuestions = [
     "Will it rain today?", // Triggers radar + historical table
@@ -159,7 +278,10 @@ function AIWeatherPage() {
   return (
     <div className="ai-weather-page">
       <div className="ai-page-header">
-        <h1>🤖 Ask Meteo Weather AI</h1>
+        <div className="ai-header-content">
+          <h1>🤖 Ask Meteo Weather AI</h1>
+          <AIHistoryDropdown onSelectHistory={handleSelectHistory} />
+        </div>
         <p>Get instant answers to your weather questions powered by Claude AI</p>
         {location && (
           <div className="current-location-badge">
@@ -206,9 +328,19 @@ function AIWeatherPage() {
         <div className="ai-answer-section">
           <div className="answer-header">
             <h2>💬 Answer</h2>
-            <div className="answer-meta">
-              <span className="confidence-badge">{answer.confidence} confidence</span>
-              <span className="tokens-used">{answer.tokensUsed} tokens</span>
+            <div className="answer-actions">
+              <div className="answer-meta">
+                <span className="confidence-badge">{answer.confidence} confidence</span>
+                <span className="tokens-used">{answer.tokensUsed} tokens</span>
+              </div>
+              <button
+                onClick={handleShare}
+                className="share-button"
+                disabled={shareLoading}
+                title="Share this answer"
+              >
+                {shareLoading ? '⏳' : shareCopied ? '✓ Copied!' : '🔗 Share'}
+              </button>
             </div>
           </div>
           <div className="answer-text">
@@ -228,38 +360,75 @@ function AIWeatherPage() {
                   <div className="viz-header">
                     <h4>{viz.reason}</h4>
                   </div>
+
+                  {/* Radar Map with skeleton */}
                   {viz.type === 'radar' && answer.weatherData.coordinates && (
-                    <RadarMap
-                      center={[answer.weatherData.coordinates.lat, answer.weatherData.coordinates.lon]}
-                      zoom={8}
-                    />
+                    <>
+                      {!visualizationsLoaded[`radar-${index}`] && <MapSkeleton height={350} />}
+                      <div className={visualizationsLoaded[`radar-${index}`] ? 'fade-in' : 'hidden'}>
+                        <RadarMap
+                          center={[answer.weatherData.coordinates.lat, answer.weatherData.coordinates.lon]}
+                          zoom={8}
+                        />
+                      </div>
+                    </>
                   )}
+
+                  {/* Historical Precipitation Table with skeleton */}
                   {viz.type === 'historical-precipitation' && viz.params && (
-                    <HistoricalRainTable
-                      location={location}
-                      date={viz.params.date}
-                      years={viz.params.years}
-                    />
+                    <>
+                      {!visualizationsLoaded[`historical-precipitation-${index}`] && (
+                        <TableSkeleton rows={10} columns={4} height={500} />
+                      )}
+                      <div className={visualizationsLoaded[`historical-precipitation-${index}`] ? 'fade-in' : 'hidden'}>
+                        <HistoricalRainTable
+                          location={location}
+                          date={viz.params.date}
+                          years={viz.params.years}
+                        />
+                      </div>
+                    </>
                   )}
+
+                  {/* Temperature Chart with skeleton */}
                   {viz.type === 'chart-temperature' && answer.weatherData.forecast && (
-                    <TemperatureBandChart
-                      data={answer.weatherData.forecast}
-                      unit={unit}
-                      height={400}
-                    />
+                    <>
+                      {!visualizationsLoaded[`chart-temperature-${index}`] && <ChartSkeleton height={400} />}
+                      <div className={visualizationsLoaded[`chart-temperature-${index}`] ? 'fade-in' : 'hidden'}>
+                        <TemperatureBandChart
+                          data={answer.weatherData.forecast}
+                          unit={unit}
+                          height={400}
+                        />
+                      </div>
+                    </>
                   )}
+
+                  {/* Wind Chart with skeleton */}
                   {viz.type === 'chart-wind' && answer.weatherData.forecast && (
-                    <WindChart
-                      data={answer.weatherData.forecast}
-                      height={350}
-                    />
+                    <>
+                      {!visualizationsLoaded[`chart-wind-${index}`] && <ChartSkeleton height={350} />}
+                      <div className={visualizationsLoaded[`chart-wind-${index}`] ? 'fade-in' : 'hidden'}>
+                        <WindChart
+                          data={answer.weatherData.forecast}
+                          height={350}
+                        />
+                      </div>
+                    </>
                   )}
+
+                  {/* Hourly Forecast Chart with skeleton */}
                   {viz.type === 'chart-hourly' && answer.weatherData.hourly && (
-                    <HourlyForecastChart
-                      hourlyData={answer.weatherData.hourly}
-                      unit={unit}
-                      height={400}
-                    />
+                    <>
+                      {!visualizationsLoaded[`chart-hourly-${index}`] && <ChartSkeleton height={400} />}
+                      <div className={visualizationsLoaded[`chart-hourly-${index}`] ? 'fade-in' : 'hidden'}>
+                        <HourlyForecastChart
+                          hourlyData={answer.weatherData.hourly}
+                          unit={unit}
+                          height={400}
+                        />
+                      </div>
+                    </>
                   )}
                 </div>
               ))}

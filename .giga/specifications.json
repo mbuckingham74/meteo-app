@@ -1,0 +1,22 @@
+[
+  {
+    "fileName": "main-overview.mdc",
+    "description": "Complete system overview covering the weather application architecture, component organization, and interaction between frontend and backend systems"
+  },
+  {
+    "fileName": "weather-algorithms.mdc",
+    "description": "Detailed documentation of core weather-related algorithms including climate analysis, temperature probability distributions, historical comparisons, and radar data processing"
+  },
+  {
+    "fileName": "ai-services.mdc",
+    "description": "Documentation of AI-powered features including location finder service, weather analysis system, and natural language processing implementations"
+  },
+  {
+    "fileName": "data-flow.mdc",
+    "description": "Comprehensive documentation of data flow between components, including weather data aggregation, caching strategies, and state management patterns"
+  },
+  {
+    "fileName": "weather-models.mdc",
+    "description": "Detailed documentation of data models for weather metrics, location data, user preferences, and their relationships in both frontend and backend systems"
+  }
+]

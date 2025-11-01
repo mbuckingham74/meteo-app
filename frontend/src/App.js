@@ -10,6 +10,7 @@ import WeatherDashboard from './components/weather/WeatherDashboard';
 import LocationComparisonView from './components/location/LocationComparisonView';
 import PrivacyPolicy from './components/legal/PrivacyPolicy';
 import AIWeatherPage from './components/ai/AIWeatherPage';
+import SharedAnswerPage from './components/ai/SharedAnswerPage';
 import { getCurrentRoute, parseLocationSlug } from './utils/urlHelpers';
 import { geocodeLocation } from './services/weatherApi';
 import './styles/themes.css';
@@ -59,7 +60,12 @@ function AppContent() {
       } else if (route.path === 'privacy') {
         setCurrentView('privacy');
       } else if (route.path === 'ai-weather') {
-        setCurrentView('ai-weather');
+        // Check if this is a shared answer route
+        if (route.params.action === 'shared') {
+          setCurrentView('shared-answer');
+        } else {
+          setCurrentView('ai-weather');
+        }
       } else {
         // Both dashboard and location routes show the dashboard
         setCurrentView('dashboard');
@@ -113,6 +119,8 @@ function AppContent() {
       <main id="main-content" tabIndex={-1}>
         {currentView === 'privacy' ? (
           <PrivacyPolicy />
+        ) : currentView === 'shared-answer' ? (
+          <SharedAnswerPage />
         ) : currentView === 'ai-weather' ? (
           <AIWeatherPage />
         ) : currentView === 'compare' ? (

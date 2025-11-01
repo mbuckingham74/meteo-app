@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
 import { useLocation } from '../../contexts/LocationContext';
+import { useTemperatureUnit } from '../../contexts/TemperatureUnitContext';
 import { geocodeLocation } from '../../services/weatherApi';
-import { navigateToAIWeather } from '../../utils/urlHelpers';
+import RadarMap from '../weather/RadarMap';
+import HistoricalRainTable from '../weather/HistoricalRainTable';
+import TemperatureBandChart from '../charts/TemperatureBandChart';
+import WindChart from '../charts/WindChart';
+import HourlyForecastChart from '../charts/HourlyForecastChart';
+import { ChartSkeleton, TableSkeleton, MapSkeleton } from '../common/Skeleton';
+import { addToAIHistory } from '../../utils/aiHistoryStorage';
 import './UniversalSearchBar.css';
+
+// Use environment variable for API URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
 /**
  * Universal Smart Search Bar
@@ -12,8 +22,20 @@ import './UniversalSearchBar.css';
  */
 function UniversalSearchBar() {
   const { location, selectLocation } = useLocation();
+  const { unit } = useTemperatureUnit();
   const [query, setQuery] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // AI answer state
+  const [aiAnswer, setAiAnswer] = useState(null);
+  const [aiError, setAiError] = useState(null);
+  const [visualizationsLoaded, setVisualizationsLoaded] = useState({
+    hourly: false,
+    temperature: false,
+    wind: false,
+    radar: false,
+    historical: false
+  });
 
   // Get current city for dynamic queries
   const currentCity = location?.address?.split(',')[0] || 'Seattle';
@@ -70,11 +92,92 @@ function UniversalSearchBar() {
   };
 
   /**
-   * Handle complex AI query (intelligent analysis)
+   * Handle complex AI query (intelligent analysis) - INLINE
    */
-  const handleAIQuery = (question) => {
-    // Navigate to AI page with question using client-side routing
-    navigateToAIWeather(question);
+  const handleAIQuery = async (question) => {
+    if (!location || typeof location !== 'string' || !location.trim()) {
+      setAiError('Please select a location first');
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      setAiError(null);
+      setAiAnswer(null);
+      setVisualizationsLoaded({
+        hourly: false,
+        temperature: false,
+        wind: false,
+        radar: false,
+        historical: false
+      });
+
+      // Step 1: Validate query
+      const validateRes = await fetch(`${API_BASE_URL}/ai-weather/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: question, location })
+      });
+
+      const validateData = await validateRes.json();
+
+      if (!validateRes.ok) {
+        throw new Error(validateData.error || 'Validation failed');
+      }
+
+      if (!validateData.isValid) {
+        setAiError(`Invalid query: ${validateData.reason}`);
+        setIsProcessing(false);
+        return;
+      }
+
+      // Step 2: Get AI analysis
+      const analyzeRes = await fetch(`${API_BASE_URL}/ai-weather/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: question,
+          location,
+          days: 7
+        })
+      });
+
+      const analyzeData = await analyzeRes.json();
+
+      if (!analyzeRes.ok) {
+        throw new Error(analyzeData.error || 'Analysis failed');
+      }
+
+      // Set AI answer
+      setAiAnswer({
+        question,
+        answer: analyzeData.answer,
+        confidence: analyzeData.confidence,
+        tokensUsed: analyzeData.tokensUsed,
+        model: analyzeData.model,
+        weatherData: analyzeData.weatherData,
+        visualizations: analyzeData.visualizations || [],
+        followUpQuestions: analyzeData.followUpQuestions || []
+      });
+
+      // Save to history
+      addToAIHistory({
+        question,
+        answer: analyzeData.answer,
+        location,
+        confidence: analyzeData.confidence,
+        tokensUsed: analyzeData.tokensUsed,
+        visualizations: analyzeData.visualizations,
+        followUpQuestions: analyzeData.followUpQuestions
+      });
+
+      setQuery(''); // Clear input on success
+    } catch (error) {
+      console.error('AI query error:', error);
+      setAiError(error.message || 'Failed to process AI query');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   /**
@@ -169,6 +272,134 @@ function UniversalSearchBar() {
             <span className="hint-ai">🤖 AI will analyze this question</span>
           ) : (
             <span className="hint-location">📍 Searching for location</span>
+          )}
+        </div>
+      )}
+
+      {/* AI Answer Section - Inline */}
+      {aiError && (
+        <div className="ai-error-inline">
+          <p>⚠️ {aiError}</p>
+        </div>
+      )}
+
+      {aiAnswer && (
+        <div className="ai-answer-inline">
+          {/* Answer Header */}
+          <div className="ai-answer-header">
+            <div className="ai-answer-title">
+              <span className="ai-icon">🤖</span>
+              <h3>{aiAnswer.question}</h3>
+            </div>
+            <div className="ai-answer-meta">
+              <span className={`confidence-badge ${aiAnswer.confidence?.toLowerCase()}`}>
+                {aiAnswer.confidence} confidence
+              </span>
+              <span className="tokens-used">{aiAnswer.tokensUsed} tokens</span>
+            </div>
+          </div>
+
+          {/* Answer Text */}
+          <div className="ai-answer-text">
+            <p>{aiAnswer.answer}</p>
+          </div>
+
+          {/* Visualizations */}
+          {aiAnswer.visualizations && aiAnswer.visualizations.length > 0 && (
+            <div className="ai-visualizations-inline">
+              {aiAnswer.visualizations.map((viz, index) => {
+                const loaded = visualizationsLoaded[viz.type];
+
+                return (
+                  <div key={index} className={`visualization-card ${loaded ? 'loaded' : 'loading'}`}>
+                    {viz.type === 'hourly_forecast' && (
+                      <>
+                        {!loaded && <ChartSkeleton height={400} />}
+                        <div style={{ display: loaded ? 'block' : 'none' }}>
+                          <HourlyForecastChart
+                            data={aiAnswer.weatherData?.hourly || []}
+                            unit={unit}
+                            onLoad={() => setVisualizationsLoaded(prev => ({ ...prev, hourly: true }))}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {viz.type === 'temperature' && (
+                      <>
+                        {!loaded && <ChartSkeleton height={450} />}
+                        <div style={{ display: loaded ? 'block' : 'none' }}>
+                          <TemperatureBandChart
+                            data={aiAnswer.weatherData?.forecast || []}
+                            unit={unit}
+                            onLoad={() => setVisualizationsLoaded(prev => ({ ...prev, temperature: true }))}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {viz.type === 'wind' && (
+                      <>
+                        {!loaded && <ChartSkeleton height={450} />}
+                        <div style={{ display: loaded ? 'block' : 'none' }}>
+                          <WindChart
+                            data={aiAnswer.weatherData?.forecast || []}
+                            unit={unit}
+                            onLoad={() => setVisualizationsLoaded(prev => ({ ...prev, wind: true }))}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {viz.type === 'radar' && (
+                      <>
+                        {!loaded && <MapSkeleton height={350} />}
+                        <div style={{ display: loaded ? 'block' : 'none' }}>
+                          <RadarMap
+                            location={location}
+                            onLoad={() => setVisualizationsLoaded(prev => ({ ...prev, radar: true }))}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {viz.type === 'historical' && (
+                      <>
+                        {!loaded && <TableSkeleton rows={12} columns={4} height={500} />}
+                        <div style={{ display: loaded ? 'block' : 'none' }}>
+                          <HistoricalRainTable
+                            location={location}
+                            unit={unit}
+                            onLoad={() => setVisualizationsLoaded(prev => ({ ...prev, historical: true }))}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Follow-up Questions */}
+          {aiAnswer.followUpQuestions && aiAnswer.followUpQuestions.length > 0 && (
+            <div className="follow-up-questions-inline">
+              <p className="follow-up-label">💡 Related questions:</p>
+              <div className="follow-up-chips">
+                {aiAnswer.followUpQuestions.map((q, idx) => (
+                  <button
+                    key={idx}
+                    className="follow-up-chip"
+                    onClick={() => {
+                      setQuery(q);
+                      handleAIQuery(q);
+                    }}
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}

@@ -69,4 +69,54 @@ export const TemperatureDisplaySkeleton = () => {
   );
 };
 
+// Chart skeleton for weather visualizations
+export const ChartSkeleton = ({ height = 400 }) => {
+  return (
+    <div className="chart-skeleton" style={{ height }}>
+      <Skeleton variant="rectangular" width="60%" height="24px" style={{ marginBottom: '16px' }} />
+      <Skeleton variant="rectangular" width="100%" height={height - 80} style={{ marginBottom: '16px' }} />
+      <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+        <Skeleton variant="rectangular" width="80px" height="16px" />
+        <Skeleton variant="rectangular" width="80px" height="16px" />
+        <Skeleton variant="rectangular" width="80px" height="16px" />
+      </div>
+    </div>
+  );
+};
+
+// Table skeleton for historical data
+export const TableSkeleton = ({ rows = 10, columns = 4, height = 500 }) => {
+  return (
+    <div className="table-skeleton" style={{ maxHeight: height, overflow: 'hidden' }}>
+      <Skeleton variant="rectangular" width="40%" height="24px" style={{ marginBottom: '16px' }} />
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 1fr)`, gap: '12px', marginBottom: '12px' }}>
+        {Array.from({ length: columns }).map((_, i) => (
+          <Skeleton key={i} variant="rectangular" width="100%" height="40px" />
+        ))}
+      </div>
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <div key={rowIndex} style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 1fr)`, gap: '12px', marginBottom: '8px' }}>
+          {Array.from({ length: columns }).map((_, colIndex) => (
+            <Skeleton key={colIndex} variant="rectangular" width="100%" height="48px" />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// Map skeleton for radar
+export const MapSkeleton = ({ height = 350 }) => {
+  return (
+    <div className="map-skeleton" style={{ position: 'relative', height }}>
+      <Skeleton variant="rectangular" width="100%" height={height} />
+      <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <Skeleton variant="circular" width="40px" height="40px" />
+        <Skeleton variant="circular" width="40px" height="40px" />
+        <Skeleton variant="circular" width="40px" height="40px" />
+      </div>
+    </div>
+  );
+};
+
 export default Skeleton;

@@ -541,10 +541,18 @@ Cost: $0
 ```
 Input: "What's similar to Seattle climate from June-October?"
 Detection: Contains "what", "similar", analytical intent
-Action: Navigate to AI Weather page with pre-filled question
+Action: Display AI answer inline on dashboard with visualizations
 Speed: 2-3 seconds (AI processing)
 Cost: ~$0.005 per query
 ```
+
+**Design Rationale for Inline Display:**
+Inline answers provide significantly better UX than navigation:
+- **Faster perceived performance** - No page navigation delays
+- **Context preservation** - Users stay on main dashboard with weather data visible
+- **Reduced friction** - No mental context switching between pages
+- **Progressive enhancement** - AI insights appear alongside traditional weather data
+- **Better discovery** - Users see AI capabilities without leaving their workflow
 
 ### Smart Detection Logic
 
@@ -661,11 +669,13 @@ Input: "Seattle"
 
 Input: "Will it rain this weekend in Seattle?"
 → AI understands: location + time period + precipitation question
-→ Returns focused forecast with rain probability
+→ Displays answer inline with hourly forecast chart and precipitation visualization
+→ Shows follow-up questions like "How windy will it be?"
 
 Input: "I live in Florida June-November and it's miserable - where should I move?"
 → AI extracts: current location, time period, discomfort factors
 → Suggests cooler, less humid alternatives with data
+→ All displayed inline on dashboard without navigation
 ```
 
 **Progressive Discovery:**
@@ -684,13 +694,16 @@ Input: "I live in Florida June-November and it's miserable - where should I move
 - Users never pay - cost absorbed by app
 
 **Technical Implementation:**
-- **UniversalSearchBar.jsx** - Smart detection and routing logic
-- **aiLocationFinderService.js** - Claude API integration
+- **UniversalSearchBar.jsx** - Smart detection and inline AI answer display
+- **aiWeatherAnalysisService.js** - Claude API integration for weather Q&A
 - **LocationContext** - Provides current city for dynamic queries
-- **UniversalSearchBar.css** - Centered hero layout with max-width 900px
+- **TemperatureUnitContext** - Global temperature unit for visualizations
+- **UniversalSearchBar.css** - Centered hero layout with inline answer styling
+- **Skeleton Loaders** - ChartSkeleton, TableSkeleton, MapSkeleton for smooth loading states
+- **AI History** - localStorage-based caching of last 10 queries with instant replay
 
 **Why This Matters:**
-Most weather apps hide AI features in settings or make them feel experimental. Meteo makes AI the primary interface, encouraging users to ask questions naturally instead of learning app navigation patterns.
+Most weather apps hide AI features in settings or make them feel experimental. Meteo makes AI the primary interface with inline answers, encouraging users to ask questions naturally while staying in their workflow context. The separate /ai-weather page is now only used for shared links.
 
 ### URL Routing & Navigation
 The application uses a custom client-side routing system with shareable URLs and proper browser navigation support:

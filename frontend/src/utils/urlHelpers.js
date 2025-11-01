@@ -85,7 +85,16 @@ export const getCurrentRoute = () => {
     return { path: 'privacy', params: {}, state: null };
   }
 
-  if (path === '/ai-weather') {
+  // Check for AI weather routes
+  const aiWeatherMatch = path.match(/^\/ai-weather(?:\/([^/]+)\/([^/]+))?$/);
+  if (aiWeatherMatch) {
+    if (aiWeatherMatch[1] === 'shared' && aiWeatherMatch[2]) {
+      return {
+        path: 'ai-weather',
+        params: { action: 'shared', shareId: aiWeatherMatch[2] },
+        state: null
+      };
+    }
     return { path: 'ai-weather', params: {}, state: null };
   }
 
