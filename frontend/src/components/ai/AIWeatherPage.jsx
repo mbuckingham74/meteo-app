@@ -43,16 +43,28 @@ function AIWeatherPage() {
     setError(null);
     setAnswer(null);
 
+    // Set up 30-second timeout
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+      setError('Request timed out. The AI service took too long to respond. Please try again.');
+    }, 30000);
+
     try {
-      // Step 1: Validate query
+      // Step 1: Validate query (with 10 second timeout)
+      const validateController = new AbortController();
+      const validateTimeout = setTimeout(() => validateController.abort(), 10000);
+
       const validateResponse = await fetch(`${API_BASE_URL}/ai-weather/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query: question,
           location
-        })
+        }),
+        signal: validateController.signal
       });
+
+      clearTimeout(validateTimeout);
 
       const validation = await validateResponse.json();
 
@@ -62,7 +74,10 @@ function AIWeatherPage() {
         return;
       }
 
-      // Step 2: Get AI analysis
+      // Step 2: Get AI analysis (with 20 second timeout)
+      const analyzeController = new AbortController();
+      const analyzeTimeout = setTimeout(() => analyzeController.abort(), 20000);
+
       const analyzeResponse = await fetch(`${API_BASE_URL}/ai-weather/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,18 +85,28 @@ function AIWeatherPage() {
           query: question,
           location,
           days: 7
-        })
+        }),
+        signal: analyzeController.signal
       });
+
+      clearTimeout(analyzeTimeout);
+      clearTimeout(timeoutId); // Clear the overall timeout
 
       const analysis = await analyzeResponse.json();
 
       if (analysis.error) {
-        setError(analysis.error);
+        setError(`Error: ${analysis.error}`);
       } else {
         setAnswer(analysis);
       }
     } catch (err) {
-      setError('Failed to get answer: ' + err.message);
+      clearTimeout(timeoutId);
+
+      if (err.name === 'AbortError') {
+        setError('Request timed out. The AI service is taking too long. Please try again.');
+      } else {
+        setError(`Failed to get answer: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }
